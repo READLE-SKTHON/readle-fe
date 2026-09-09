@@ -1,4 +1,7 @@
-import { NavLink } from "react-router-dom";
+import type { CSSProperties } from "react";
+import { NavLink, useLocation } from "react-router-dom";
+
+import "./FooterNavigation.css";
 
 import bookIcon from "@/assets/icons/navigationIcons/bookIcon.png";
 import gameIcon from "@/assets/icons/navigationIcons/gameIcon.png";
@@ -6,7 +9,13 @@ import trophyIcon from "@/assets/icons/navigationIcons/trophyIcon.png";
 import userIcon from "@/assets/icons/navigationIcons/userIcon.png";
 import whaleIcon from "@/assets/icons/navigationIcons/whaleIcon.png";
 
-const navigationItems = [
+interface NavigationItem {
+  label: string;
+  path: string;
+  icon: string;
+}
+
+const navigationItems: NavigationItem[] = [
   {
     label: "랭킹",
     path: "/ranking",
@@ -16,6 +25,11 @@ const navigationItems = [
     label: "훈련",
     path: "/training",
     icon: bookIcon,
+  },
+  {
+    label: "HOME",
+    path: "/",
+    icon: whaleIcon,
   },
   {
     label: "게임",
@@ -29,49 +43,144 @@ const navigationItems = [
   },
 ];
 
-type NavItemProps = {
-  item: {
-    label: string;
-    path: string;
-    icon: string;
-  };
-};
-
-function NavItem({ item }: NavItemProps) {
-  return (
-    <NavLink
-      to={item.path}
-      className="flex w-14 flex-col items-center gap-1 text-xs font-semibold text-[#003F70]"
-    >
-      <img src={item.icon} alt={item.label} className="h-6 w-6 object-contain" />
-
-      <span>{item.label}</span>
-    </NavLink>
-  );
-}
-
 export default function FooterNavigation() {
+  const { pathname } = useLocation();
+
+  // 현재 주소와 일치하는 네비게이션 메뉴 index 찾기
+  const matchedIndex = navigationItems.findIndex(({ path }) => {
+    // HOME은 정확히 "/"일 때만 활성화
+    if (path === "/") {
+      return pathname === "/";
+    }
+
+    // 하위 페이지에서도 해당 메뉴 활성화
+    // 예: /training/result → 훈련 메뉴 활성화
+    return pathname === path || pathname.startsWith(`${path}/`);
+  });
+
+  // 일치하는 메뉴가 없으면 HOME을 기본 활성화
+  const activeIndex = matchedIndex >= 0 ? matchedIndex : 2;
+
+  // 현재 선택된 메뉴
+  const activeItem = navigationItems[activeIndex];
+
+  // 각 메뉴의 중앙 위치
+  const notchPositions = ["10%", "30%", "50%", "70%", "90%"] as const;
+
+  // 현재 선택된 메뉴 위치를 CSS에 전달
+  const footerBackgroundStyle = {
+    "--footer-notch-x": notchPositions[activeIndex],
+  } as CSSProperties;
+
   return (
-    <footer className="fixed bottom-0 left-1/2 w-full max-w-md -translate-x-1/2 bg-[#2F8DE4]">
-      <nav className="relative flex h-20 items-center justify-around px-3">
-        <NavItem item={navigationItems[0]} />
+    <nav
+      aria-label="하단 네비게이션"
+      className="
+        fixed bottom-0 left-1/2 z-50
+        h-20 w-full max-w-97.5
+        -translate-x-1/2
+        overflow-visible
+        bg-transparent
+        pb-[env(safe-area-inset-bottom)]
+      "
+    >
+      {/* 선택된 메뉴 주변이 곡선으로 파이는 푸터 배경 */}
+      <div
+        aria-hidden="true"
+        className="
+          footer-navigation-background
+          pointer-events-none
+          absolute inset-0 z-0
+          bg-[#2F8DE4]
+        "
+        style={footerBackgroundStyle}
+      />
 
-        <NavItem item={navigationItems[1]} />
-
-        <NavLink to="/" className="relative flex w-16 flex-col items-center justify-center">
-          <div className="absolute -top-11 flex h-14 w-14 items-center justify-center rounded-full bg-[#F4F34E]">
-            <img src={whaleIcon} alt="홈" className="h-10 w-10 object-contain" />
+      {/* 활성 원이 움직이는 영역 */}
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute -top-7 left-0 z-20
+          grid w-full grid-cols-5
+        "
+      >
+        {/* 선택된 메뉴 위치로 활성 원 이동 */}
+        <div
+          className="
+            col-start-1
+            flex justify-center
+            transition-transform duration-1000
+            ease-[cubic-bezier(0.22,1,0.36,1)]
+            will-change-transform
+          "
+          style={{
+            transform: `translateX(${activeIndex * 100}%)`,
+          }}
+        >
+          {/* 활성 메뉴 원형 도형 */}
+          <div
+            className="
+              flex size-17
+              items-center justify-center
+              rounded-full
+              bg-[#F4F34E]
+              shadow-lg
+            "
+          >
+            <img
+              src={activeItem.icon}
+              alt=""
+              aria-hidden="true"
+              className="size-10 object-contain"
+            />
           </div>
+        </div>
+      </div>
 
-          <span className="mt-10 rounded-full bg-[#F4F34E] px-2 py-0.5 text-[10px] font-bold text-[#2F8DE4]">
-            HOME
-          </span>
-        </NavLink>
+      {/* 메뉴 전체 영역 */}
+      <div className="relative z-10 grid h-full w-full grid-cols-5">
+        {navigationItems.map((item, index) => {
+          const isActive = index === activeIndex;
 
-        <NavItem item={navigationItems[2]} />
+          return (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              aria-label={`${item.label} 페이지로 이동`}
+              aria-current={isActive ? "page" : undefined}
+              className="
+                flex h-full flex-col
+                items-center justify-end
+                gap-1 pb-3
+                outline-none
+              "
+            >
+              {/* 활성 메뉴는 아래쪽 아이콘 숨김 */}
+              <img
+                src={item.icon}
+                alt=""
+                aria-hidden="true"
+                className={`
+                  size-7 object-contain
+                  transition-opacity duration-200
+                  ${isActive ? "opacity-0" : "opacity-100"}
+                `}
+              />
 
-        <NavItem item={navigationItems[3]} />
-      </nav>
-    </footer>
+              <span
+                className={`
+                  text-xs
+                  transition-colors duration-1000
+                  ${isActive ? "font-bold text-[#F4F34E]" : "font-medium text-[#003F70]"}
+                `}
+              >
+                {item.label}
+              </span>
+            </NavLink>
+          );
+        })}
+      </div>
+    </nav>
   );
 }
