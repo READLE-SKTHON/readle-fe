@@ -1,10 +1,9 @@
 ---
 name: Feature request
 about: 새로운 기능 구현을 위한 이슈
-title: ''
-labels: ''
-assignees: ''
-
+title: ""
+labels: ""
+assignees: ""
 ---
 
 ## ✨ Feature Issue

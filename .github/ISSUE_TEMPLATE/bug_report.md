@@ -1,10 +1,9 @@
 ---
 name: Bug report
 about: 버그 수정 이슈
-title: ''
-labels: ''
-assignees: ''
-
+title: ""
+labels: ""
+assignees: ""
 ---
 
 ## 🐛 Bug
