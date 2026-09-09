@@ -1,13 +1,28 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import AppLayout from "@/layouts/AppLayout";
+import FooterLayout from "@/layouts/FooterLayout";
+
+import GamePage from "@/pages/game/GamePage";
+import HomePage from "@/pages/home/HomePage";
+import MyPage from "@/pages/my/MyPage";
+import RankingPage from "@/pages/ranking/RankingPage";
+import TrainingPage from "@/pages/training/TrainingPage";
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route element={<AppLayout />}>
-          <Route path="/" element={<div>Readle</div>} />
+          {/* 푸터 필요한 페이지 */}
+          <Route element={<FooterLayout />}>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/ranking" element={<RankingPage />} />
+            <Route path="/training" element={<TrainingPage />} />
+            <Route path="/game" element={<GamePage />} />
+            <Route path="/my" element={<MyPage />} />
+          </Route>
+          {/* 푸터 필요 없는 페이지는 나중에 여기아래에 */}
         </Route>
       </Routes>
     </BrowserRouter>
