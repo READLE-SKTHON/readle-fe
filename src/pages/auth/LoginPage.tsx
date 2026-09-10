@@ -1,22 +1,39 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import loginIcon from "@/assets/icons/loginIcon.png";
+import { users } from "@/mocks/user";
 
 export default function LoginPage() {
+  const navigate = useNavigate();
+
   const [nickname, setNickname] = useState("");
   const [school, setSchool] = useState("");
+  const [error, setError] = useState("");
 
   const isLoginEnabled = nickname.trim() !== "" && school.trim() !== "";
 
   const handleLogin = () => {
     if (!isLoginEnabled) return;
 
-    // TODO: 데모 계정 로그인 로직 추가
-    console.log("로그인", { nickname, school });
+    const user = users.find(
+      (user) => user.nickname === nickname.trim() && user.school === school.trim(),
+    );
+
+    if (!user) {
+      setError("등록되지 않은 테스트 계정입니다.");
+      return;
+    }
+
+    // 로그인한 사용자 정보 저장
+    localStorage.setItem("user", JSON.stringify(user));
+
+    // 로그인 성공 후 메인 페이지 이동
+    navigate("/home");
   };
 
   return (
-    <main className="min-h-screen px-5 bg-[#F0F8FF]">
+    <main className="min-h-screen bg-[#F0F8FF] px-5">
       {/* 로그인 로고 */}
       <img src={loginIcon} alt="Login" className="mx-auto w-60 pt-[20vh] object-contain" />
 
@@ -31,7 +48,10 @@ export default function LoginPage() {
             id="nickname"
             type="text"
             value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
+            onChange={(e) => {
+              setNickname(e.target.value);
+              setError("");
+            }}
             placeholder="닉네임을 입력하시오"
             className="
               h-16 w-full rounded-xl
@@ -53,7 +73,10 @@ export default function LoginPage() {
             id="school"
             type="text"
             value={school}
-            onChange={(e) => setSchool(e.target.value)}
+            onChange={(e) => {
+              setSchool(e.target.value);
+              setError("");
+            }}
             placeholder="학교명을 입력하시오"
             className="
               h-16 w-full rounded-xl
@@ -65,6 +88,9 @@ export default function LoginPage() {
             "
           />
         </div>
+
+        {/* 로그인 실패 메시지 */}
+        {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
 
         <button
           type="button"
