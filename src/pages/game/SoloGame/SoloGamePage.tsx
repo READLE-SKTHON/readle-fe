@@ -1,11 +1,29 @@
+import { useState } from "react";
+
 import Header from "@/components/common/header/Header";
+import NewsPreview from "@/components/game/solo/NewsPreview";
+import QuizRenderer from "@/components/game/solo/QuizRenderer";
+
+import { mockQuizzes } from "@/mocks/quizzes";
 
 export default function SoloGamePage() {
-  return (
-    <main>
-      <Header title="혼자 문제풀기" />
+  const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null);
 
-      <div>문제 풀기 페이지</div>
-    </main>
+  const currentQuiz = mockQuizzes[0];
+
+  return (
+    <div>
+      <Header title="혼자 문제풀기" current={1} total={mockQuizzes.length} />
+
+      <main className="px-5 pb-8 pt-6">
+        <NewsPreview onOpen={() => {}} />
+
+        <QuizRenderer
+          quiz={currentQuiz}
+          selectedOptionId={selectedOptionId}
+          onSelectOption={setSelectedOptionId}
+        />
+      </main>
+    </div>
   );
 }
