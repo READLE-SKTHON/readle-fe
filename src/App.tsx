@@ -7,7 +7,7 @@ import GamePage from "@/pages/game/GamePage";
 import HomePage from "@/pages/home/HomePage";
 import MyPage from "@/pages/my/MyPage";
 import RankingPage from "@/pages/ranking/RankingPage";
-import TrainingPage from "@/pages/training/TrainingPage";
+import ReviewPage from "@/pages/review/ReviewPage";
 
 import SoloIntroPage from "@/pages/game/SoloGame/SoloIntroPage";
 import SoloGamePage from "@/pages/game/SoloGame/SoloGamePage";
@@ -24,7 +24,7 @@ export default function App() {
           <Route element={<FooterLayout />}>
             <Route path="/" element={<HomePage />} />
             <Route path="/ranking" element={<RankingPage />} />
-            <Route path="/training" element={<TrainingPage />} />
+            <Route path="/review" element={<ReviewPage />} />
             <Route path="/game" element={<GamePage />} />
             <Route path="/my" element={<MyPage />} />
           </Route>

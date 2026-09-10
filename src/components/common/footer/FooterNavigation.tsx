@@ -23,7 +23,7 @@ const navigationItems: NavigationItem[] = [
   },
   {
     label: "복습",
-    path: "/training",
+    path: "/review",
     icon: bookIcon,
   },
   {
