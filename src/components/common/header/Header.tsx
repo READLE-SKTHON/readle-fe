@@ -35,7 +35,7 @@ export default function Header({ title, current, total, backPath }: HeaderProps)
           <img src={chevronLeftIcon} alt="" className="w-3" />
         </button>
 
-        <h1 className="text-[20px] font-semibold">{title}</h1>
+        <h1 className="text-[20px] font-bold">{title}</h1>
 
         {hasProgress && (
           <span className="absolute right-5 text-[14px] font-semibold">
