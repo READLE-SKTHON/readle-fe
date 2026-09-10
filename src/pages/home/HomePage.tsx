@@ -1,5 +1,4 @@
 import MainHeader from "@/components/common/header/MainHeader";
-import FooterNavigation from "@/components/common/footer/FooterNavigation";
 import StatCard from "@/components/home/StatCard";
 
 import beluga from "@/assets/icons/home/Beluga.png";
@@ -98,8 +97,6 @@ export default function HomePage() {
           </article>
         </section>
       </div>
-
-      <FooterNavigation />
     </main>
   );
 }

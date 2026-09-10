@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 
-import FooterNavigation from "@/components/common/footer/FooterNavigation";
 import MainHeader from "@/components/common/header/MainHeader";
 
 import gameBeluga from "@/assets/icons/game/gameBeluga.png";
@@ -91,8 +90,6 @@ export default function GameMainPage() {
           </button>
         </section>
       </div>
-
-      <FooterNavigation />
     </main>
   );
 }
