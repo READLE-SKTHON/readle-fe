@@ -44,7 +44,7 @@ export default function SoloIntroPage() {
         <button
           type="button"
           onClick={() => navigate("/game/solo/reading")}
-          className="mt-7 h-16 w-full cursor-pointer rounded-2xl bg-[#168CF2] text-xl font-bold text-white"
+          className="mt-7 h-16 w-full cursor-pointer rounded-2xl bg-[#2285E3] text-xl font-bold text-white"
         >
           시작하기
         </button>
