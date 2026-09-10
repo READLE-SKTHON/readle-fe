@@ -48,7 +48,7 @@ export default function GameMainPage() {
         </section>
 
         {/* 게임 모드 선택 */}
-        <section className="mt-6 grid grid-cols-2 gap-4">
+        <section className="grid grid-cols-2 gap-4">
           {/* 혼자 문제풀기 */}
           <button
             type="button"

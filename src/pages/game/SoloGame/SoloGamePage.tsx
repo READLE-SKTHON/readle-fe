@@ -5,7 +5,7 @@ export default function SoloGamePage() {
     <main>
       <Header title="혼자 문제풀기" />
 
-      <div>혼자 문제풀기 페이지</div>
+      <div>문제 풀기 페이지</div>
     </main>
   );
 }
