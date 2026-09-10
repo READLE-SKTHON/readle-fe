@@ -54,6 +54,13 @@ export interface SubjectiveQuiz extends BaseQuiz {
 
   maxLength: number;
 
+  // 기사에서 확인할 수 있는 근거
+  articleEvidence: string;
+
+  // AI 피드백
+  feedback: string;
+
+  // 완벽한 답안 예시
   exampleAnswer: string;
 }
 

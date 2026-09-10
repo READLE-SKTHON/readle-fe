@@ -3,11 +3,12 @@ import { useNavigate } from "react-router-dom";
 
 import Header from "@/components/common/header/Header";
 import FeedbackRenderer from "@/components/game/solo/feedback/FeedbackRenderer";
-import OxResult from "@/components/game/solo/feedback/OxResult";
+import OxResult from "@/components/game/solo/feedback/result/OxResult";
+import SubjectiveResult from "@/components/game/solo/feedback/result/SubjectiveResult";
 import NewsModal from "@/components/game/solo/NewsModal";
 import NewsPreview from "@/components/game/solo/NewsPreview";
-import QuizActionButton from "@/components/game/solo/QuizActionButton";
-import QuizRenderer from "@/components/game/solo/QuizRenderer";
+import QuizActionButton from "@/components/game/solo/quiz/QuizActionButton";
+import QuizRenderer from "@/components/game/solo/quiz/QuizRenderer";
 
 import { mockNews } from "@/mocks/news";
 import { mockQuizzes } from "@/mocks/quizzes";
@@ -75,7 +76,7 @@ export default function SoloGamePage() {
       }
 
       // 임시 기준
-      // 나중에 AI/API 평가 결과로 변경
+      // 추후 AI/API 평가 결과로 변경
       if (reason.trim().length < 10) {
         return "PARTIAL";
       }
@@ -83,19 +84,19 @@ export default function SoloGamePage() {
       return "CORRECT";
     }
 
-    // 주관식 채점은 아직 구현 전
+    // 주관식
+    if (currentQuiz.type === "SUBJECTIVE") {
+      // 임시 처리
+      // 추후 AI/API 채점 결과로 변경
+      return "CORRECT";
+    }
+
     return null;
   };
 
   // 제출
   const handleSubmit = () => {
     if (!canSubmit) return;
-
-    // 주관식은 현재 피드백 없이 바로 다음 문제로 이동
-    if (currentQuiz.type === "SUBJECTIVE") {
-      handleNext();
-      return;
-    }
 
     const status = getFeedbackStatus();
 
@@ -110,7 +111,7 @@ export default function SoloGamePage() {
   const handleNext = () => {
     const isLastQuiz = currentIndex === mockQuizzes.length - 1;
 
-    // 마지막 문제면 결과 페이지로 이동
+    // 마지막 문제면 결과 페이지 이동
     if (isLastQuiz) {
       navigate("/game/solo/result", {
         state: {
@@ -123,7 +124,7 @@ export default function SoloGamePage() {
       return;
     }
 
-    // 다음 문제로 이동
+    // 다음 문제
     setCurrentIndex((prev) => prev + 1);
 
     // 이전 문제 상태 초기화
@@ -161,12 +162,12 @@ export default function SoloGamePage() {
           <NewsPreview onOpen={() => setIsNewsOpen(true)} />
         )}
 
-        {/* 제출 후 피드백 */}
+        {/* 제출 후 상단 피드백 */}
         {isSubmitted && feedbackStatus && (
           <FeedbackRenderer quiz={currentQuiz} status={feedbackStatus} />
         )}
 
-        {/* O/X 제출 후 결과 상세 */}
+        {/* O/X 제출 후 상세 결과 */}
         {isSubmitted && currentQuiz.type === "OX" && selectedOxAnswer && feedbackStatus && (
           <OxResult
             quiz={currentQuiz}
@@ -174,6 +175,11 @@ export default function SoloGamePage() {
             reason={reason}
             status={feedbackStatus}
           />
+        )}
+
+        {/* 주관식 제출 후 상세 결과 */}
+        {isSubmitted && currentQuiz.type === "SUBJECTIVE" && feedbackStatus && (
+          <SubjectiveResult quiz={currentQuiz} answer={subjectiveAnswer} />
         )}
 
         {/* 문제 풀이 화면 */}
@@ -195,7 +201,7 @@ export default function SoloGamePage() {
 
         {/* 제출 / 다음 */}
         <QuizActionButton
-          label={currentQuiz.type === "SUBJECTIVE" ? "다음" : isSubmitted ? "다음" : "제출하기"}
+          label={isSubmitted ? "다음" : currentQuiz.type === "SUBJECTIVE" ? "다음" : "제출하기"}
           disabled={!isSubmitted && !canSubmit}
           onClick={handleAction}
         />

@@ -1,5 +1,6 @@
 import MultipleChoiceFeedback from "./MultipleChoiceFeedback";
 import OxFeedback from "./OxFeedback";
+import SubjectiveFeedback from "./SubjectiveFeedback";
 
 import type { FeedbackStatus, Quiz } from "@/types/quiz";
 
@@ -17,6 +18,6 @@ export default function FeedbackRenderer({ quiz, status }: FeedbackRendererProps
       return <OxFeedback status={status} />;
 
     case "SUBJECTIVE":
-      return null;
+      return <SubjectiveFeedback />;
   }
 }
