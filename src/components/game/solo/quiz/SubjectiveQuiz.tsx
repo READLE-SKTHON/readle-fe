@@ -24,7 +24,7 @@ export default function SubjectiveQuiz({
         <button
           type="button"
           onClick={onOpenNews}
-          className="cursor-pointer rounded-full bg-[#EFF238] px-4 py-1 text-[14px] font-bold"
+          className="cursor-pointer rounded-full bg-[#2285E3] text-white px-4 py-1 text-[14px] font-bold"
         >
           지문 전체보기
         </button>

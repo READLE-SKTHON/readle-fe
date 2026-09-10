@@ -66,19 +66,19 @@ export default function GameMainPage() {
             onClick={() => navigate("/game/solo")}
             className="
               flex h-57 cursor-pointer flex-col
-              rounded-3xl bg-[#E8F1F9]
+              rounded-3xl bg-[#2285E3]
               p-5
             "
           >
-            <h2 className="mt-7 w-full text-center text-xl font-bold text-black">혼자 문제풀기</h2>
+            <h2 className="mt-7 w-full text-center text-xl font-bold text-white">혼자 문제풀기</h2>
 
-            <p className="mt-3 w-full text-center text-base font-semibold leading-snug text-gray-500">
+            <p className="mt-3 w-full text-center text-base font-semibold leading-snug text-white">
               오늘의 뉴스로
               <br />
               실력을 키워요
             </p>
 
-            <span className="mt-auto self-end text-4xl leading-none text-[#168CF2]">›</span>
+            <span className="mt-auto self-end text-4xl leading-none text-white">›</span>
           </button>
 
           {/* 친구와 함께 */}

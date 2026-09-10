@@ -17,7 +17,7 @@ export default function QuizActionButton({
       className={`mt-8 h-16 w-full rounded-2xl text-[18px] font-bold ${
         disabled
           ? "cursor-not-allowed bg-gray-200 text-gray-400"
-          : "cursor-pointer bg-black text-white"
+          : "cursor-pointer bg-[#2285E3] text-white"
       }`}
     >
       {label}
