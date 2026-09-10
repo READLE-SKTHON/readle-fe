@@ -1,5 +1,6 @@
 import MainHeader from "@/components/common/header/MainHeader";
 import FooterNavigation from "@/components/common/footer/FooterNavigation";
+import StatCard from "@/components/home/StatCard";
 
 import beluga from "@/assets/icons/home/Beluga.png";
 import bookIcon from "@/assets/icons/home/bookIcon.png";
@@ -67,7 +68,7 @@ export default function HomePage() {
 
           <StatCard icon={bookIcon} value="2개" label="읽은 뉴스" />
 
-          <StatCard icon={targetIcon} value="80%" label="평균 정답률" />
+          <StatCard icon={targetIcon} value="80%" label="정답률" />
         </section>
 
         {/* 오늘의 훈련 */}
@@ -100,24 +101,5 @@ export default function HomePage() {
 
       <FooterNavigation />
     </main>
-  );
-}
-
-type StatCardProps = {
-  icon: string;
-  value: string;
-  label: string;
-};
-
-function StatCard({ icon, value, label }: StatCardProps) {
-  return (
-    <div className="flex items-center justify-center gap-2 rounded-xl border border-gray-100 bg-white px-2 py-3 shadow-sm">
-      <img src={icon} alt="" className="size-9 object-contain" />
-
-      <div>
-        <p className="text-base font-bold text-black">{value}</p>
-        <p className="whitespace-nowrap text-xs font-medium text-gray-400">{label}</p>
-      </div>
-    </div>
   );
 }
