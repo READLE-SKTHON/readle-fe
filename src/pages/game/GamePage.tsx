@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 
 import MainHeader from "@/components/common/header/MainHeader";
 
-import gameBeluga from "@/assets/icons/game/gameBeluga.png";
+import gameBeluga from "@/assets/images/gameBeluga.png";
 
 export default function GameMainPage() {
   const navigate = useNavigate();

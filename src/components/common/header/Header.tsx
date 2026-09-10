@@ -6,26 +6,36 @@ type HeaderProps = {
   title: string;
   current?: number;
   total?: number;
+  backPath?: string;
 };
 
-export default function Header({ title, current, total }: HeaderProps) {
+export default function Header({ title, current, total, backPath }: HeaderProps) {
   const navigate = useNavigate();
 
   const hasProgress = current !== undefined && total !== undefined;
+
+  const handleBack = () => {
+    if (backPath) {
+      navigate(backPath);
+      return;
+    }
+
+    navigate(-1);
+  };
 
   return (
     <header className="w-full bg-white">
       <div className="relative flex h-20 items-center justify-center px-5 pt-5">
         <button
           type="button"
-          onClick={() => navigate(-1)}
-          className="absolute left-5 text-2xl cursor-pointer"
+          onClick={handleBack}
+          className="absolute left-5 cursor-pointer text-2xl"
           aria-label="뒤로가기"
         >
-          <img src={chevronLeftIcon} className="w-3"></img>
+          <img src={chevronLeftIcon} alt="" className="w-3" />
         </button>
 
-        <h1 className="text-[20px] text-base font-semibold">{title}</h1>
+        <h1 className="text-[20px] font-semibold">{title}</h1>
 
         {hasProgress && (
           <span className="absolute right-5 text-[14px] font-semibold">
