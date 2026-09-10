@@ -9,6 +9,9 @@ import MyPage from "@/pages/my/MyPage";
 import RankingPage from "@/pages/ranking/RankingPage";
 import TrainingPage from "@/pages/training/TrainingPage";
 
+import SoloGamePage from "@/pages/game/SoloGame/SoloGamePage";
+import FriendGamePage from "@/pages/game/FriendGame/FriendGamePage";
+
 export default function App() {
   return (
     <BrowserRouter>
@@ -23,6 +26,8 @@ export default function App() {
             <Route path="/my" element={<MyPage />} />
           </Route>
           {/* 푸터 필요 없는 페이지는 나중에 여기아래에 */}
+          <Route path="/game/solo" element={<SoloGamePage />} />
+          <Route path="/game/friend" element={<FriendGamePage />} />
         </Route>
       </Routes>
     </BrowserRouter>
