@@ -4,6 +4,7 @@ import AppLayout from "@/layouts/AppLayout";
 import FooterLayout from "@/layouts/FooterLayout";
 
 import SplashPage from "./pages/auth/SplashPage";
+import LoginPage from "./pages/auth/LoginPage";
 
 import GamePage from "@/pages/game/GamePage";
 import HomePage from "@/pages/home/HomePage";
@@ -32,6 +33,7 @@ export default function App() {
           </Route>
           {/* 푸터 필요 없는 페이지는 나중에 여기아래에 */}
           <Route path="/" element={<SplashPage />} />
+          <Route path="/login" element={<LoginPage />} />
 
           <Route path="/game/solo" element={<SoloIntroPage />} />
           <Route path="/game/solo/reading" element={<SoloReadingPage />} />
