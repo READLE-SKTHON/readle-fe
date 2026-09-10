@@ -41,3 +41,6 @@ export interface SubjectiveQuiz extends BaseQuiz {
 
 // 모든 퀴즈 타입
 export type Quiz = MultipleChoiceQuiz | OxQuiz | SubjectiveQuiz;
+
+// 퀴즈 정답 타입
+export type FeedbackStatus = "CORRECT" | "INCORRECT" | "PARTIAL";

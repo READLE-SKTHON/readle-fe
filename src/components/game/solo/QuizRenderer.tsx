@@ -6,12 +6,14 @@ type QuizRendererProps = {
   quiz: Quiz;
   selectedOptionId: number | null;
   onSelectOption: (optionId: number) => void;
+  isSubmitted: boolean;
 };
 
 export default function QuizRenderer({
   quiz,
   selectedOptionId,
   onSelectOption,
+  isSubmitted,
 }: QuizRendererProps) {
   switch (quiz.type) {
     case "MULTIPLE_CHOICE":
@@ -20,6 +22,7 @@ export default function QuizRenderer({
           quiz={quiz}
           selectedOptionId={selectedOptionId}
           onSelect={onSelectOption}
+          isSubmitted={isSubmitted}
         />
       );
 
