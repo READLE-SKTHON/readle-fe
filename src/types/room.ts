@@ -28,3 +28,31 @@ export interface RoomOption<T extends string | number = string | number> {
   label: string;
   value: T;
 }
+
+// 대기방 참여자
+export interface Participant {
+  userId: number;
+  nickname: string;
+
+  // 프로필 이미지 (없으면 기본 이미지)
+  profileImageUrl: string | null;
+}
+
+// 대기방 정보
+export interface WaitingRoom {
+  // 숫자 4자리 방 코드
+  roomCode: string;
+
+  inviteLink: string;
+  hostId: number;
+  maxPlayers: number;
+  participants: Participant[];
+}
+
+// 방 코드 입장 요청
+export interface JoinRoomRequest {
+  roomCode: string;
+}
+
+// 방 코드 입장 응답
+export type JoinRoomResponse = WaitingRoom;

@@ -4,6 +4,7 @@ import type {
   NewsCategory,
   RoomOption,
   RoomSettings,
+  WaitingRoom,
 } from "@/types/room";
 
 // 뉴스 카테고리
@@ -59,8 +60,43 @@ export const defaultRoomSettings: RoomSettings = {
   difficulty: "MEDIUM",
 };
 
-// 방 생성 더미 응답
+// 방 생성 더미 응답 (방 코드는 숫자 4자리)
 export const mockCreatedRoom: CreateRoomResponse = {
-  roomCode: "abc123",
-  inviteLink: "https://readle.app/invite/abc123",
+  roomCode: "1017",
+  inviteLink: "https://readle.app/invite/1017",
 };
+
+// 방 만들기 후 입장 시 내 id (장서후, 방장)
+export const mockHostUserId = 2;
+
+// 방 코드로 입장 시 내 id (3 오지우 / 1 김환희·4 김승민으로 변경 가능)
+export const mockGuestUserId = 3;
+
+// 방장 화면용 대기방
+export const mockHostWaitingRoom: WaitingRoom = {
+  roomCode: mockCreatedRoom.roomCode,
+  inviteLink: mockCreatedRoom.inviteLink,
+  hostId: mockHostUserId,
+  maxPlayers: 4,
+  participants: [
+    { userId: 2, nickname: "장서후", profileImageUrl: null },
+    { userId: 3, nickname: "오지우", profileImageUrl: null },
+    { userId: 1, nickname: "김환희", profileImageUrl: null },
+  ],
+};
+
+// 참여자 화면용 대기방
+export const mockGuestWaitingRoom: WaitingRoom = {
+  ...mockHostWaitingRoom,
+  participants: [
+    ...mockHostWaitingRoom.participants,
+    { userId: 4, nickname: "김승민", profileImageUrl: null },
+  ],
+};
+
+// 방장 입장 대기방 목데이터 (방 설정의 참여 인원 수 반영)
+export const createMockHostWaitingRoom = (maxPlayers: number): WaitingRoom => ({
+  ...mockHostWaitingRoom,
+  maxPlayers,
+  participants: mockHostWaitingRoom.participants.slice(0, maxPlayers),
+});

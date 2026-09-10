@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+
 import Button from "@/components/common/button/Button";
 import Header from "@/components/common/header/Header";
 import Toast from "@/components/common/toast/Toast";
@@ -5,13 +7,17 @@ import CharacterShadow from "@/components/game/friend/CharacterShadow";
 import InviteLinkCard from "@/components/game/friend/invite/InviteLinkCard";
 import useClipboard from "@/hooks/useClipboard";
 import useToast from "@/hooks/useToast";
-import { mockCreatedRoom } from "@/mocks/room";
+import { createMockHostWaitingRoom, mockCreatedRoom, mockHostUserId } from "@/mocks/room";
 import { useRoomStore } from "@/stores/useRoomStore";
 
 import inviteCharacter from "@/assets/images/game/RoomCreate/InviteCharacter.png";
 
 export default function InviteRoomPage() {
+  const navigate = useNavigate();
+
   const createdRoom = useRoomStore((state) => state.createdRoom);
+  const settings = useRoomStore((state) => state.settings);
+  const setWaitingRoom = useRoomStore((state) => state.setWaitingRoom);
 
   const { copy } = useClipboard();
   const { message, showToast } = useToast();
@@ -26,9 +32,11 @@ export default function InviteRoomPage() {
     showToast(isCopied ? "초대 링크가 복사되었어요" : "링크 복사에 실패했어요");
   };
 
-  // 대기방 입장 처리
+  // 대기방 입장 처리 (방장으로 입장)
   const handleEnterRoom = () => {
-    // TODO: 대기방 화면 연결 (디자인 확정 후)
+    // TODO: 대기방 입장 API 연동 (생성한 방 정보 수신)
+    setWaitingRoom(createMockHostWaitingRoom(settings.maxPlayers), mockHostUserId);
+    navigate("/game/friend/waiting");
   };
 
   return (
