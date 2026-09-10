@@ -1,6 +1,6 @@
-import MultipleChoiceQuiz from "../MultipleChoiceQuiz";
+import MultipleChoiceQuiz from "./MultipleChoiceQuiz";
 import OxQuiz from "./OxQuiz";
-import SubjectiveQuiz from "../SubjectiveQuiz";
+import SubjectiveQuiz from "./SubjectiveQuiz";
 
 import type { Quiz } from "@/types/quiz";
 
