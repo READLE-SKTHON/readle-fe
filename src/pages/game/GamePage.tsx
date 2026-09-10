@@ -11,7 +11,7 @@ export default function GameMainPage() {
     <main>
       <MainHeader userName="김환희" />
 
-      <div className="px-5 mb-10">
+      <div className="px-5">
         {/* 메인 소개 */}
         <section className="relative mt-25 h-72">
           <p className="text-xs font-semibold text-[#A8A8A8]">
