@@ -9,7 +9,9 @@ import MyPage from "@/pages/my/MyPage";
 import RankingPage from "@/pages/ranking/RankingPage";
 import TrainingPage from "@/pages/training/TrainingPage";
 
+import SoloIntroPage from "@/pages/game/SoloGame/SoloIntroPage";
 import SoloGamePage from "@/pages/game/SoloGame/SoloGamePage";
+import SoloReadingPage from "./pages/game/SoloGame/SoloReadingPage";
 import FriendGamePage from "@/pages/game/FriendGame/FriendGamePage";
 
 export default function App() {
@@ -26,7 +28,10 @@ export default function App() {
             <Route path="/my" element={<MyPage />} />
           </Route>
           {/* 푸터 필요 없는 페이지는 나중에 여기아래에 */}
+          <Route path="/game/solo" element={<SoloIntroPage />} />
+          <Route path="/game/solo/reading" element={<SoloReadingPage />} />
           <Route path="/game/solo" element={<SoloGamePage />} />
+
           <Route path="/game/friend" element={<FriendGamePage />} />
         </Route>
       </Routes>

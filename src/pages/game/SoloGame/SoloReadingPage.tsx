@@ -1,11 +1,11 @@
 import Header from "@/components/common/header/Header";
 
-export default function SoloGamePage() {
+export default function SoloReadingPage() {
   return (
     <main>
       <Header title="혼자 문제풀기" />
 
-      <div>문제 풀기 페이지</div>
+      <div>지문읽기 페이지</div>
     </main>
   );
 }
