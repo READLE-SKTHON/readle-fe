@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 
 import chevronLeftIcon from "@/assets/icons/header/chevronLeftIcon.png";
@@ -7,9 +8,10 @@ type HeaderProps = {
   current?: number;
   total?: number;
   backPath?: string;
+  rightElement?: ReactNode;
 };
 
-export default function Header({ title, current, total, backPath }: HeaderProps) {
+export default function Header({ title, current, total, backPath, rightElement }: HeaderProps) {
   const navigate = useNavigate();
 
   const hasProgress = current !== undefined && total !== undefined;
@@ -42,6 +44,9 @@ export default function Header({ title, current, total, backPath }: HeaderProps)
             {current}/{total}
           </span>
         )}
+
+        {/* 헤더 우측 아이콘 영역 */}
+        {rightElement && <div className="absolute right-5">{rightElement}</div>}
       </div>
 
       {hasProgress && (
