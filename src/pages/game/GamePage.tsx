@@ -11,10 +11,10 @@ export default function GameMainPage() {
     <main>
       <MainHeader userName="김환희" />
 
-      <div className="px-5">
+      <div className="px-5 ">
         {/* 메인 소개 */}
-        <section className="relative mt-12 h-72 overflow-hidden">
-          <p className="text-xs font-semibold text-gray-400">
+        <section className="relative mt-25 h-72">
+          <p className="text-xs font-semibold text-[#A8A8A8]">
             NEWS-TODAY
             <br />A BRIGHTER YOU
           </p>
@@ -34,15 +34,17 @@ export default function GameMainPage() {
           {/* 배경 원 */}
           <div
             aria-hidden="true"
-            className="absolute -right-24 -top-5 size-60 rounded-full bg-[#E7F3FC]"
+            className="absolute -right-5 -top-10 h-80 w-40 rounded-l-full bg-[#E8F1F9]"
           />
 
           {/* 벨루가 */}
-          <img
-            src={gameBeluga}
-            alt="뉴스를 읽는 벨루가"
-            className="absolute -right-8 bottom-0 z-10 w-64 object-contain"
-          />
+          <div className="absolute -right-5 top-0 h-60 w-52 overflow-hidden">
+            <img
+              src={gameBeluga}
+              alt="뉴스를 읽는 벨루가"
+              className="absolute right-0 bottom-0 w-64 object-contain"
+            />
+          </div>
         </section>
 
         {/* 게임 모드 선택 */}
@@ -52,14 +54,15 @@ export default function GameMainPage() {
             type="button"
             onClick={() => navigate("/game/solo")}
             className="
-              flex h-56 flex-col
-              rounded-3xl bg-[#EAF5FD]
-              p-5 text-left
-            "
+      flex h-56 flex-col
+      rounded-3xl bg-[#E8F1F9]
+      p-5
+      cursor-pointer
+    "
           >
-            <h2 className="mt-8 text-xl font-bold text-black">혼자 문제풀기</h2>
+            <h2 className="mt-8 w-full text-center text-xl font-bold text-black">혼자 문제풀기</h2>
 
-            <p className="mt-2 text-base font-semibold leading-snug text-gray-500">
+            <p className="mt-2 w-full text-center text-base font-semibold leading-snug text-gray-500">
               오늘의 뉴스로
               <br />
               실력을 키워요
@@ -73,14 +76,15 @@ export default function GameMainPage() {
             type="button"
             onClick={() => navigate("/game/friend")}
             className="
-              flex h-56 flex-col
-              rounded-3xl bg-[#F7F7C9]
-              p-5 text-left
-            "
+      flex h-56 flex-col
+      rounded-3xl bg-[#F5F6C9]
+      p-5
+      cursor-pointer
+    "
           >
-            <h2 className="mt-8 text-xl font-bold text-black">친구와 함께</h2>
+            <h2 className="mt-8 w-full text-center text-xl font-bold text-black">친구와 함께</h2>
 
-            <p className="mt-2 text-base font-semibold leading-snug text-gray-500">
+            <p className="mt-2 w-full text-center text-[15px] font-semibold leading-snug text-gray-500">
               친구와 한판 붙고,
               <br />
               문해력은 한 뼘 성장

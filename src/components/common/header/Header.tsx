@@ -19,7 +19,7 @@ export default function Header({ title, current, total }: HeaderProps) {
         <button
           type="button"
           onClick={() => navigate(-1)}
-          className="absolute left-5 text-2xl"
+          className="absolute left-5 text-2xl cursor-pointer"
           aria-label="뒤로가기"
         >
           <img src={chevronLeftIcon} className="w-3"></img>
