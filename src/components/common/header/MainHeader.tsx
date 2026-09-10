@@ -1,5 +1,5 @@
-import readleLogo from "@/assets/icons/readleLogo.png";
-import bellIcon from "@/assets/icons/bellIcon.png";
+import readleLogo from "@/assets/icons/header/readleLogo.png";
+import bellIcon from "@/assets/icons/header/bellIcon.png";
 
 type MainHeaderProps = {
   userName: string;

@@ -30,7 +30,7 @@ export default function App() {
           {/* 푸터 필요 없는 페이지는 나중에 여기아래에 */}
           <Route path="/game/solo" element={<SoloIntroPage />} />
           <Route path="/game/solo/reading" element={<SoloReadingPage />} />
-          <Route path="/game/solo" element={<SoloGamePage />} />
+          <Route path="/game/solo/play" element={<SoloGamePage />} />
 
           <Route path="/game/friend" element={<FriendGamePage />} />
         </Route>

@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-import chevronLeftIcon from "@/assets/icons/chevronLeftIcon.png";
+import chevronLeftIcon from "@/assets/icons/header/chevronLeftIcon.png";
 
 type HeaderProps = {
   title: string;
