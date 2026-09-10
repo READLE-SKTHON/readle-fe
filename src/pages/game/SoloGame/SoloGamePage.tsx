@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import Header from "@/components/common/header/Header";
 import FeedbackRenderer from "@/components/game/solo/feedback/FeedbackRenderer";
@@ -14,8 +15,13 @@ import { mockQuizzes } from "@/mocks/quizzes";
 import type { FeedbackStatus } from "@/types/quiz";
 
 export default function SoloGamePage() {
+  const navigate = useNavigate();
+
   // 현재 문제 번호
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  // 맞힌 문제 수
+  const [correctCount, setCorrectCount] = useState(0);
 
   // 객관식 답
   const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null);
@@ -57,13 +63,13 @@ export default function SoloGamePage() {
 
     // O/X
     if (currentQuiz.type === "OX") {
-      // 선택한 답이 틀린 경우
+      // O/X 선택이 틀린 경우
       if (selectedOxAnswer !== currentQuiz.correctAnswer) {
         return "INCORRECT";
       }
 
       // 임시 기준
-      // 나중에 AI/API 결과로 변경
+      // 나중에 AI/API 평가 결과로 변경
       if (reason.trim().length < 10) {
         return "PARTIAL";
       }
@@ -78,13 +84,34 @@ export default function SoloGamePage() {
   const handleSubmit = () => {
     if (!canSubmit) return;
 
+    const status = getFeedbackStatus();
+
+    // 완전 정답만 정답 개수에 포함
+    if (status === "CORRECT") {
+      setCorrectCount((prev) => prev + 1);
+    }
+
     setIsSubmitted(true);
   };
 
   // 다음 문제
   const handleNext = () => {
-    if (currentIndex >= mockQuizzes.length - 1) return;
+    const isLastQuiz = currentIndex === mockQuizzes.length - 1;
 
+    // 마지막 문제면 결과 페이지로 이동
+    if (isLastQuiz) {
+      navigate("/game/solo/result", {
+        state: {
+          total: mockQuizzes.length,
+          correctCount,
+          exp: correctCount * 80,
+        },
+      });
+
+      return;
+    }
+
+    // 다음 문제로 이동
     setCurrentIndex((prev) => prev + 1);
 
     // 이전 문제 상태 초기화
@@ -94,7 +121,7 @@ export default function SoloGamePage() {
     setIsSubmitted(false);
   };
 
-  // 하단 버튼 클릭
+  // 하단 버튼
   const handleAction = () => {
     if (isSubmitted) {
       handleNext();
@@ -121,7 +148,7 @@ export default function SoloGamePage() {
           <NewsPreview onOpen={() => setIsNewsOpen(true)} />
         )}
 
-        {/* 제출 후 상단 피드백 카드 */}
+        {/* 제출 후 피드백 */}
         {isSubmitted && feedbackStatus && (
           <FeedbackRenderer quiz={currentQuiz} status={feedbackStatus} />
         )}
@@ -136,7 +163,7 @@ export default function SoloGamePage() {
           />
         )}
 
-        {/* 풀이 화면 */}
+        {/* 문제 풀이 화면 */}
         {(!isSubmitted || currentQuiz.type === "MULTIPLE_CHOICE") && (
           <QuizRenderer
             quiz={currentQuiz}
@@ -151,7 +178,7 @@ export default function SoloGamePage() {
           />
         )}
 
-        {/* 제출 / 다음 버튼 */}
+        {/* 제출 / 다음 */}
         <QuizActionButton
           label={isSubmitted ? "다음" : "제출하기"}
           disabled={!isSubmitted && !canSubmit}
