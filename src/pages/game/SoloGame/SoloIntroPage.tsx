@@ -12,7 +12,7 @@ export default function SoloIntroPage() {
 
   return (
     <div>
-      <Header title="혼자 문제풀기" />
+      <Header title="혼자 문제풀기" backPath="/game" />
       <main className="flex min-h-screen flex-col px-5 pb-8">
         {/* 캐릭터 및 소개 */}
         <section className="mt-8 flex flex-col items-center">

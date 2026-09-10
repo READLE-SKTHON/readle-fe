@@ -108,7 +108,12 @@ export default function SoloGamePage() {
 
   return (
     <div>
-      <Header title="혼자 문제풀기" current={currentIndex + 1} total={mockQuizzes.length} />
+      <Header
+        title="혼자 문제풀기"
+        current={currentIndex + 1}
+        total={mockQuizzes.length}
+        backPath="/game/solo"
+      />
 
       <main className="px-5 pb-8 pt-6">
         {/* 객관식 풀이 전 뉴스 미리보기 */}
