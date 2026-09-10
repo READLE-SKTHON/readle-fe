@@ -30,9 +30,9 @@ export default function MultipleChoiceQuiz({
 
           // 풀이 중 선택한 답
           if (!isSubmitted && isSelected) {
-            optionStyle = "border-[#168CF2] bg-[#B8DAF8]";
-            circleStyle = "border-[#168CF2] bg-[#168CF2] text-white";
-            textStyle = "font-semibold text-black";
+            optionStyle = "border-[#2285E3] bg-[#2285E3]";
+            circleStyle = "border-white bg-[#2285E3] text-white";
+            textStyle = "font-semibold text-white";
           }
 
           // 제출 후 정답

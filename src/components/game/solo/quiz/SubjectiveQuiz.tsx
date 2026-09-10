@@ -1,3 +1,5 @@
+import QuizMetaBar from "./QuizMetaBar";
+
 import type { SubjectiveQuiz as SubjectiveQuizType } from "@/types/quiz";
 
 type SubjectiveQuizProps = {
@@ -16,19 +18,7 @@ export default function SubjectiveQuiz({
   return (
     <section>
       {/* 문제 유형 / 지문 전체보기 */}
-      <div className="flex items-center justify-between">
-        <span className="rounded-full bg-[#D5EAFB] px-4 py-1 text-[14px] font-bold text-[#168CF2]">
-          주관식문제
-        </span>
-
-        <button
-          type="button"
-          onClick={onOpenNews}
-          className="cursor-pointer rounded-full bg-[#EFF238] px-4 py-1 text-[14px] font-bold"
-        >
-          지문 전체보기
-        </button>
-      </div>
+      <QuizMetaBar type="주관식 문제" onOpenNews={onOpenNews} />
 
       {/* 문제 */}
       <h2 className="mt-7 text-[20px] font-bold leading-8">{quiz.question}</h2>

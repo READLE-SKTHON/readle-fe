@@ -8,6 +8,7 @@ import SubjectiveResult from "@/components/game/solo/feedback/result/SubjectiveR
 import NewsModal from "@/components/game/solo/NewsModal";
 import NewsPreview from "@/components/game/solo/NewsPreview";
 import QuizActionButton from "@/components/game/solo/quiz/QuizActionButton";
+import QuizMetaBar from "@/components/game/solo/quiz/QuizMetaBar";
 import QuizRenderer from "@/components/game/solo/quiz/QuizRenderer";
 
 import { mockNews } from "@/mocks/news";
@@ -157,9 +158,13 @@ export default function SoloGamePage() {
       />
 
       <main className="px-5 pb-8 pt-6">
-        {/* 객관식 풀이 전 뉴스 미리보기 */}
+        {/* 객관식 풀이 전 문제 유형 / 지문 전체보기 / 뉴스 미리보기 */}
         {!isSubmitted && currentQuiz.type === "MULTIPLE_CHOICE" && (
-          <NewsPreview onOpen={() => setIsNewsOpen(true)} />
+          <>
+            <QuizMetaBar type="객관식" subtype="요지" onOpenNews={() => setIsNewsOpen(true)} />
+
+            <NewsPreview />
+          </>
         )}
 
         {/* 제출 후 상단 피드백 */}

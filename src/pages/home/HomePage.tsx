@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+
 import MainHeader from "@/components/common/header/MainHeader";
 import StatCard from "@/components/home/StatCard";
 
@@ -9,6 +11,8 @@ import targetIcon from "@/assets/icons/home/targetIcon.png";
 import blueCircle from "@/assets/icons/home/blueCircle.png";
 
 export default function HomePage() {
+  const navigate = useNavigate();
+
   return (
     <main className="mb-10">
       <MainHeader userName="김환희" />
@@ -70,24 +74,32 @@ export default function HomePage() {
           <StatCard icon={targetIcon} value="80%" label="정답률" />
         </section>
 
-        {/* 오늘의 훈련 */}
+        {/* 오늘의 뉴스 */}
         <section className="mt-9">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-[#0A2A43]">오늘의 훈련</h2>
+            <h2 className="text-2xl font-bold text-[#0A2A43]">오늘의 뉴스</h2>
 
-            <button type="button" className="text-sm font-medium text-gray-500">
-              훈련하기
+            <button
+              type="button"
+              onClick={() => navigate("/game/solo")}
+              className="group flex cursor-pointer items-center gap-1 text-sm font-medium text-gray-500"
+            >
+              <span className="underline-offset-4 group-hover:underline group-active:underline">
+                게임하기
+              </span>
+
+              <span className="text-xl pb-1 leading-none">›</span>
             </button>
           </div>
 
           {/* 뉴스 카드 */}
           <article className="mt-4 flex items-center gap-4 rounded-2xl bg-[#F5F6FB] p-4">
-            <img src={newsIcon} alt="" className="size-20 object-contain" />
+            <img src={newsIcon} alt="뉴스" className="size-20 shrink-0 object-contain" />
 
             <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold text-[#2F8DE4]">경제</p>
 
-              <h3 className="mt-1 font-bold text-black">물가 상승 속 가계 부담 증가</h3>
+              <h3 className="mt-1 text-lg font-bold text-black">오늘의 뉴스</h3>
 
               <p className="mt-1 line-clamp-2 text-sm leading-snug text-gray-400">
                 지속되는 물가상승으로 인해 가계의 생활비 부담이 커지고 있으며, 소비 심리도 위축되고

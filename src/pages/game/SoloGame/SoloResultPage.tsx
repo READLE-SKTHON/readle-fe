@@ -46,7 +46,7 @@ export default function SoloResultPage() {
       {/* 홈으로 */}
       <button
         type="button"
-        onClick={() => navigate("/")}
+        onClick={() => navigate("/home")}
         className="mt-auto h-16 w-full cursor-pointer rounded-2xl bg-black text-[20px] font-bold text-white"
       >
         홈화면으로 가기

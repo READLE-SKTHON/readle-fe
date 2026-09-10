@@ -1,3 +1,5 @@
+import QuizMetaBar from "./QuizMetaBar";
+
 import type { OxQuiz as OxQuizType } from "@/types/quiz";
 
 type OxQuizProps = {
@@ -25,19 +27,7 @@ export default function OxQuiz({
       {!isSubmitted && (
         <>
           {/* 문제 유형 / 지문 전체보기 */}
-          <div className="flex items-center justify-between">
-            <span className="rounded-full bg-[#D5EAFB] px-4 py-1 text-[14px] font-bold text-[#168CF2]">
-              O/X문제
-            </span>
-
-            <button
-              type="button"
-              onClick={onOpenNews}
-              className="cursor-pointer rounded-full bg-[#EFF238] px-4 py-1 text-[14px] font-bold"
-            >
-              지문 전체보기
-            </button>
-          </div>
+          <QuizMetaBar type="O/X 문제" onOpenNews={onOpenNews} />
 
           {/* 질문 */}
           <h2 className="mt-6 text-[18px] font-bold leading-8">{quiz.question}</h2>
@@ -59,7 +49,7 @@ export default function OxQuiz({
                   onClick={() => onSelect(answer)}
                   className={`h-16 cursor-pointer rounded-2xl border text-[24px] font-bold ${
                     isSelected
-                      ? "border-[#168CF2] bg-[#D5EAFB] text-[#168CF2]"
+                      ? "border-[#2285E3] bg-[#2285E3] text-white"
                       : "border-gray-200 bg-[#F7F7F7] text-black"
                   }`}
                 >

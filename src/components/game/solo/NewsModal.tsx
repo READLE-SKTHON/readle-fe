@@ -17,7 +17,7 @@ export default function NewsModal({ news, onClose }: NewsModalProps) {
             <button
               type="button"
               onClick={onClose}
-              className="cursor-pointer text-2xl"
+              className="cursor-pointer text-2xl text-[#2285E3]"
               aria-label="닫기"
             >
               ×
@@ -35,7 +35,7 @@ export default function NewsModal({ news, onClose }: NewsModalProps) {
           <button
             type="button"
             onClick={onClose}
-            className="mt-5 h-14 w-full cursor-pointer rounded-2xl bg-black text-[18px] font-bold text-white"
+            className="mt-5 h-14 w-full cursor-pointer rounded-2xl bg-[#2285E3] text-[18px] font-bold text-white"
           >
             확인
           </button>
