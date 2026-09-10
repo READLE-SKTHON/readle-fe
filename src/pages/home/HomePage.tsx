@@ -11,7 +11,7 @@ import blueCircle from "@/assets/icons/home/blueCircle.png";
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-white pb-28">
+    <main className="mb-10">
       <MainHeader userName="김환희" />
 
       <div className="px-5">
