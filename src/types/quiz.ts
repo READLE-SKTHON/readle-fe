@@ -26,9 +26,26 @@ export interface MultipleChoiceQuiz extends BaseQuiz {
 export interface OxQuiz extends BaseQuiz {
   type: "OX";
 
+  // O/X로 판단할 문장
   statement: string;
+
+  // 정답
   correctAnswer: "O" | "X";
+
+  // 근거 작성 여부
   requiresReason: boolean;
+
+  // 완벽한 답안 예시
+  exampleAnswer: string;
+
+  // 부분 정답일 때 보여줄 피드백
+  suggestion: string;
+
+  // 오답일 때 왜 다른지 설명
+  differenceReason: string;
+
+  // 기사에서 다시 확인할 부분
+  articleHint: string;
 }
 
 // 주관식
@@ -36,11 +53,12 @@ export interface SubjectiveQuiz extends BaseQuiz {
   type: "SUBJECTIVE";
 
   maxLength: number;
+
   exampleAnswer: string;
 }
 
 // 모든 퀴즈 타입
 export type Quiz = MultipleChoiceQuiz | OxQuiz | SubjectiveQuiz;
 
-// 퀴즈 정답 타입
+// 퀴즈 피드백 상태
 export type FeedbackStatus = "CORRECT" | "INCORRECT" | "PARTIAL";

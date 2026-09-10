@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import Header from "@/components/common/header/Header";
 import FeedbackRenderer from "@/components/game/solo/feedback/FeedbackRenderer";
+import OxResult from "@/components/game/solo/feedback/OxResult";
 import NewsModal from "@/components/game/solo/NewsModal";
 import NewsPreview from "@/components/game/solo/NewsPreview";
 import QuizActionButton from "@/components/game/solo/QuizActionButton";
@@ -10,49 +11,150 @@ import QuizRenderer from "@/components/game/solo/QuizRenderer";
 import { mockNews } from "@/mocks/news";
 import { mockQuizzes } from "@/mocks/quizzes";
 
+import type { FeedbackStatus } from "@/types/quiz";
+
 export default function SoloGamePage() {
+  // 현재 문제 번호
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  // 객관식 답
   const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null);
+
+  // O/X 답
+  const [selectedOxAnswer, setSelectedOxAnswer] = useState<"O" | "X" | null>(null);
+
+  // O/X 근거
+  const [reason, setReason] = useState("");
+
+  // 뉴스 모달
   const [isNewsOpen, setIsNewsOpen] = useState(false);
+
+  // 제출 여부
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const currentQuiz = mockQuizzes[0];
+  // 현재 퀴즈
+  const currentQuiz = mockQuizzes[currentIndex];
 
+  // 제출 가능 여부
+  const canSubmit = (() => {
+    if (currentQuiz.type === "MULTIPLE_CHOICE") {
+      return selectedOptionId !== null;
+    }
+
+    if (currentQuiz.type === "OX") {
+      return selectedOxAnswer !== null && (!currentQuiz.requiresReason || reason.trim().length > 0);
+    }
+
+    return false;
+  })();
+
+  // 피드백 상태
+  const getFeedbackStatus = (): FeedbackStatus | null => {
+    // 객관식
+    if (currentQuiz.type === "MULTIPLE_CHOICE") {
+      return selectedOptionId === currentQuiz.correctAnswer ? "CORRECT" : "INCORRECT";
+    }
+
+    // O/X
+    if (currentQuiz.type === "OX") {
+      // 선택한 답이 틀린 경우
+      if (selectedOxAnswer !== currentQuiz.correctAnswer) {
+        return "INCORRECT";
+      }
+
+      // 임시 기준
+      // 나중에 AI/API 결과로 변경
+      if (reason.trim().length < 10) {
+        return "PARTIAL";
+      }
+
+      return "CORRECT";
+    }
+
+    return null;
+  };
+
+  // 제출
   const handleSubmit = () => {
-    if (selectedOptionId === null) return;
+    if (!canSubmit) return;
 
     setIsSubmitted(true);
   };
 
-  const isCorrect =
-    currentQuiz.type === "MULTIPLE_CHOICE" && selectedOptionId === currentQuiz.correctAnswer;
+  // 다음 문제
+  const handleNext = () => {
+    if (currentIndex >= mockQuizzes.length - 1) return;
+
+    setCurrentIndex((prev) => prev + 1);
+
+    // 이전 문제 상태 초기화
+    setSelectedOptionId(null);
+    setSelectedOxAnswer(null);
+    setReason("");
+    setIsSubmitted(false);
+  };
+
+  // 하단 버튼 클릭
+  const handleAction = () => {
+    if (isSubmitted) {
+      handleNext();
+      return;
+    }
+
+    handleSubmit();
+  };
+
+  const feedbackStatus = getFeedbackStatus();
 
   return (
     <div>
-      <Header title="혼자 문제풀기" current={1} total={mockQuizzes.length} />
+      <Header title="혼자 문제풀기" current={currentIndex + 1} total={mockQuizzes.length} />
 
       <main className="px-5 pb-8 pt-6">
-        {/* 풀이 전 */}
-        {!isSubmitted && <NewsPreview onOpen={() => setIsNewsOpen(true)} />}
-
-        {/* 제출 후 피드백 */}
-        {isSubmitted && currentQuiz.type === "MULTIPLE_CHOICE" && (
-          <FeedbackRenderer quiz={currentQuiz} status={isCorrect ? "CORRECT" : "INCORRECT"} />
+        {/* 객관식 풀이 전 뉴스 미리보기 */}
+        {!isSubmitted && currentQuiz.type === "MULTIPLE_CHOICE" && (
+          <NewsPreview onOpen={() => setIsNewsOpen(true)} />
         )}
 
-        <QuizRenderer
-          quiz={currentQuiz}
-          selectedOptionId={selectedOptionId}
-          onSelectOption={setSelectedOptionId}
-          isSubmitted={isSubmitted}
-        />
+        {/* 제출 후 상단 피드백 카드 */}
+        {isSubmitted && feedbackStatus && (
+          <FeedbackRenderer quiz={currentQuiz} status={feedbackStatus} />
+        )}
 
+        {/* O/X 제출 후 결과 상세 */}
+        {isSubmitted && currentQuiz.type === "OX" && selectedOxAnswer && feedbackStatus && (
+          <OxResult
+            quiz={currentQuiz}
+            selectedAnswer={selectedOxAnswer}
+            reason={reason}
+            status={feedbackStatus}
+          />
+        )}
+
+        {/* 풀이 화면 */}
+        {(!isSubmitted || currentQuiz.type === "MULTIPLE_CHOICE") && (
+          <QuizRenderer
+            quiz={currentQuiz}
+            selectedOptionId={selectedOptionId}
+            onSelectOption={setSelectedOptionId}
+            selectedOxAnswer={selectedOxAnswer}
+            reason={reason}
+            onSelectOxAnswer={setSelectedOxAnswer}
+            onChangeReason={setReason}
+            isSubmitted={isSubmitted}
+            onOpenNews={() => setIsNewsOpen(true)}
+          />
+        )}
+
+        {/* 제출 / 다음 버튼 */}
         <QuizActionButton
           label={isSubmitted ? "다음" : "제출하기"}
-          disabled={!isSubmitted && selectedOptionId === null}
-          onClick={handleSubmit}
+          disabled={!isSubmitted && !canSubmit}
+          onClick={handleAction}
         />
       </main>
 
+      {/* 뉴스 전체보기 */}
       {isNewsOpen && <NewsModal news={mockNews} onClose={() => setIsNewsOpen(false)} />}
     </div>
   );
