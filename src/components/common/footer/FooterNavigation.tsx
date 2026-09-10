@@ -110,7 +110,7 @@ export default function FooterNavigation() {
           className="
             col-start-1
             flex justify-center
-            transition-transform duration-1000
+            transition-transform duration-1100
             ease-[cubic-bezier(0.22,1,0.36,1)]
             will-change-transform
           "
