@@ -28,7 +28,7 @@ const navigationItems: NavigationItem[] = [
   },
   {
     label: "HOME",
-    path: "/",
+    path: "/home",
     icon: whaleIcon,
   },
   {

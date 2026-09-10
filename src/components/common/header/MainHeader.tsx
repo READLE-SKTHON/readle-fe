@@ -7,7 +7,7 @@ type MainHeaderProps = {
 
 export default function MainHeader({ userName }: MainHeaderProps) {
   return (
-    <header className="flex h-16 w-full items-center justify-between px-6 pt-20">
+    <header className="flex h-16 w-full items-center justify-between px-6 pt-15">
       <img src={readleLogo} alt="READLE" className="w-38 object-contain" />
 
       <div className="flex items-center gap-1 pt-3">
