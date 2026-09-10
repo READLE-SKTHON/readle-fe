@@ -64,11 +64,11 @@ type ResultCardProps = {
 function ResultCard({ icon, label, value }: ResultCardProps) {
   return (
     <div className="flex min-h-40 flex-col items-center justify-center rounded-3xl bg-[#F5F6FC]">
-      <img src={icon} alt="" className="h-14 w-14 object-contain" />
+      <img src={icon} alt="" className="h-12 w-14 object-contain" />
 
-      <p className="mt-3 text-[17px] font-bold text-gray-400">{label}</p>
+      <p className="mt-1 text-[17px] font-bold text-gray-400">{label}</p>
 
-      <strong className="mt-2 text-[34px] font-extrabold text-[#123BFF]">{value}</strong>
+      <strong className="text-[34px] font-extrabold text-[#123BFF]">{value}</strong>
     </div>
   );
 }

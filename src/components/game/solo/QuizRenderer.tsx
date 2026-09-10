@@ -1,5 +1,6 @@
 import MultipleChoiceQuiz from "./MultipleChoiceQuiz";
 import OxQuiz from "./OxQuiz";
+import SubjectiveQuiz from "./SubjectiveQuiz";
 
 import type { Quiz } from "@/types/quiz";
 
@@ -14,6 +15,9 @@ type QuizRendererProps = {
   onSelectOxAnswer: (answer: "O" | "X") => void;
   onChangeReason: (reason: string) => void;
 
+  subjectiveAnswer: string;
+  onChangeSubjectiveAnswer: (answer: string) => void;
+
   isSubmitted: boolean;
   onOpenNews: () => void;
 };
@@ -26,6 +30,8 @@ export default function QuizRenderer({
   reason,
   onSelectOxAnswer,
   onChangeReason,
+  subjectiveAnswer,
+  onChangeSubjectiveAnswer,
   isSubmitted,
   onOpenNews,
 }: QuizRendererProps) {
@@ -54,6 +60,13 @@ export default function QuizRenderer({
       );
 
     case "SUBJECTIVE":
-      return <div>주관식 문제</div>;
+      return (
+        <SubjectiveQuiz
+          quiz={quiz}
+          answer={subjectiveAnswer}
+          onChangeAnswer={onChangeSubjectiveAnswer}
+          onOpenNews={onOpenNews}
+        />
+      );
   }
 }

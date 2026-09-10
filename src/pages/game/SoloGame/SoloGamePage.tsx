@@ -32,6 +32,9 @@ export default function SoloGamePage() {
   // O/X 근거
   const [reason, setReason] = useState("");
 
+  // 주관식 답
+  const [subjectiveAnswer, setSubjectiveAnswer] = useState("");
+
   // 뉴스 모달
   const [isNewsOpen, setIsNewsOpen] = useState(false);
 
@@ -51,6 +54,10 @@ export default function SoloGamePage() {
       return selectedOxAnswer !== null && (!currentQuiz.requiresReason || reason.trim().length > 0);
     }
 
+    if (currentQuiz.type === "SUBJECTIVE") {
+      return subjectiveAnswer.trim().length > 0;
+    }
+
     return false;
   })();
 
@@ -63,7 +70,6 @@ export default function SoloGamePage() {
 
     // O/X
     if (currentQuiz.type === "OX") {
-      // O/X 선택이 틀린 경우
       if (selectedOxAnswer !== currentQuiz.correctAnswer) {
         return "INCORRECT";
       }
@@ -77,6 +83,7 @@ export default function SoloGamePage() {
       return "CORRECT";
     }
 
+    // 주관식 채점은 아직 구현 전
     return null;
   };
 
@@ -84,9 +91,14 @@ export default function SoloGamePage() {
   const handleSubmit = () => {
     if (!canSubmit) return;
 
+    // 주관식은 현재 피드백 없이 바로 다음 문제로 이동
+    if (currentQuiz.type === "SUBJECTIVE") {
+      handleNext();
+      return;
+    }
+
     const status = getFeedbackStatus();
 
-    // 완전 정답만 정답 개수에 포함
     if (status === "CORRECT") {
       setCorrectCount((prev) => prev + 1);
     }
@@ -118,6 +130,7 @@ export default function SoloGamePage() {
     setSelectedOptionId(null);
     setSelectedOxAnswer(null);
     setReason("");
+    setSubjectiveAnswer("");
     setIsSubmitted(false);
   };
 
@@ -173,6 +186,8 @@ export default function SoloGamePage() {
             reason={reason}
             onSelectOxAnswer={setSelectedOxAnswer}
             onChangeReason={setReason}
+            subjectiveAnswer={subjectiveAnswer}
+            onChangeSubjectiveAnswer={setSubjectiveAnswer}
             isSubmitted={isSubmitted}
             onOpenNews={() => setIsNewsOpen(true)}
           />
@@ -180,7 +195,7 @@ export default function SoloGamePage() {
 
         {/* 제출 / 다음 */}
         <QuizActionButton
-          label={isSubmitted ? "다음" : "제출하기"}
+          label={currentQuiz.type === "SUBJECTIVE" ? "다음" : isSubmitted ? "다음" : "제출하기"}
           disabled={!isSubmitted && !canSubmit}
           onClick={handleAction}
         />
