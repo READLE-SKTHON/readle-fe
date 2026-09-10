@@ -22,8 +22,8 @@ const navigationItems: NavigationItem[] = [
     icon: trophyIcon,
   },
   {
-    label: "훈련",
-    path: "/training",
+    label: "복습",
+    path: "/review",
     icon: bookIcon,
   },
   {
