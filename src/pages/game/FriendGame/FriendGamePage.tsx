@@ -12,12 +12,12 @@ export default function FriendGamePage() {
 
   // 방 코드 입장 처리
   const handleJoinByCode = () => {
-    // TODO: 방 코드 입력 화면 연결 (디자인 확정 후)
+    navigate("/game/friend/join");
   };
 
   return (
     <div className="min-h-screen">
-      <Header title="친구와 함께" />
+      <Header title="친구와 함께" backPath="/game" />
 
       <main className="px-6.5 pb-10">
         {/* 소개 문구 */}
