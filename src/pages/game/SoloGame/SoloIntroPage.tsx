@@ -5,7 +5,7 @@ import Header from "@/components/common/header/Header";
 import chartIcon from "@/assets/icons/game/chartIcon.png";
 import newsIcon from "@/assets/icons/game/newsIcon.png";
 import quizIcon from "@/assets/icons/game/quizIcon.png";
-import newsWhale from "@/assets/images/newsWhale.png";
+import newsBeluga from "@/assets/images/newsBeluga.png";
 
 export default function SoloIntroPage() {
   const navigate = useNavigate();
@@ -16,7 +16,7 @@ export default function SoloIntroPage() {
       <main className="flex min-h-screen flex-col px-5 pb-8">
         {/* 캐릭터 및 소개 */}
         <section className="mt-8 flex flex-col items-center">
-          <img src={newsWhale} alt="신문을 읽는 고래 캐릭터" className="w-55 object-contain" />
+          <img src={newsBeluga} alt="신문을 읽는 고래 캐릭터" className="w-55 object-contain" />
 
           <h2 className="mt-6 text-3xl font-extrabold">오늘의 뉴스</h2>
 

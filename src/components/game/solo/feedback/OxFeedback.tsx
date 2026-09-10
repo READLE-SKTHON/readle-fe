@@ -1,6 +1,6 @@
-import correctWhale from "@/assets/images/game/CorrectWhale.png";
-import incorrectWhale from "@/assets/images/game/IncorrectWhale.png";
-import partialWhale from "@/assets/images/game/PartialWhale.png";
+import correctBeluga from "@/assets/images/game/CorrectBeluga.png";
+import incorrectBeluga from "@/assets/images/game/IncorrectBeluga.png";
+import partialBeluga from "@/assets/images/game/PartialBeluga.png";
 
 import type { FeedbackStatus } from "@/types/quiz";
 
@@ -19,7 +19,7 @@ export default function OxFeedback({ status }: OxFeedbackProps) {
           기사의 핵심 내용을 정확하게 찾았어요!
         </>
       ),
-      image: correctWhale,
+      image: correctBeluga,
       style: "border-[#78D51B] bg-[#E7F8D5]",
     },
 
@@ -32,7 +32,7 @@ export default function OxFeedback({ status }: OxFeedbackProps) {
           기사의 핵심 내용을 정확하게 찾았어요!
         </>
       ),
-      image: incorrectWhale,
+      image: incorrectBeluga,
       style: "border-[#FF4D4F] bg-[#FFDADA]",
     },
 
@@ -45,7 +45,7 @@ export default function OxFeedback({ status }: OxFeedbackProps) {
           이유를 구체적으로 볼까요?
         </>
       ),
-      image: partialWhale,
+      image: partialBeluga,
       style: "border-[#FFBA18] bg-[#FFF1C9]",
     },
   };

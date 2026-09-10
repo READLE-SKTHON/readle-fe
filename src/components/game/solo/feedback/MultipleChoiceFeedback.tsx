@@ -1,5 +1,5 @@
-import correctWhale from "@/assets/images/game/CorrectWhale.png";
-import incorrectWhale from "@/assets/images/game/IncorrectWhale.png";
+import correctBeluga from "@/assets/images/game/CorrectBeluga.png";
+import incorrectBeluga from "@/assets/images/game/IncorrectBeluga.png";
 
 type MultipleChoiceFeedbackProps = {
   isCorrect: boolean;
@@ -12,7 +12,11 @@ export default function MultipleChoiceFeedback({ isCorrect }: MultipleChoiceFeed
         isCorrect ? "border-[#78D51B] bg-[#E7F8D5]" : "border-[#FF4D4F] bg-[#FFDADA]"
       }`}
     >
-      <img src={isCorrect ? correctWhale : incorrectWhale} alt="" className="h-28 object-contain" />
+      <img
+        src={isCorrect ? correctBeluga : incorrectBeluga}
+        alt=""
+        className="h-28 object-contain"
+      />
 
       <h2 className="mt-2 text-[24px] font-bold">{isCorrect ? "고래고래" : "으악 틀렸어!"}</h2>
 

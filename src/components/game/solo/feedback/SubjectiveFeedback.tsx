@@ -1,4 +1,4 @@
-import correctWhale from "@/assets/images/game/CorrectWhale.png";
+import correctBeluga from "@/assets/images/game/CorrectBeluga.png";
 
 export default function SubjectiveFeedback() {
   return (
@@ -11,7 +11,7 @@ export default function SubjectiveFeedback() {
         </p>
       </div>
 
-      <img src={correctWhale} alt="" className="absolute bottom-0 right-0 h-28 object-contain" />
+      <img src={correctBeluga} alt="" className="absolute bottom-0 right-0 h-28 object-contain" />
     </section>
   );
 }
