@@ -1,4 +1,4 @@
-import MultipleChoiceFeedback from "../MultipleChoiceFeedback";
+import MultipleChoiceFeedback from "../feedback/MultipleChoiceFeedback";
 
 type Choice = {
   id: number;

@@ -1,10 +1,15 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Header from "@/components/common/header/Header";
+import ConfirmModal from "@/components/common/modal/ConfirmModal";
 import CharacterShadow from "@/components/game/friend/CharacterShadow";
-import ReviewTypeCard from "@/components/review/ReviewTypeCard";
+import ReviewTypeCard from "@/components/review/type/ReviewTypeCard";
 import { mockReviewTypes } from "@/mocks/review";
 import { MAX_DAILY_REVIEW_XP, REVIEW_XP_PER_TYPE, useReviewStore } from "@/stores/useReviewStore";
+import type { ReviewStatus, ReviewTypeId } from "@/types/review";
+import { getReviewTargets } from "@/utils/getReviewTargets";
+import { getToday } from "@/utils/getToday";
 
 import newsBeluga from "@/assets/images/newsBeluga.png";
 
@@ -12,9 +17,35 @@ export default function ReviewTypePage() {
   const navigate = useNavigate();
 
   const xpEarnedTypeIds = useReviewStore((state) => state.xpEarnedTypeIds);
+  const xpEarnedDate = useReviewStore((state) => state.xpEarnedDate);
+  const wrongAnswers = useReviewStore((state) => state.wrongAnswers);
+
+  // 재복습 확인 유형 (오늘 모두 복습한 유형)
+  const [retryTypeId, setRetryTypeId] = useState<ReviewTypeId | null>(null);
+
+  // 틀린 문제 없음 안내 모달
+  const [isEmptyModalOpen, setIsEmptyModalOpen] = useState(false);
+
+  // 오늘 XP 획득 유형 (날짜 변경 시 초기화)
+  const todayXpTypeIds: ReviewTypeId[] = xpEarnedDate === getToday() ? xpEarnedTypeIds : [];
 
   // 오늘 획득 XP (일일 최대치 제한)
-  const todayXp = Math.min(xpEarnedTypeIds.length * REVIEW_XP_PER_TYPE, MAX_DAILY_REVIEW_XP);
+  const todayXp = Math.min(todayXpTypeIds.length * REVIEW_XP_PER_TYPE, MAX_DAILY_REVIEW_XP);
+
+  // 유형 선택 (복습 전 오답 있으면 복습 이동, 없으면 상태별 모달)
+  const handleSelectType = (typeId: ReviewTypeId, status: ReviewStatus) => {
+    if (status === "UNREVIEWED") {
+      navigate(`/review/play/${typeId}`);
+      return;
+    }
+
+    if (status === "REVIEWED") {
+      setRetryTypeId(typeId);
+      return;
+    }
+
+    setIsEmptyModalOpen(true);
+  };
 
   return (
     <div className="min-h-screen pb-10">
@@ -41,17 +72,43 @@ export default function ReviewTypePage() {
         </section>
 
         <ul className="mt-4 flex flex-col gap-2.5">
-          {mockReviewTypes.map((reviewType) => (
-            <li key={reviewType.typeId}>
-              <ReviewTypeCard
-                reviewType={reviewType}
-                isXpEarned={xpEarnedTypeIds.includes(reviewType.typeId)}
-                onClick={() => navigate(`/review/play/${reviewType.typeId}`)}
-              />
-            </li>
-          ))}
+          {mockReviewTypes.map((reviewType) => {
+            const { status, targets } = getReviewTargets(wrongAnswers, reviewType.typeId);
+
+            // 복습 전 오답 개수 (오늘 모두 복습 시 0개)
+            const wrongCount = status === "UNREVIEWED" ? targets.length : 0;
+
+            return (
+              <li key={reviewType.typeId}>
+                <ReviewTypeCard
+                  reviewType={{ ...reviewType, wrongCount }}
+                  isXpEarned={todayXpTypeIds.includes(reviewType.typeId)}
+                  onClick={() => handleSelectType(reviewType.typeId, status)}
+                />
+              </li>
+            );
+          })}
         </ul>
       </main>
+
+      {/* 재복습 확인 모달 */}
+      {retryTypeId && (
+        <ConfirmModal
+          message={"현재 모든 문제를 다 복습했습니다.\n다시 복습하시겠습니까?"}
+          confirmLabel="예"
+          cancelLabel="아니오"
+          onConfirm={() => navigate(`/review/play/${retryTypeId}`)}
+          onCancel={() => setRetryTypeId(null)}
+        />
+      )}
+
+      {/* 틀린 문제 없음 안내 모달 */}
+      {isEmptyModalOpen && (
+        <ConfirmModal
+          message="이 유형으로 틀린 문제가 없습니다."
+          onConfirm={() => setIsEmptyModalOpen(false)}
+        />
+      )}
     </div>
   );
 }

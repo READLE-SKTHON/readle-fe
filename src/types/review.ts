@@ -1,8 +1,5 @@
-import type {
-  MultipleChoiceGameQuestion,
-  OxGameQuestion,
-  ShortAnswerGameQuestion,
-} from "@/types/game";
+import type { News } from "@/types/news";
+import type { Quiz } from "@/types/quiz";
 
 // 문해력 능력치 축 (어휘력 · 독해력 · 추론력 · 비판적 사고력 · 표현력)
 export type AbilityKey =
@@ -30,40 +27,39 @@ export interface ReviewTypeSummary {
   isXpEarnedToday: boolean;
 }
 
+// 유형 복습 상태 (복습 전 오답 있음 / 오늘 모두 복습 완료 / 틀린 문제 없음)
+export type ReviewStatus = "UNREVIEWED" | "REVIEWED" | "EMPTY";
+
 // 복기(기존 오답) / 응용(동일 유형 신규 지문)
 export type ReviewKind = "RETRY" | "APPLY";
 
-type ReviewQuestionMeta = {
-  reviewKind: ReviewKind;
+// 복습 문제 본문 (혼자 문제풀기 문제 + 기사·객관식 해설)
+export type ReviewQuizContent = Quiz & {
+  // 기사 미리보기·지문 전체보기 기사
+  news: News;
 
-  // 문제 유형 태그 (예: 어휘 | 의미찾기)
-  category: string;
-  subCategory: string;
+  // 객관식 해설 (없으면 해설 미표시)
+  explanation?: string;
 };
 
-// 객관식 (지문 박스 + 밑줄 구간)
-export type ReviewMultipleChoiceQuestion = Omit<MultipleChoiceGameQuestion, "points"> &
-  ReviewQuestionMeta & {
-    passage: string;
-    underline: string;
-  };
+// 저장된 오답 (혼자 문제풀기 오답, 훈련하기 유형별 정리)
+export interface ReviewWrongAnswer {
+  quiz: ReviewQuizContent;
+  typeId: ReviewTypeId;
+  subType: string;
 
-// O/X
-export type ReviewOxQuestion = Omit<OxGameQuestion, "points"> & ReviewQuestionMeta;
-
-// 단답형 주관식
-export type ReviewShortAnswerQuestion = Omit<ShortAnswerGameQuestion, "points"> &
-  ReviewQuestionMeta;
-
-export type ReviewQuestion =
-  ReviewMultipleChoiceQuestion | ReviewOxQuestion | ReviewShortAnswerQuestion;
-
-// 오답 1개당 복기·응용 문제 쌍 (유형별 복습 문제 조회 응답)
-export interface ReviewQuestionPair {
-  wrongQuestionId: number;
-  retry: ReviewQuestion;
-  apply: ReviewQuestion;
+  // 복습 완료 날짜 (복습 전 null)
+  reviewedDate: string | null;
 }
+
+// 복습 문제 (복기·응용 구분 + 훈련하기 유형 태그)
+export type ReviewQuiz = ReviewQuizContent & {
+  reviewKind: ReviewKind;
+
+  // 문제 유형 태그 (예: 정보추출 | 일치/불일치)
+  typeName: string;
+  subType: string;
+};
 
 // 답안 제출 요청
 export interface ReviewAnswerRequest {

@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import MultipleChoiceQuiz from "./MultipleChoiceQuiz";
 import OxQuiz from "./OxQuiz";
 import SubjectiveQuiz from "./SubjectiveQuiz";
@@ -20,6 +22,9 @@ type QuizRendererProps = {
 
   isSubmitted: boolean;
   onOpenNews: () => void;
+
+  // O/X·주관식 문제 유형 영역 (없으면 기본 유형 태그)
+  metaBar?: ReactNode;
 };
 
 export default function QuizRenderer({
@@ -34,6 +39,7 @@ export default function QuizRenderer({
   onChangeSubjectiveAnswer,
   isSubmitted,
   onOpenNews,
+  metaBar,
 }: QuizRendererProps) {
   switch (quiz.type) {
     case "MULTIPLE_CHOICE":
@@ -55,6 +61,7 @@ export default function QuizRenderer({
           onSelect={onSelectOxAnswer}
           onChangeReason={onChangeReason}
           onOpenNews={onOpenNews}
+          metaBar={metaBar}
         />
       );
 
@@ -65,6 +72,7 @@ export default function QuizRenderer({
           answer={subjectiveAnswer}
           onChangeAnswer={onChangeSubjectiveAnswer}
           onOpenNews={onOpenNews}
+          metaBar={metaBar}
         />
       );
   }
