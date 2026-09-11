@@ -4,6 +4,8 @@ import MainHeader from "@/components/common/header/MainHeader";
 
 import gameBeluga from "@/assets/images/gameBeluga.png";
 
+import shadow from "@/assets/images/Shadow.png";
+
 export default function GameMainPage() {
   const navigate = useNavigate();
 
@@ -46,20 +48,32 @@ export default function GameMainPage() {
             문해력을 길러보세요
           </p>
 
+          {/* 벨루가 그림자 */}
+          <img
+            src={shadow}
+            alt=""
+            aria-hidden="true"
+            className="
+            absolute right-5 bottom-0
+            z-0 w-35
+            object-contain
+          "
+          />
+
           {/* 벨루가 */}
           <img
             src={gameBeluga}
             alt="뉴스를 읽는 벨루가"
             className="
-              absolute -right-9 top-27
-              z-10 w-56
-              object-contain
-            "
+            absolute -right-9 top-27
+            z-10 w-56
+            object-contain
+          "
           />
         </section>
 
         {/* 게임 모드 선택 */}
-        <section className="grid grid-cols-2 gap-4 mt-5">
+        <section className="mt-5 grid grid-cols-2 gap-4">
           {/* 혼자 문제풀기 */}
           <button
             type="button"
@@ -86,7 +100,7 @@ export default function GameMainPage() {
             type="button"
             onClick={() => navigate("/game/friend")}
             className="
-              flex h-57 ursor-pointer flex-col
+              flex h-57 cursor-pointer flex-col
               rounded-3xl bg-[#F5F6C9]
               p-5
             "

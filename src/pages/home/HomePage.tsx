@@ -10,11 +10,13 @@ import newsIcon from "@/assets/icons/home/newsIcon.png";
 import targetIcon from "@/assets/icons/home/targetIcon.png";
 import blueCircle from "@/assets/icons/home/blueCircle.png";
 
+import shadow from "@/assets/images/Shadow.png";
+
 export default function HomePage() {
   const navigate = useNavigate();
 
   return (
-    <main className="mb-10">
+    <main>
       <MainHeader userName="김환희" />
 
       <div className="px-5">
@@ -47,14 +49,25 @@ export default function HomePage() {
         </section>
 
         {/* 레벨 카드 */}
-        <section className="mt-5 rounded-3xl border border-white bg-[#EAF5FD] px-5 py-5 shadow-md">
-          <p className="text-2xl font-bold text-[#2F8DE4]">Lv. 1</p>
+        <section
+          className="
+            mt-5
+            rounded-3xl
+            border border-white
+            bg-[#EAF5FD]
+            px-5 py-3
+            shadow-[0_4px_14px_rgba(47,141,228,0.15)]
+          "
+        >
+          <p className="text-2xl font-extrabold text-[#2F8DE4]">Lv. 1</p>
 
-          <h2 className="mt-1 text-3xl font-bold text-[#071D2E]">문장 수집가</h2>
+          <h2 className="mt-0.5 text-2xl font-extrabold text-[#071D2E]">문장 수집가</h2>
 
-          <p className="mt-2 text-lg font-semibold text-gray-400">글이랑 낯가리는 중이에요!</p>
+          <p className="mt-1 text-md font-semibold text-gray-400">
+            문장 속 중요한 단어들을 하나씩 모아가요
+          </p>
 
-          <div className="mt-4 flex items-center gap-3">
+          <div className="mt-2 flex items-center gap-3">
             <div className="h-5 flex-1 overflow-hidden rounded-full bg-gray-200">
               <div className="h-full w-[64%] rounded-full bg-[#2F95F5]" />
             </div>
@@ -68,9 +81,7 @@ export default function HomePage() {
         {/* 통계 */}
         <section className="mt-4 grid grid-cols-3 gap-3">
           <StatCard icon={fireIcon} value="7일" label="연속학습" />
-
           <StatCard icon={bookIcon} value="2개" label="읽은 뉴스" />
-
           <StatCard icon={targetIcon} value="80%" label="정답률" />
         </section>
 
@@ -88,20 +99,36 @@ export default function HomePage() {
                 게임하기
               </span>
 
-              <span className="text-xl pb-1 leading-none">›</span>
+              <span className="pb-1 text-xl leading-none">›</span>
             </button>
           </div>
 
           {/* 뉴스 카드 */}
-          <article className="mt-4 flex items-center gap-4 rounded-2xl bg-[#F5F6FB] p-4">
-            <img src={newsIcon} alt="뉴스" className="size-20 shrink-0 object-contain" />
+          <article className="mt-4 flex items-center gap-4 rounded-2xl bg-[#F5F6FB] p-5">
+            {/* 뉴스 이미지 + 그림자 */}
+            <div className="relative size-20 shrink-0">
+              {/* 그림자 */}
+              <img
+                src={shadow}
+                alt=""
+                aria-hidden="true"
+                className="absolute bottom-0 left-1/2 z-0 w-14 -translate-x-1/2 object-contain"
+              />
+
+              {/* 뉴스 이미지 */}
+              <img
+                src={newsIcon}
+                alt="뉴스"
+                className="relative z-10 size-20 -translate-y-2 object-contain"
+              />
+            </div>
 
             <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold text-[#2F8DE4]">경제</p>
 
-              <h3 className="mt-1 text-lg font-bold text-black">오늘의 뉴스</h3>
+              <h3 className=" text-lg font-bold text-black">오늘의 뉴스</h3>
 
-              <p className="mt-1 line-clamp-2 text-sm leading-snug text-gray-400">
+              <p className="line-clamp-2 text-sm font-semibold leading-snug text-gray-400">
                 지속되는 물가상승으로 인해 가계의 생활비 부담이 커지고 있으며, 소비 심리도 위축되고
                 있다는 분석이...
               </p>
