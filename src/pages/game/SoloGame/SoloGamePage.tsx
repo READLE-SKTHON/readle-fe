@@ -138,9 +138,12 @@ function SoloGameContent({ training }: SoloGameContentProps) {
     setReason,
     subjectiveAnswer,
     setSubjectiveAnswer,
-    canSubmit,
+    canSubmit: canSubmitAnswer,
     resetAnswer,
   } = useQuizAnswer(currentQuiz);
+
+  const requiresSubjectiveReason = currentQuiz.type === "SUBJECTIVE" && currentQuestion.requireReason;
+  const canSubmit = canSubmitAnswer && (!requiresSubjectiveReason || reason.trim().length > 0);
 
   // 서버 채점 결과 → 기존 UI 상태로 변환
   const feedbackStatus: FeedbackStatus | null =
@@ -179,7 +182,7 @@ function SoloGameContent({ training }: SoloGameContentProps) {
         questionId: currentQuestion.questionId,
         body: {
           selectedAnswer,
-          reason: reason.trim() || undefined,
+          reason: currentQuestion.requireReason ? reason.trim() || undefined : undefined,
         },
       },
       {
@@ -284,6 +287,7 @@ function SoloGameContent({ training }: SoloGameContentProps) {
             onChangeReason={setReason}
             subjectiveAnswer={subjectiveAnswer}
             onChangeSubjectiveAnswer={setSubjectiveAnswer}
+            requiresSubjectiveReason={requiresSubjectiveReason}
             isSubmitted={isSubmitted}
             onOpenNews={() => setIsNewsOpen(true)}
             metaBar={metaBar}
