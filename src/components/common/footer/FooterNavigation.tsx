@@ -3,26 +3,30 @@ import { NavLink, useLocation } from "react-router-dom";
 
 import "./FooterNavigation.css";
 
-import bookIcon from "@/assets/icons/navigationIcons/bookIcon.png";
-import bookActiveIcon from "@/assets/icons/navigationIcons/bookActiveIcon.png";
+import bookIcon from "@/assets/icons/navigationIcons/ReviewIcon.svg";
+import bookActiveIcon from "@/assets/icons/navigationIcons/ReviewIconActivate.svg";
 
-import gameIcon from "@/assets/icons/navigationIcons/gameIcon.png";
-import gameActiveIcon from "@/assets/icons/navigationIcons/gameActiveIcon.png";
+import gameIcon from "@/assets/icons/navigationIcons/GameIcon.svg";
+import gameActiveIcon from "@/assets/icons/navigationIcons/GameIconActivate.svg";
 
-import trophyIcon from "@/assets/icons/navigationIcons/trophyIcon.png";
-import trophyActiveIcon from "@/assets/icons/navigationIcons/trophyActiveIcon.png";
+import trophyIcon from "@/assets/icons/navigationIcons/rankingIcon.svg";
+import trophyActiveIcon from "@/assets/icons/navigationIcons/RankingIconActivate.svg";
 
-import userIcon from "@/assets/icons/navigationIcons/userIcon.png";
-import userActiveIcon from "@/assets/icons/navigationIcons/userActiveIcon.png";
+import userIcon from "@/assets/icons/navigationIcons/MyPageIcon.svg";
+import userActiveIcon from "@/assets/icons/navigationIcons/MyPageIconActivate.svg";
 
-import whaleIcon from "@/assets/icons/navigationIcons/whaleIcon.png";
-import whaleActiveIcon from "@/assets/icons/navigationIcons/whaleActiveIcon.png";
+import whaleIcon from "@/assets/icons/navigationIcons/HomeIcon.svg";
+import whaleActiveIcon from "@/assets/icons/navigationIcons/HomeIconActivate.svg";
 
 interface NavigationItem {
   label: string;
   path: string;
   icon: string;
   activeIcon: string;
+
+  // 원본 여백이 달라 아이콘별 표시 크기 보정 (비활성 28px · 활성 36px 기준)
+  iconClassName: string;
+  activeIconClassName: string;
 }
 
 const navigationItems: NavigationItem[] = [
@@ -31,30 +35,40 @@ const navigationItems: NavigationItem[] = [
     path: "/ranking",
     icon: trophyIcon,
     activeIcon: trophyActiveIcon,
+    iconClassName: "h-8.5",
+    activeIconClassName: "h-11",
   },
   {
     label: "복습",
     path: "/review",
     icon: bookIcon,
     activeIcon: bookActiveIcon,
+    iconClassName: "h-8",
+    activeIconClassName: "h-10.5",
   },
   {
     label: "HOME",
     path: "/home",
     icon: whaleIcon,
     activeIcon: whaleActiveIcon,
+    iconClassName: "h-8 -translate-y-px",
+    activeIconClassName: "h-10 -translate-y-0.5",
   },
   {
     label: "게임",
     path: "/game",
     icon: gameIcon,
     activeIcon: gameActiveIcon,
+    iconClassName: "h-8.5",
+    activeIconClassName: "h-10 -translate-y-px",
   },
   {
     label: "마이페이지",
     path: "/my",
     icon: userIcon,
     activeIcon: userActiveIcon,
+    iconClassName: "h-8.5",
+    activeIconClassName: "h-10.5",
   },
 ];
 
@@ -146,7 +160,7 @@ export default function FooterNavigation() {
               src={activeItem.activeIcon}
               alt=""
               aria-hidden="true"
-              className="size-10 object-contain"
+              className={`object-contain ${activeItem.activeIconClassName}`}
             />
           </div>
         </div>
@@ -170,23 +184,28 @@ export default function FooterNavigation() {
                 outline-none
               "
             >
-              {/* 비활성 메뉴 아이콘 */}
-              <img
-                src={item.icon}
-                alt=""
-                aria-hidden="true"
-                className={`
-                  size-7 object-contain
-                  transition-opacity duration-200
-                  ${isActive ? "opacity-0" : "opacity-100"}
-                `}
-              />
+              {/* 비활성 메뉴 아이콘 (고정 높이 영역 가운데 정렬) */}
+              <span className="flex h-7 items-center justify-center">
+                <img
+                  src={item.icon}
+                  alt=""
+                  aria-hidden="true"
+                  className={`
+                    object-contain
+                    transition-opacity duration-200
+                    ${item.iconClassName}
+                    ${isActive ? "opacity-0" : "opacity-100"}
+                  `}
+                />
+              </span>
 
+              {/* 선택 시 노란 알약 배경 라벨 */}
               <span
                 className={`
-                  text-xs
+                  rounded-full px-2.5
+                  text-xs leading-4.5 font-bold
                   transition-colors duration-1000
-                  ${isActive ? "font-bold text-[#F4F34E]" : "font-medium text-[#003F70]"}
+                  ${isActive ? "bg-[#F4F34E] text-[#2F8DE4]" : "text-[#003F70]"}
                 `}
               >
                 {item.label}
