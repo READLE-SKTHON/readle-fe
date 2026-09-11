@@ -100,7 +100,7 @@ export default function OxFeedback({ status }: OxFeedbackProps) {
       <div className="relative z-20">
         {/* 제목만 캐릭터 공간 확보 */}
         <h2
-          className={`pr-20 text-[36px] font-extrabold leading-tight ${current.titleStyle} [text-shadow:_-2px_-2px_0_white,_2px_-2px_0_white,_-2px_2px_0_white,_2px_2px_0_white]`}
+          className={`pr-20 text-[36px] font-extrabold leading-tight ${current.titleStyle} text-shadow-[-2px_-2px_0_white,2px_-2px_0_white,-2px_2px_0_white,2px_2px_0_white]`}
         >
           {current.title}
         </h2>
