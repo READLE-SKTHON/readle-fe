@@ -72,7 +72,7 @@ export default function SoloReadingPage() {
           <div className="flex items-center gap-5 text-sm font-medium text-gray-400">
             <div className="flex items-center gap-1.5">
               <img src={publisherIcon} alt="출처" className="h-5 w-5 object-contain" />
-              <span>{news.publisher}</span>
+              <span>중앙일보</span>
             </div>
 
             <div className="flex items-center gap-1.5">
