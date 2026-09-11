@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { Share2 } from "lucide-react";
 
 import Button from "@/components/common/button/Button";
@@ -18,6 +19,8 @@ import waitingCharacter from "@/assets/images/game/RoomEnter/WaitingCharacter.pn
 const MIN_START_PLAYERS = 2;
 
 export default function WaitingRoomPage() {
+  const navigate = useNavigate();
+
   const { room, myUserId, isHost, emptySlotCount } = useWaitingRoom();
 
   const { copy } = useClipboard();
@@ -41,7 +44,7 @@ export default function WaitingRoomPage() {
 
   // 게임 시작 처리
   const handleStart = () => {
-    // TODO: 게임 화면 연결 (디자인 확정 후)
+    navigate("/game/friend/play");
   };
 
   return (
