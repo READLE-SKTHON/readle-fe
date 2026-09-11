@@ -28,12 +28,12 @@ export default function MyPage() {
     .join(" ");
 
   return (
-    <main className="min-h-screen bg-white pb-32">
+    <main className="min-h-screen bg-white">
       {/* 상단 프로필 */}
-      <section className="relative h-[310px] overflow-hidden bg-[#2285E3] px-5 pt-8">
+      <section className="relative h-77.5 overflow-hidden bg-[#2285E3] px-5 pt-8">
         {/* 사용자 정보 */}
         <div className="relative z-10 flex items-center">
-          <div className="flex h-[72px] w-[72px] items-center justify-center overflow-hidden rounded-full border-4 border-white bg-[#DCEFFF]">
+          <div className="flex h-18 w-18 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-[#DCEFFF]">
             <img src={character} alt="프로필" className="h-full w-full object-cover" />
           </div>
 
@@ -65,7 +65,7 @@ export default function MyPage() {
         <img
           src={character}
           alt={`레벨 ${user.level} 캐릭터`}
-          className="absolute -bottom-5 right-5 w-[235px] object-contain"
+          className="absolute -bottom-5 right-5 w-59 object-contain"
         />
       </section>
 
