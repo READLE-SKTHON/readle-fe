@@ -11,6 +11,9 @@ import HomePage from "@/pages/home/HomePage";
 import MyPage from "@/pages/my/MyPage";
 import RankingPage from "@/pages/ranking/RankingPage";
 import ReviewPage from "@/pages/review/ReviewPage";
+import ReviewTypePage from "@/pages/review/ReviewTypePage";
+import ReviewPlayPage from "@/pages/review/ReviewPlayPage";
+import ReviewResultPage from "@/pages/review/ReviewResultPage";
 
 import SoloIntroPage from "@/pages/game/SoloGame/SoloIntroPage";
 import SoloGamePage from "@/pages/game/SoloGame/SoloGamePage";
@@ -53,6 +56,10 @@ export default function App() {
           <Route path="/game/friend/waiting" element={<WaitingRoomPage />} />
           <Route path="/game/friend/play" element={<GamePlayPage />} />
           <Route path="/game/friend/result" element={<GameResultPage />} />
+
+          <Route path="/review/types" element={<ReviewTypePage />} />
+          <Route path="/review/play/:typeId" element={<ReviewPlayPage />} />
+          <Route path="/review/result" element={<ReviewResultPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
