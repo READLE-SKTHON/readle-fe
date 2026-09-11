@@ -4,7 +4,6 @@ import ProfileImage from "@/components/common/profile/ProfileImage";
 
 type PlayerRowProps = {
   nickname: string;
-  profileImageUrl: string | null;
   isMe: boolean;
   isHighlighted?: boolean;
   leading?: ReactNode;
@@ -15,7 +14,6 @@ type PlayerRowProps = {
 
 export default function PlayerRow({
   nickname,
-  profileImageUrl,
   isMe,
   isHighlighted = false,
   leading,
@@ -33,11 +31,8 @@ export default function PlayerRow({
       >
         {leading}
 
-        <ProfileImage
-          src={profileImageUrl}
-          alt={`${nickname} 프로필`}
-          className="size-10 shrink-0"
-        />
+        {/* 프로필 이미지 미제공 (기본 프로필) */}
+        <ProfileImage alt={`${nickname} 프로필`} className="size-10 shrink-0" />
 
         {/* 내 행은 이름 대신 나 표시 */}
         <span

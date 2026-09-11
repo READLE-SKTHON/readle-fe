@@ -19,7 +19,6 @@ export default function SubmitStatusList({
         <PlayerRow
           key={participant.userId}
           nickname={participant.nickname}
-          profileImageUrl={participant.profileImageUrl}
           isMe={participant.userId === myUserId}
           trailing={
             <SubmitStatusText status={submitStatuses[participant.userId] ?? "NOT_SUBMITTED"} />

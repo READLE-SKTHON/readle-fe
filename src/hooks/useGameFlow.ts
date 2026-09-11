@@ -2,7 +2,7 @@ import { useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
 import useCountdown from "@/hooks/useCountdown";
-import useWaitingRoom from "@/hooks/useWaitingRoom";
+import useGameRoom from "@/hooks/useGameRoom";
 import { createMockQuestions, gradeMockRound, mockSubmitTimings } from "@/mocks/game";
 import { useGameStore } from "@/stores/useGameStore";
 
@@ -16,7 +16,7 @@ const RANKING_DURATION_MS = 3000;
 // 게임 진행 단계 전환 및 서버 이벤트 수신 (현재는 목데이터·타이머 시뮬레이션)
 export default function useGameFlow() {
   const navigate = useNavigate();
-  const { room, myUserId } = useWaitingRoom();
+  const { room, roomCode, participants, myUserId } = useGameRoom();
 
   const questions = useGameStore((state) => state.questions);
   const currentIndex = useGameStore((state) => state.currentIndex);
@@ -33,8 +33,8 @@ export default function useGameFlow() {
   const goToNextQuestion = useGameStore((state) => state.goToNextQuestion);
 
   const participantIds = useMemo(
-    () => room.participants.map((participant) => participant.userId),
-    [room.participants],
+    () => participants.map((participant) => participant.userId),
+    [participants],
   );
 
   const otherIds = useMemo(
@@ -46,14 +46,14 @@ export default function useGameFlow() {
   const isLastQuestion = currentIndex === questions.length - 1;
 
   // 문제당 제한 시간 (문제 풀이·제출 대기 동안 진행)
-  const remainingSeconds = useCountdown(room.settings.timeLimit, isAnswerPhase, currentIndex);
+  const remainingSeconds = useCountdown(room.timer, isAnswerPhase, currentIndex);
   const isTimeUp = remainingSeconds === 0;
 
   // 게임 시작
   useEffect(() => {
     // TODO: 문제 목록 조회 API 연동
-    startGame(createMockQuestions(room.settings.questionCount), participantIds);
-  }, [startGame, room.settings.questionCount, participantIds]);
+    startGame(createMockQuestions(room.questionCount), participantIds);
+  }, [startGame, room.questionCount, participantIds]);
 
   // 다른 참여자 제출 현황 수신
   useEffect(() => {
@@ -164,7 +164,8 @@ export default function useGameFlow() {
   };
 
   return {
-    room,
+    roomCode,
+    participants,
     myUserId,
     question: questions[currentIndex],
     questionNumber: currentIndex + 1,

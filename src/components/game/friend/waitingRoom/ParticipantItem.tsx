@@ -4,17 +4,11 @@ import crownIcon from "@/assets/icons/game/crown.svg";
 
 type ParticipantItemProps = {
   nickname: string;
-  profileImageUrl: string | null;
   isMe: boolean;
   isHost: boolean;
 };
 
-export default function ParticipantItem({
-  nickname,
-  profileImageUrl,
-  isMe,
-  isHost,
-}: ParticipantItemProps) {
+export default function ParticipantItem({ nickname, isMe, isHost }: ParticipantItemProps) {
   return (
     <li className="flex h-17.5 items-center gap-5 rounded-2xl bg-[#F4F4F4] px-6">
       <div className="relative shrink-0">
@@ -26,7 +20,8 @@ export default function ParticipantItem({
           />
         )}
 
-        <ProfileImage src={profileImageUrl} alt={`${nickname} 프로필`} className="size-10" />
+        {/* 프로필 이미지 미제공 (기본 프로필) */}
+        <ProfileImage alt={`${nickname} 프로필`} className="size-10" />
       </div>
 
       {/* 내 행은 이름 대신 나 표시 */}
