@@ -14,12 +14,24 @@ export const users: User[] = [
     id: 2,
     nickname: "장서후",
     school: "서후고등학교",
-    totalXp: 5000,
+    totalXp: 2500,
   },
   {
     id: 3,
     nickname: "오지우",
     school: "지우고등학교",
-    totalXp: 2210,
+    totalXp: 4210,
+  },
+  {
+    id: 4,
+    nickname: "김승민",
+    school: "승민고등학교",
+    totalXp: 6500,
+  },
+  {
+    id: 5,
+    nickname: "박예지 ",
+    school: "승민고등학교",
+    totalXp: 8500,
   },
 ];

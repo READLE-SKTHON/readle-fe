@@ -62,7 +62,6 @@ export default function AnswerReveal({
             <PlayerRow
               key={participant.userId}
               nickname={participant.nickname}
-              profileImageUrl={participant.profileImageUrl}
               isMe={participant.userId === myUserId}
               isHighlighted={isTop}
               trailing={

@@ -17,7 +17,8 @@ import middleCharacter from "@/assets/images/game/MultiGame/middleCharacter.png"
 
 export default function GamePlayPage() {
   const {
-    room,
+    roomCode,
+    participants,
     myUserId,
     question,
     questionNumber,
@@ -30,7 +31,7 @@ export default function GamePlayPage() {
     submitAnswer,
   } = useGameFlow();
 
-  const rankings = useGameRanking(room.participants);
+  const rankings = useGameRanking(participants);
 
   if (!question) return null;
 
@@ -39,7 +40,7 @@ export default function GamePlayPage() {
   return (
     <div className="flex h-dvh flex-col">
       {/* 게임 진행 중 뒤로가기 없음 */}
-      <Header title={room.roomCode} current={questionNumber} total={totalCount} showBack={false} />
+      <Header title={roomCode} current={questionNumber} total={totalCount} showBack={false} />
 
       {/* 제한 시간 (문제 풀이·제출 대기) */}
       {isAnswerPhase && (
@@ -60,7 +61,7 @@ export default function GamePlayPage() {
 
           <div className="mt-2">
             <SubmitStatusList
-              participants={room.participants}
+              participants={participants}
               myUserId={myUserId}
               submitStatuses={submitStatuses}
             />
@@ -72,7 +73,7 @@ export default function GamePlayPage() {
         <main className="min-h-0 flex-1 overflow-y-auto px-6.5 pt-12 pb-8">
           <AnswerReveal
             question={question}
-            participants={room.participants}
+            participants={participants}
             myUserId={myUserId}
             roundScores={roundScores}
           />
