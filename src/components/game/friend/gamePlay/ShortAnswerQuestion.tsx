@@ -1,4 +1,5 @@
 import ArticleText from "@/components/game/friend/gamePlay/ArticleText";
+import ExcerptBox from "@/components/game/friend/gamePlay/ExcerptBox";
 import type { ShortAnswerGameQuestion } from "@/types/game";
 
 type ShortAnswerQuestionProps = {
@@ -16,7 +17,13 @@ export default function ShortAnswerQuestion({
 }: ShortAnswerQuestionProps) {
   return (
     <section>
-      {!isLocked && <ArticleText title={question.news.title} content={question.news.content} />}
+      {/* 발췌 지문 (없으면 기사 전체) */}
+      {!isLocked &&
+        (question.passage ? (
+          <ExcerptBox passage={question.passage} />
+        ) : (
+          <ArticleText title={question.news.title} content={question.news.content} />
+        ))}
 
       <div className={isLocked ? "" : "mt-8"}>
         <h3

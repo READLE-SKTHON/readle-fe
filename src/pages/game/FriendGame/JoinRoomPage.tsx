@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Button from "@/components/common/button/Button";
 import Header from "@/components/common/header/Header";
 import CharacterShadow from "@/components/game/friend/CharacterShadow";
+import { buttonPressStyles } from "@/components/game/friend/buttonPressStyles";
 import CodeInput from "@/components/game/friend/joinRoom/CodeInput";
 import useCodeInput from "@/hooks/useCodeInput";
 import { mockGuestUserId, mockGuestWaitingRoom } from "@/mocks/room";
@@ -70,7 +71,7 @@ export default function JoinRoomPage() {
           label="입장하기"
           disabled={!isComplete}
           onClick={handleEnterRoom}
-          className="mt-auto"
+          className={`mt-auto ${buttonPressStyles.primary}`}
         />
       </main>
     </div>

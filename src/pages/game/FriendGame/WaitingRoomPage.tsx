@@ -5,6 +5,7 @@ import Button from "@/components/common/button/Button";
 import Header from "@/components/common/header/Header";
 import Toast from "@/components/common/toast/Toast";
 import CharacterShadow from "@/components/game/friend/CharacterShadow";
+import { buttonPressStyles } from "@/components/game/friend/buttonPressStyles";
 import InviteSlot from "@/components/game/friend/waitingRoom/InviteSlot";
 import ParticipantItem from "@/components/game/friend/waitingRoom/ParticipantItem";
 import RoomCodeCard from "@/components/game/friend/waitingRoom/RoomCodeCard";
@@ -127,6 +128,7 @@ export default function WaitingRoomPage() {
               label="시작하기"
               disabled={room.participants.length < MIN_START_PLAYERS}
               onClick={handleStart}
+              className={buttonPressStyles.primary}
             />
 
             <p className="mt-3 text-center text-[16px] font-semibold text-[#8F8F8F]">
