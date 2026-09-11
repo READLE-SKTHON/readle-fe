@@ -22,6 +22,7 @@ import type { News } from "@/types/news";
 import type { FeedbackStatus } from "@/types/quiz";
 import type { SubmitAnswerResult, TodayTraining } from "@/types/training";
 
+import { getQuestionCategoryLabel } from "@/utils/getQuestionCategoryLabel";
 import {
   getTrainingErrorMessage,
   getTrainingFeedback,
@@ -129,11 +130,11 @@ function SoloGameContent({ training }: SoloGameContentProps) {
     sourceUrl: training.article.sourceUrl ?? "",
   };
 
-  // 문제 유형 태그
-  const quizTag = {
-    type: currentQuestion.mainCategory,
-    subtype: currentQuestion.subCategory,
-  };
+  // 문제 유형 태그 (같이 게임하기와 같은 한글 유형 이름)
+  const quizTag = getQuestionCategoryLabel(
+    currentQuestion.mainCategory,
+    currentQuestion.subCategory,
+  );
 
   // 답안 입력 상태
   const {
