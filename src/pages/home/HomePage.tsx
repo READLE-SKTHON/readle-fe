@@ -13,9 +13,8 @@ import targetIcon from "@/assets/icons/home/targetIcon.png";
 import shadow from "@/assets/images/Shadow.png";
 
 import type { UserLevel } from "@/config/gameLevelConfig";
-import { XP_PER_LEVEL } from "@/config/levelConfig";
-import useUser from "@/hooks/useUser";
-import { mockMyPage } from "@/mocks/mypage";
+import { LEVEL_CONFIG } from "@/config/levelConfig";
+import { useHome } from "@/hooks/queries/useHome";
 
 // 레벨별 캐릭터 세로 위치·크기 (이미지 여백 차이 보정, 레벨 배너 위 안착)
 const CHARACTER_CLASS_NAMES: Record<UserLevel, string> = {
@@ -29,15 +28,16 @@ const CHARACTER_CLASS_NAMES: Record<UserLevel, string> = {
 export default function HomePage() {
   const navigate = useNavigate();
 
-  // 로그인 사용자 정보·누적 XP 기준 레벨
-  const { user, levelInfo, levelXp, levelProgress } = useUser();
-
-  // 학습 통계 (마이페이지 공통)
-  const { stats } = mockMyPage;
+  // 홈 사용자 정보·학습 통계·오늘의 기사
+  const { data: home, isLoading, isError } = useHome();
+  const levelInfo = LEVEL_CONFIG.find(({ level }) => level === home?.level) ?? LEVEL_CONFIG[0];
+  const levelProgress = home && home.maxXp > 0
+    ? Math.min(100, Math.max(0, (home.xp / home.maxXp) * 100))
+    : 0;
 
   return (
     <main>
-      <MainHeader userName={user.nickname} />
+      <MainHeader userName={home?.nickname ?? ""} />
 
       <div className="px-5">
         {/* 메인 문구 */}
@@ -79,11 +79,13 @@ export default function HomePage() {
             shadow-[0_0_20px_5px_rgba(47,141,228,0.12)]
           "
         >
-          <p className="text-2xl font-extrabold text-[#2F8DE4]">Lv. {levelInfo.level}</p>
+          <p className="text-2xl font-extrabold text-[#2F8DE4]">Lv. {home?.level ?? "-"}</p>
 
-          <h2 className="mt-0.5 text-2xl font-extrabold text-[#071D2E]">{levelInfo.title}</h2>
+          <h2 className="mt-0.5 text-2xl font-extrabold text-[#071D2E]">{home ? levelInfo.title : "-"}</h2>
 
-          <p className="mt-1 text-md font-semibold text-gray-400">{levelInfo.description}</p>
+          <p className="mt-1 text-md font-semibold text-gray-400">
+            {home ? levelInfo.description : isLoading ? "홈 정보를 불러오는 중이에요." : "홈 정보를 불러오지 못했습니다."}
+          </p>
 
           <div className="mt-2 flex items-center gap-3">
             <div className="h-5 flex-1 overflow-hidden rounded-full bg-gray-200">
@@ -94,16 +96,16 @@ export default function HomePage() {
             </div>
 
             <span className="whitespace-nowrap text-sm font-semibold text-gray-400">
-              {levelXp.toLocaleString("ko-KR")}/{XP_PER_LEVEL.toLocaleString("ko-KR")} XP
+              {home?.xp.toLocaleString("ko-KR") ?? "-"}/{home?.maxXp.toLocaleString("ko-KR") ?? "-"} XP
             </span>
           </div>
         </section>
 
         {/* 통계 */}
         <section className="mt-4 grid grid-cols-3 gap-3">
-          <StatCard icon={fireIcon} value={`${stats.streakDays}일`} label="연속학습" />
-          <StatCard icon={bookIcon} value={`${stats.newsCount}개`} label="읽은 뉴스" />
-          <StatCard icon={targetIcon} value={`${stats.accuracy}%`} label="정답률" />
+          <StatCard icon={fireIcon} value={home ? `${home.currentStreak}일` : "-"} label="연속학습" />
+          <StatCard icon={bookIcon} value={home ? `${home.newsReadCount}개` : "-"} label="읽은 뉴스" />
+          <StatCard icon={targetIcon} value={home ? `${home.answerRate}%` : "-"} label="정답률" />
         </section>
 
         {/* 오늘의 뉴스 */}
@@ -143,14 +145,29 @@ export default function HomePage() {
             </div>
 
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold text-[#2F8DE4]">경제</p>
+              {isLoading ? (
+                <p className="text-sm font-semibold text-gray-400">
+                  오늘의 뉴스를 불러오는 중이에요.
+                </p>
+              ) : home?.todayNews ? (
+                <>
+                  <p className="text-sm font-semibold text-[#2F8DE4]">
+                    {home.todayNews.category}
+                  </p>
 
-              <h3 className="text-lg font-bold text-black">오늘의 뉴스</h3>
+                  <h3 className="truncate text-lg font-bold text-black">
+                    {home.todayNews.title}
+                  </h3>
 
-              <p className="line-clamp-2 text-sm font-semibold leading-snug text-gray-400">
-                지속되는 물가상승으로 인해 가계의 생활비 부담이 커지고 있으며, 소비 심리도 위축되고
-                있다는 분석이...
-              </p>
+                  <p className="line-clamp-2 text-sm font-semibold leading-snug text-gray-400">
+                    {home.todayNews.content}
+                  </p>
+                </>
+              ) : (
+                <p className="text-sm font-semibold text-gray-400">
+                  {isError ? "오늘의 뉴스를 불러오지 못했습니다." : "오늘의 뉴스가 아직 준비되지 않았습니다."}
+                </p>
+              )}
             </div>
           </article>
         </section>

@@ -61,15 +61,17 @@ export default function ArticleSheet({ news, onClose }: ArticleSheetProps) {
               출처 {news.publisher} · {formatPublishedDate(news.publishedAt)}
             </p>
 
-            <a
-              href={news.sourceUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center gap-1 text-[14px] font-semibold text-[#2285E3]"
-            >
-              원문 보기
-              <ExternalLink className="size-4" />
-            </a>
+            {news.sourceUrl && (
+              <a
+                href={news.sourceUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-1 text-[14px] font-semibold text-[#2285E3]"
+              >
+                원문 보기
+                <ExternalLink className="size-4" />
+              </a>
+            )}
           </div>
         </div>
       </section>
