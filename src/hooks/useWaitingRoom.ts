@@ -1,23 +1,40 @@
-import { useMemo } from "react";
-
+import useRoom from "@/hooks/useRoom";
 import useUser from "@/hooks/useUser";
-import { createMockGuestWaitingRoom } from "@/mocks/room";
-import { useRoomStore } from "@/stores/useRoomStore";
+import useRoomParticipantsQuery from "@/queries/room/useRoomParticipantsQuery";
 
-// 대기방 정보 및 참여자 목록 제공 (추후 API·WebSocket 연동 지점)
+// 대기방 정보 및 서버 참여자 목록 제공 (폴링 갱신)
 export default function useWaitingRoom() {
   const { user } = useUser();
+  const { room, roomCode } = useRoom();
 
-  const waitingRoom = useRoomStore((state) => state.waitingRoom);
-  const storedMyUserId = useRoomStore((state) => state.myUserId);
+  const { data, isPending, isError, error, refetch } = useRoomParticipantsQuery(room.roomId);
 
-  // TODO: 대기방 조회 API 및 WebSocket 참여자 갱신 연동
-  // 대기방 정보가 없을 때 임시 기본값 (로그인 사용자 참여자 입장, 참여자 목록 참조 유지)
-  const room = useMemo(() => waitingRoom ?? createMockGuestWaitingRoom(user), [waitingRoom, user]);
-  const myUserId = storedMyUserId ?? user.id;
+  const participants = data?.participants ?? [];
+  const memberCount = data?.memberCount ?? room.memberCount;
 
-  const isHost = room.hostId === myUserId;
-  const emptySlotCount = Math.max(room.maxPlayers - room.participants.length, 0);
+  // 서버 참여자 목록 기준 방장 여부
+  const isHost = participants.some(
+    (participant) => participant.userId === user.id && participant.isHost,
+  );
 
-  return { room, myUserId, isHost, emptySlotCount };
+  const emptySlotCount = Math.max(memberCount - participants.length, 0);
+
+  return {
+    roomId: room.roomId,
+
+    // 게임 시작 시각 (시작 전 null, 게임 시작 감지용)
+    startedAt: data?.startedAt ?? null,
+
+    inviteLink: room.inviteLink,
+    roomCode,
+    participants,
+    memberCount,
+    myUserId: user.id,
+    isHost,
+    emptySlotCount,
+    isPending,
+    isError,
+    error,
+    refetch,
+  };
 }

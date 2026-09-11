@@ -2,20 +2,21 @@ import MultipleChoiceQuestion from "@/components/game/friend/gamePlay/MultipleCh
 import OxQuestion from "@/components/game/friend/gamePlay/OxQuestion";
 import QuestionTag from "@/components/game/friend/gamePlay/QuestionTag";
 import ShortAnswerQuestion from "@/components/game/friend/gamePlay/ShortAnswerQuestion";
-import type { GameQuestion } from "@/types/game";
+import { MAIN_CATEGORY_LABELS, SUB_CATEGORY_LABELS } from "@/config/questionCategoryConfig";
+import type { GameAnswer, GameQuestion } from "@/types/game";
 
 type QuestionRendererProps = {
   question: GameQuestion;
 
-  // 답안 (객관식 보기 id / 단답형 텍스트 / O·X)
-  answer: string;
-  onChangeAnswer?: (answer: string) => void;
+  // 선택·입력 중인 답안 (제출 대기 시 제출한 답안)
+  answer: GameAnswer | null;
+  onChangeAnswer?: (answer: GameAnswer) => void;
 
   // 제출 대기 시 답안 잠금
   isLocked?: boolean;
 };
 
-// 문제 유형별 화면 분기 (풀이 중 상단 문제 유형 태그)
+// 문제 형식별 화면 분기 (풀이 중 상단 문제 유형 태그)
 export default function QuestionRenderer({
   question,
   answer,
@@ -23,23 +24,25 @@ export default function QuestionRenderer({
   isLocked = false,
 }: QuestionRendererProps) {
   const renderQuestion = () => {
-    switch (question.type) {
-      case "MULTIPLE_CHOICE":
+    switch (question.format) {
+      case "multiple_choice":
         return (
           <MultipleChoiceQuestion
             question={question}
-            selectedOptionId={answer ? Number(answer) : null}
-            onSelect={(optionId) => onChangeAnswer?.(String(optionId))}
+            selectedNumber={answer?.format === "multiple_choice" ? answer.choiceNumber : null}
+            onSelect={(choiceNumber) =>
+              onChangeAnswer?.({ format: "multiple_choice", choiceNumber })
+            }
             isLocked={isLocked}
           />
         );
 
-      case "SHORT_ANSWER":
+      case "short_answer":
         return (
           <ShortAnswerQuestion
             question={question}
-            answer={answer}
-            onChangeAnswer={onChangeAnswer}
+            answer={answer?.format === "short_answer" ? answer.text : ""}
+            onChangeAnswer={(text) => onChangeAnswer?.({ format: "short_answer", text })}
             isLocked={isLocked}
           />
         );
@@ -48,8 +51,8 @@ export default function QuestionRenderer({
         return (
           <OxQuestion
             question={question}
-            selectedAnswer={answer === "O" || answer === "X" ? answer : null}
-            onSelect={onChangeAnswer}
+            selectedAnswer={answer?.format === "OX" ? answer.value : null}
+            onSelect={(value) => onChangeAnswer?.({ format: "OX", value })}
             isLocked={isLocked}
           />
         );
@@ -61,7 +64,12 @@ export default function QuestionRenderer({
 
   return (
     <>
-      <QuestionTag category={question.category} subCategory={question.subCategory} />
+      {question.mainCategory && question.subCategory && (
+        <QuestionTag
+          category={MAIN_CATEGORY_LABELS[question.mainCategory]}
+          subCategory={SUB_CATEGORY_LABELS[question.subCategory]}
+        />
+      )}
 
       <div className="mt-4">{renderQuestion()}</div>
     </>

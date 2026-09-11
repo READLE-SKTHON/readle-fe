@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import AppLayout from "@/layouts/AppLayout";
 import FooterLayout from "@/layouts/FooterLayout";
+import RoomLayout from "@/layouts/RoomLayout";
 
 import SplashPage from "./pages/auth/SplashPage";
 import LoginPage from "./pages/auth/LoginPage";
@@ -26,6 +27,7 @@ import WaitingRoomPage from "@/pages/game/FriendGame/WaitingRoomPage";
 import GamePlayPage from "@/pages/game/FriendGame/GamePlayPage";
 import GameResultPage from "@/pages/game/FriendGame/GameResultPage";
 import SoloResultPage from "@/pages/game/SoloGame/SoloResultPage";
+import SoloCompletedPage from "@/pages/game/SoloGame/SoloCompletedPage";
 
 export default function App() {
   return (
@@ -48,14 +50,19 @@ export default function App() {
           <Route path="/game/solo/reading" element={<SoloReadingPage />} />
           <Route path="/game/solo/play" element={<SoloGamePage />} />
           <Route path="/game/solo/result" element={<SoloResultPage />} />
+          <Route path="/game/solo/completed" element={<SoloCompletedPage />} />
 
           <Route path="/game/friend" element={<FriendGamePage />} />
           <Route path="/game/friend/create" element={<CreateRoomPage />} />
-          <Route path="/game/friend/invite" element={<InviteRoomPage />} />
           <Route path="/game/friend/join" element={<JoinRoomPage />} />
-          <Route path="/game/friend/waiting" element={<WaitingRoomPage />} />
-          <Route path="/game/friend/play" element={<GamePlayPage />} />
-          <Route path="/game/friend/result" element={<GameResultPage />} />
+
+          {/* 참여 중인 방 정보 필요한 페이지 */}
+          <Route element={<RoomLayout />}>
+            <Route path="/game/friend/invite" element={<InviteRoomPage />} />
+            <Route path="/game/friend/waiting" element={<WaitingRoomPage />} />
+            <Route path="/game/friend/play" element={<GamePlayPage />} />
+            <Route path="/game/friend/result" element={<GameResultPage />} />
+          </Route>
 
           <Route path="/review/types" element={<ReviewTypePage />} />
           <Route path="/review/play/:typeId" element={<ReviewPlayPage />} />

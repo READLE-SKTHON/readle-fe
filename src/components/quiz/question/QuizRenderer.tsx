@@ -19,6 +19,7 @@ type QuizRendererProps = {
 
   subjectiveAnswer: string;
   onChangeSubjectiveAnswer: (answer: string) => void;
+  requiresSubjectiveReason?: boolean;
 
   isSubmitted: boolean;
   onOpenNews: () => void;
@@ -37,6 +38,7 @@ export default function QuizRenderer({
   onChangeReason,
   subjectiveAnswer,
   onChangeSubjectiveAnswer,
+  requiresSubjectiveReason = false,
   isSubmitted,
   onOpenNews,
   metaBar,
@@ -71,6 +73,9 @@ export default function QuizRenderer({
           quiz={quiz}
           answer={subjectiveAnswer}
           onChangeAnswer={onChangeSubjectiveAnswer}
+          requiresReason={requiresSubjectiveReason}
+          reason={reason}
+          onChangeReason={onChangeReason}
           onOpenNews={onOpenNews}
           metaBar={metaBar}
         />

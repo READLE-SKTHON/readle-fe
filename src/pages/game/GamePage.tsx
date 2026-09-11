@@ -1,17 +1,57 @@
+import axios from "axios";
+import { useQueryClient } from "@tanstack/react-query";
 import { ChevronRight } from "lucide-react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import MainHeader from "@/components/common/header/MainHeader";
+
+import { getTodayTraining } from "@/api/training";
 import useUser from "@/hooks/useUser";
+
+import type { ApiErrorResponse } from "@/types/api";
 
 import gameBeluga from "@/assets/images/gameBeluga.png";
 import shadow from "@/assets/images/Shadow.png";
 
 export default function GameMainPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   // 로그인 사용자
   const { user } = useUser();
+
+  // 오늘 문제 상태 확인 중
+  const [isCheckingSolo, setIsCheckingSolo] = useState(false);
+
+  const handleSoloGame = async () => {
+    if (isCheckingSolo) return;
+
+    setIsCheckingSolo(true);
+
+    try {
+      // 기존 useTodayTraining과 동일한 queryKey 사용
+      await queryClient.fetchQuery({
+        queryKey: ["training", "today", user.id],
+        queryFn: () => getTodayTraining(user.id),
+        staleTime: 1000 * 60 * 5,
+      });
+
+      // 오늘 문제를 아직 풀 수 있는 상태
+      navigate("/game/solo");
+    } catch (error) {
+      if (axios.isAxiosError<ApiErrorResponse>(error) && error.response?.data?.code === "AN002") {
+        // 오늘 문제풀이를 이미 완료한 상태
+        navigate("/game/solo/completed");
+        return;
+      }
+
+      // AN001 등 다른 Training 오류는 기존 SoloReadingPage에서 처리
+      navigate("/game/solo");
+    } finally {
+      setIsCheckingSolo(false);
+    }
+  };
 
   return (
     <main>
@@ -81,19 +121,27 @@ export default function GameMainPage() {
           {/* 혼자 문제풀기 */}
           <button
             type="button"
-            onClick={() => navigate("/game/solo")}
+            onClick={handleSoloGame}
+            disabled={isCheckingSolo}
             className="
               flex h-57 cursor-pointer flex-col
               rounded-3xl bg-[#2285E3]
               p-5
+              disabled:cursor-not-allowed disabled:opacity-70
             "
           >
             <h2 className="mt-7 w-full text-center text-xl font-bold text-white">혼자 문제풀기</h2>
 
             <p className="mt-3 w-full text-center text-base font-semibold leading-snug text-white">
-              오늘의 뉴스로
-              <br />
-              실력을 키워요
+              {isCheckingSolo ? (
+                "오늘 학습을 확인 중이에요"
+              ) : (
+                <>
+                  오늘의 뉴스로
+                  <br />
+                  실력을 키워요
+                </>
+              )}
             </p>
 
             <ChevronRight size={32} strokeWidth={2} className="mt-auto self-end text-white" />

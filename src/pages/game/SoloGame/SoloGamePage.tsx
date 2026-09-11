@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import Header from "@/components/common/header/Header";
 import ArticleSheet from "@/components/common/article/ArticleSheet";
+import Header from "@/components/common/header/Header";
 import GameExitModal from "@/components/common/modal/GameExitModal";
 import QuizTimer from "@/components/game/solo/QuizTimer";
 import NewsPreview from "@/components/quiz/question/NewsPreview";
@@ -11,40 +11,95 @@ import QuizMetaBar from "@/components/quiz/question/QuizMetaBar";
 import QuizRenderer from "@/components/quiz/question/QuizRenderer";
 import QuizResultRenderer from "@/components/quiz/result/QuizResultRenderer";
 
-import { GAME_LEVEL_CONFIG } from "@/config/gameLevelConfig";
+import { GAME_LEVEL_CONFIG, type UserLevel } from "@/config/gameLevelConfig";
 
+import { useSubmitTrainingAnswer, useTodayTraining } from "@/hooks/queries/useTraining";
 import useQuizAnswer from "@/hooks/useQuizAnswer";
-import useUser from "@/hooks/useUser";
 
-import { mockNews } from "@/mocks/news";
-import { mockQuizzes } from "@/mocks/quizzes";
-
-import { useReviewStore } from "@/stores/useReviewStore";
 import { useUserStore } from "@/stores/useUserStore";
 
-import { getQuizTag } from "@/utils/getQuizTag";
+import type { News } from "@/types/news";
+import type { FeedbackStatus } from "@/types/quiz";
+import type { SubmitAnswerResult, TodayTraining } from "@/types/training";
+
+import { getQuestionCategoryLabel } from "@/utils/getQuestionCategoryLabel";
+import {
+  getTrainingErrorMessage,
+  getTrainingFeedback,
+  mapTrainingQuestionToQuiz,
+  mapTrainingResultToQuiz,
+} from "@/utils/trainingMapper";
 
 export default function SoloGamePage() {
+  const userId = useUserStore((state) => state.user?.id);
+
+  const { data: training, isPending, isError, error } = useTodayTraining();
+
+  if (!userId) {
+    return (
+      <div>
+        <Header title="혼자 문제풀기" />
+        <p role="status">로그인이 필요합니다.</p>
+      </div>
+    );
+  }
+
+  if (isPending) {
+    return (
+      <div>
+        <Header title="혼자 문제풀기" />
+
+        <main className="px-5 pt-10">
+          <p className="text-center text-gray-500">문제를 불러오는 중입니다.</p>
+        </main>
+      </div>
+    );
+  }
+
+  if (
+    isError ||
+    !training ||
+    training.questions.length === 0 ||
+    training.questions.some(
+      (question) =>
+        !["multiple_choice", "ox", "short_answer"].includes(question.questionFormat.toLowerCase()),
+    )
+  ) {
+    return (
+      <div>
+        <Header title="혼자 문제풀기" />
+
+        <main className="px-5 pt-10">
+          <p className="text-center text-gray-500">
+            {error ? getTrainingErrorMessage(error) : "오늘의 문제가 아직 준비되지 않았습니다."}
+          </p>
+        </main>
+      </div>
+    );
+  }
+
+  return <SoloGameContent training={training} />;
+}
+
+type SoloGameContentProps = {
+  training: TodayTraining;
+};
+
+function SoloGameContent({ training }: SoloGameContentProps) {
   const navigate = useNavigate();
 
-  // 오답 저장 (훈련하기 유형별 정리)
-  const saveWrongAnswer = useReviewStore((state) => state.saveWrongAnswer);
+  // 답안 제출 API
+  const submitTraining = useSubmitTrainingAnswer();
 
-  // 획득 XP 누적 (홈 XP 게이지 반영)
-  const addXp = useUserStore((state) => state.addXp);
-
-  // 사용자 레벨 (누적 XP 기준)
-  const { levelInfo } = useUser();
-  const userLevel = levelInfo.level;
+  // 서버 사용자 레벨 (1 ~ 5)
+  const userLevel: UserLevel =
+    training.userLevel >= 1 && training.userLevel <= 5 ? (training.userLevel as UserLevel) : 1;
 
   // 현재 레벨 게임 설정
   const gameConfig = GAME_LEVEL_CONFIG[userLevel];
 
   // 현재 문제 번호
   const [currentIndex, setCurrentIndex] = useState(0);
-
-  // 맞힌 문제 수
-  const [correctCount, setCorrectCount] = useState(0);
 
   // 뉴스 모달
   const [isNewsOpen, setIsNewsOpen] = useState(false);
@@ -55,13 +110,33 @@ export default function SoloGamePage() {
   // 제출 여부
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // 현재 퀴즈
-  const currentQuiz = mockQuizzes[currentIndex];
+  // 서버 제출 결과
+  const [submitResult, setSubmitResult] = useState<SubmitAnswerResult | null>(null);
 
-  // 문제 유형 태그 (훈련하기 유형 기준)
-  const quizTag = getQuizTag(currentQuiz.category);
+  // 현재 서버 문제
+  const currentQuestion = training.questions[currentIndex];
 
-  // 답안 상태·제출 가능 여부·피드백 상태
+  // 서버 문제 → 기존 Quiz UI 타입으로 변환
+  const currentQuiz = mapTrainingQuestionToQuiz(currentQuestion);
+
+  // 서버 기사 → 기존 News 타입으로 변환
+  const currentNews: News = {
+    newsId: training.article.newsId,
+    title: training.article.title ?? "",
+    category: training.article.category,
+    publisher: training.article.publisher,
+    publishedAt: training.article.publishedAt,
+    content: training.article.content,
+    sourceUrl: training.article.sourceUrl ?? "",
+  };
+
+  // 문제 유형 태그 (같이 게임하기와 같은 한글 유형 이름)
+  const quizTag = getQuestionCategoryLabel(
+    currentQuestion.mainCategory,
+    currentQuestion.subCategory,
+  );
+
+  // 답안 입력 상태
   const {
     selectedOptionId,
     setSelectedOptionId,
@@ -71,54 +146,91 @@ export default function SoloGamePage() {
     setReason,
     subjectiveAnswer,
     setSubjectiveAnswer,
-    canSubmit,
-    feedbackStatus,
+    canSubmit: canSubmitAnswer,
     resetAnswer,
   } = useQuizAnswer(currentQuiz);
 
-  // 제출
+  // 주관식 + 근거 필수 여부
+  const requiresSubjectiveReason =
+    currentQuiz.type === "SUBJECTIVE" && currentQuestion.requireReason;
+
+  // 근거가 필요한 문제는 reason까지 입력해야 제출 가능
+  const canSubmit = canSubmitAnswer && (!requiresSubjectiveReason || reason.trim().length > 0);
+
+  // 서버 채점 결과 → 기존 UI 상태로 변환
+  const feedbackStatus: FeedbackStatus | null =
+    submitResult?.resultStatus === "correct"
+      ? "CORRECT"
+      : submitResult?.resultStatus === "incorrect"
+        ? "INCORRECT"
+        : submitResult?.resultStatus === "insufficient_reasoning"
+          ? "PARTIAL"
+          : null;
+
+  // 답안 제출
   const handleSubmit = () => {
-    if (!canSubmit) return;
-
-    if (feedbackStatus === "CORRECT") {
-      setCorrectCount((prev) => prev + 1);
+    if (isSubmitted || !canSubmit || submitTraining.isPending) {
+      return;
     }
 
-    // 오답 훈련하기 유형별 저장
-    if (feedbackStatus === "INCORRECT") {
-      saveWrongAnswer(currentQuiz, mockNews);
+    let selectedAnswer = "";
+
+    // 객관식
+    if (currentQuiz.type === "MULTIPLE_CHOICE" && selectedOptionId !== null) {
+      selectedAnswer =
+        currentQuiz.options.find((option) => option.id === selectedOptionId)?.text ?? "";
     }
 
-    setIsSubmitted(true);
+    // O/X
+    if (currentQuiz.type === "OX") {
+      selectedAnswer = selectedOxAnswer ?? "";
+    }
+
+    // 주관식
+    if (currentQuiz.type === "SUBJECTIVE") {
+      selectedAnswer = subjectiveAnswer.trim();
+    }
+
+    submitTraining.mutate(
+      {
+        questionId: currentQuestion.questionId,
+
+        body: {
+          selectedAnswer,
+
+          // 근거 작성이 필요한 문제에만 reason 전송
+          reason: currentQuestion.requireReason ? reason.trim() || undefined : undefined,
+        },
+      },
+      {
+        onSuccess: (result) => {
+          setSubmitResult(result);
+          setIsSubmitted(true);
+        },
+
+        onError: (error) => {
+          console.error("답안 제출 실패", error);
+        },
+      },
+    );
   };
 
   // 다음 문제
   const handleNext = () => {
-    const isLastQuiz = currentIndex === mockQuizzes.length - 1;
+    const isLastQuiz = currentIndex === training.questions.length - 1;
 
-    // 마지막 문제면 결과 페이지로 이동
+    // 마지막 문제면 결과 페이지 이동
     if (isLastQuiz) {
-      const exp = correctCount * 80;
-
-      // 획득 XP 누적
-      addXp(exp);
-
-      navigate("/game/solo/result", {
-        state: {
-          total: mockQuizzes.length,
-          correctCount,
-          exp,
-        },
-      });
-
+      navigate("/game/solo/result");
       return;
     }
 
-    // 다음 문제
     setCurrentIndex((prev) => prev + 1);
 
     // 이전 문제 상태 초기화
     resetAnswer();
+    submitTraining.reset();
+    setSubmitResult(null);
     setIsSubmitted(false);
   };
 
@@ -147,39 +259,39 @@ export default function SoloGamePage() {
       <Header
         title="혼자 문제풀기"
         current={currentIndex + 1}
-        total={mockQuizzes.length}
+        total={training.questionCount}
         onBack={() => setIsExitModalOpen(true)}
       />
 
       <main className="px-5 pb-8 pt-6">
-        {/* Lv.2 / Lv.3 타이머 */}
+        {/* 타이머 */}
         {gameConfig.hasTimer && !isSubmitted && <QuizTimer key={currentIndex} duration={60} />}
 
         {/* 객관식 풀이 전 */}
         {!isSubmitted && currentQuiz.type === "MULTIPLE_CHOICE" && (
           <>
-            {/* 문제 유형 / 지문 전체보기 */}
             {metaBar}
 
-            {/* 뉴스 미리보기 */}
-            <NewsPreview />
+            <NewsPreview content={training.article.content} />
           </>
         )}
 
         {/* 제출 후 결과 */}
         {isSubmitted && (
           <QuizResultRenderer
-            quiz={currentQuiz}
+            quiz={mapTrainingResultToQuiz(currentQuiz, submitResult, selectedOptionId)}
             status={feedbackStatus}
             selectedOptionId={selectedOptionId}
             selectedOxAnswer={selectedOxAnswer}
             reason={reason}
             subjectiveAnswer={subjectiveAnswer}
-            explanation="왜냐하면 블라블라이기 때문"
+            explanation={Object.values(getTrainingFeedback(submitResult))
+              .filter(Boolean)
+              .join("\n")}
           />
         )}
 
-        {/* 제출 전 문제 풀이 화면 */}
+        {/* 제출 전 문제 풀이 */}
         {!isSubmitted && (
           <QuizRenderer
             quiz={currentQuiz}
@@ -191,23 +303,29 @@ export default function SoloGamePage() {
             onChangeReason={setReason}
             subjectiveAnswer={subjectiveAnswer}
             onChangeSubjectiveAnswer={setSubjectiveAnswer}
+            requiresSubjectiveReason={requiresSubjectiveReason}
             isSubmitted={isSubmitted}
             onOpenNews={() => setIsNewsOpen(true)}
             metaBar={metaBar}
           />
         )}
 
+        {/* 답안 제출 실패 */}
+        {submitTraining.isError && (
+          <p role="alert">답안 제출에 실패했습니다. 다시 시도해 주세요.</p>
+        )}
+
         {/* 제출 / 다음 버튼 */}
         <QuizActionButton
           label={isSubmitted ? "다음" : currentQuiz.type === "SUBJECTIVE" ? "다음" : "제출하기"}
-          disabled={!isSubmitted && !canSubmit}
+          disabled={(!isSubmitted && !canSubmit) || submitTraining.isPending}
           onClick={handleAction}
         />
       </main>
 
       {/* 지문 전체보기 */}
       {isNewsOpen && gameConfig.canOpenNews && (
-        <ArticleSheet news={mockNews} onClose={() => setIsNewsOpen(false)} />
+        <ArticleSheet news={currentNews} onClose={() => setIsNewsOpen(false)} />
       )}
 
       {/* 게임 종료 경고 모달 */}

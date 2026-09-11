@@ -4,34 +4,43 @@ import Button from "@/components/common/button/Button";
 import Header from "@/components/common/header/Header";
 import RankingList from "@/components/game/friend/RankingList";
 import { buttonPressStyles } from "@/components/game/friend/buttonPressStyles";
-import useGameRanking from "@/hooks/useGameRanking";
-import useWaitingRoom from "@/hooks/useWaitingRoom";
+import useRoom from "@/hooks/useRoom";
+import useUser from "@/hooks/useUser";
+import useGameStatusQuery from "@/queries/game/useGameStatusQuery";
 import { useGameStore } from "@/stores/useGameStore";
+import { useRoomStore } from "@/stores/useRoomStore";
 
 import finalCharacter from "@/assets/images/game/MultiGame/FinalCharacter.png";
 
 export default function GameResultPage() {
   const navigate = useNavigate();
 
-  const { room, myUserId } = useWaitingRoom();
-  const rankings = useGameRanking(room.participants);
-  const resetGame = useGameStore((state) => state.resetGame);
+  const { user } = useUser();
+  const { room, roomCode } = useRoom();
 
-  // 같은 방 대기방 이동 (방장/참여자 분기 유지)
+  // 최종 순위 (게임 종료 상태 조회 기준)
+  const { data: status } = useGameStatusQuery(room.roomId);
+  const rankings = status?.scoreboard ?? [];
+
+  const resetGame = useGameStore((state) => state.resetGame);
+  const clearRoom = useRoomStore((state) => state.clearRoom);
+
+  // 같은 방 대기방 이동 (방장 재시작 대기)
   const handleReplay = () => {
     navigate("/game/friend/waiting", { replace: true });
     resetGame();
   };
 
-  // 홈 이동
+  // 홈 이동 (방 나가기, 게임·방 정보 초기화)
   const handleGoHome = () => {
     navigate("/home", { replace: true });
     resetGame();
+    clearRoom();
   };
 
   return (
     <div className="flex h-dvh flex-col">
-      <Header title={room.roomCode} onBack={handleGoHome} />
+      <Header title={roomCode} onBack={handleGoHome} />
 
       <main className="flex min-h-0 flex-1 flex-col px-6.5">
         <section className="mt-6 flex shrink-0 flex-col items-center">
@@ -54,7 +63,7 @@ export default function GameResultPage() {
 
         {/* 순위 목록 (넘칠 경우 목록만 스크롤) */}
         <div className="mt-4 min-h-0 flex-1 overflow-y-auto">
-          <RankingList rankings={rankings} myUserId={myUserId} />
+          <RankingList rankings={rankings} myUserId={user.id} />
         </div>
 
         <div className="flex shrink-0 flex-col gap-3 pt-4 pb-6">

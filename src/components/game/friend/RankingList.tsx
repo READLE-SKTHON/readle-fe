@@ -1,5 +1,5 @@
 import PlayerRow from "@/components/game/friend/PlayerRow";
-import type { RankingItem } from "@/types/game";
+import type { ScoreboardEntry } from "@/types/game";
 
 import gameTrophy from "@/assets/icons/game/GameTrophy.svg";
 
@@ -7,7 +7,7 @@ import gameTrophy from "@/assets/icons/game/GameTrophy.svg";
 const ROW_APPEAR_DELAY_MS = 150;
 
 type RankingListProps = {
-  rankings: RankingItem[];
+  rankings: ScoreboardEntry[];
   myUserId: number;
 };
 
@@ -24,7 +24,6 @@ export default function RankingList({ rankings, myUserId }: RankingListProps) {
           <PlayerRow
             key={item.userId}
             nickname={item.nickname}
-            profileImageUrl={item.profileImageUrl}
             isMe={item.userId === myUserId}
             isHighlighted={isTop}
             // 한 줄씩 아래에서 위로 fade in
