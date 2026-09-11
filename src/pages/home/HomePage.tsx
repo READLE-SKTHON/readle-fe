@@ -104,7 +104,7 @@ export default function HomePage() {
           </div>
 
           {/* 뉴스 카드 */}
-          <article className="mt-4 flex items-center gap-4 rounded-2xl bg-[#F5F6FB] p-4">
+          <article className="mt-4 flex items-center gap-4 rounded-2xl bg-[#F5F6FB] p-5">
             {/* 뉴스 이미지 + 그림자 */}
             <div className="relative size-20 shrink-0">
               {/* 그림자 */}
@@ -128,7 +128,7 @@ export default function HomePage() {
 
               <h3 className=" text-lg font-bold text-black">오늘의 뉴스</h3>
 
-              <p className="mt-1 line-clamp-2 text-sm font-semibold leading-snug text-gray-400">
+              <p className="line-clamp-2 text-sm font-semibold leading-snug text-gray-400">
                 지속되는 물가상승으로 인해 가계의 생활비 부담이 커지고 있으며, 소비 심리도 위축되고
                 있다는 분석이...
               </p>
