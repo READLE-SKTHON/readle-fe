@@ -1,0 +1,97 @@
+/* 푸터에 뚫리는 원형 홀의 위치값 정의 */
+@property --footer-notch-x {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 50%;
+}
+
+/* 선택된 메뉴 주변 부드럽게 곡선으로 파내기 */
+.footer-navigation-background {
+  --footer-notch-unit: 0.0625rem;
+
+  --footer-notch-shape:
+    0 0, /* 왼쪽 */ calc(var(--footer-notch-x) - 75 * var(--footer-notch-unit)) 0,
+    calc(var(--footer-notch-x) - 72 * var(--footer-notch-unit)) calc(0.5 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) - 69 * var(--footer-notch-unit)) calc(0.9 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) - 66 * var(--footer-notch-unit)) calc(1.4 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) - 63 * var(--footer-notch-unit)) calc(2.2 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) - 60 * var(--footer-notch-unit)) calc(3.6 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) - 57 * var(--footer-notch-unit)) calc(4.7 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) - 54 * var(--footer-notch-unit)) calc(6.4 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) - 51 * var(--footer-notch-unit)) calc(8.5 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) - 48 * var(--footer-notch-unit))
+      calc(11.1 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) - 45 * var(--footer-notch-unit))
+      calc(14.1 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) - 42 * var(--footer-notch-unit))
+      calc(18.1 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) - 39 * var(--footer-notch-unit))
+      calc(23.7 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) - 36 * var(--footer-notch-unit))
+      calc(28.5 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) - 33 * var(--footer-notch-unit))
+      calc(32.2 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) - 30 * var(--footer-notch-unit))
+      calc(35.2 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) - 27 * var(--footer-notch-unit))
+      calc(37.5 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) - 24 * var(--footer-notch-unit))
+      calc(39.6 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) - 21 * var(--footer-notch-unit))
+      calc(41.2 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) - 18 * var(--footer-notch-unit))
+      calc(42.6 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) - 15 * var(--footer-notch-unit))
+      calc(43.8 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) - 12 * var(--footer-notch-unit))
+      calc(44.7 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) - 9 * var(--footer-notch-unit)) calc(45.3 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) - 6 * var(--footer-notch-unit)) calc(45.8 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) - 3 * var(--footer-notch-unit)) calc(46 * var(--footer-notch-unit)),
+    /* 중앙 */ var(--footer-notch-x) calc(46 * var(--footer-notch-unit)),
+    /* 오른쪽 */ calc(var(--footer-notch-x) + 3 * var(--footer-notch-unit))
+      calc(46 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) + 6 * var(--footer-notch-unit)) calc(45.8 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) + 9 * var(--footer-notch-unit)) calc(45.3 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) + 12 * var(--footer-notch-unit))
+      calc(44.7 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) + 15 * var(--footer-notch-unit))
+      calc(43.8 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) + 18 * var(--footer-notch-unit))
+      calc(42.6 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) + 21 * var(--footer-notch-unit))
+      calc(41.2 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) + 24 * var(--footer-notch-unit))
+      calc(39.6 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) + 27 * var(--footer-notch-unit))
+      calc(37.5 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) + 30 * var(--footer-notch-unit))
+      calc(35.2 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) + 33 * var(--footer-notch-unit))
+      calc(32.2 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) + 36 * var(--footer-notch-unit))
+      calc(28.5 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) + 39 * var(--footer-notch-unit))
+      calc(23.7 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) + 42 * var(--footer-notch-unit))
+      calc(18.1 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) + 45 * var(--footer-notch-unit))
+      calc(14.1 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) + 48 * var(--footer-notch-unit))
+      calc(11.1 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) + 51 * var(--footer-notch-unit)) calc(8.5 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) + 54 * var(--footer-notch-unit)) calc(6.4 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) + 57 * var(--footer-notch-unit)) calc(4.7 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) + 60 * var(--footer-notch-unit)) calc(3.6 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) + 63 * var(--footer-notch-unit)) calc(2.2 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) + 66 * var(--footer-notch-unit)) calc(1.4 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) + 69 * var(--footer-notch-unit)) calc(0.9 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) + 72 * var(--footer-notch-unit)) calc(0.5 * var(--footer-notch-unit)),
+    calc(var(--footer-notch-x) + 75 * var(--footer-notch-unit)) 0, 100% 0, 100% 100%, 0 100%;
+
+  -webkit-clip-path: polygon(var(--footer-notch-shape));
+  clip-path: polygon(var(--footer-notch-shape));
+
+  /* 메뉴 변경 시 홀 위치도 함께 이동 */
+  transition: --footer-notch-x 1000ms cubic-bezier(0.22, 1, 0.36, 1);
+}
