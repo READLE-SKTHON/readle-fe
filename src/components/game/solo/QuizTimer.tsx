@@ -22,9 +22,7 @@ export default function QuizTimer({ duration, onTimeUp }: QuizTimerProps) {
       setRemainingTime((prev) => {
         if (prev <= 1) {
           window.clearInterval(timer);
-
           onTimeUpRef.current?.();
-
           return 0;
         }
 
@@ -45,25 +43,53 @@ export default function QuizTimer({ duration, onTimeUp }: QuizTimerProps) {
     .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 
   return (
-    <section
-      className={`
-        mb-5 flex h-13 w-full
-        items-center justify-center
-        rounded-xl
-        transition-colors duration-300
-        ${isUrgent ? "bg-[#FFDADA] text-[#FF0000]" : "bg-[#E8F3FC] text-[#168CF2]"}
-      `}
-    >
-      <div className="flex items-center gap-1.5">
-        <img
-          src={isUrgent ? redClockIcon : blueClockIcon}
-          alt=""
-          aria-hidden="true"
-          className="size-5 object-contain"
-        />
+    <>
+      <style>
+        {`
+          @keyframes timer-shake {
+            0%, 100% {
+              transform: translateX(0);
+            }
+            20% {
+              transform: translateX(-3px);
+            }
+            40% {
+              transform: translateX(3px);
+            }
+            60% {
+              transform: translateX(-2px);
+            }
+            80% {
+              transform: translateX(2px);
+            }
+          }
 
-        <span className="text-[16px] font-bold">{formattedTime}</span>
-      </div>
-    </section>
+          .timer-shake {
+            animation: timer-shake 0.4s ease-in-out infinite;
+          }
+        `}
+      </style>
+
+      <section
+        className={`
+          mb-5 flex h-13 w-full
+          items-center justify-center
+          rounded-xl
+          transition-colors duration-300
+          ${isUrgent ? "timer-shake bg-[#FFDADA] text-[#FF0000]" : "bg-[#E8F3FC] text-[#168CF2]"}
+        `}
+      >
+        <div className="flex items-center gap-1.5">
+          <img
+            src={isUrgent ? redClockIcon : blueClockIcon}
+            alt=""
+            aria-hidden="true"
+            className="size-5 object-contain"
+          />
+
+          <span className="text-[16px] font-bold">{formattedTime}</span>
+        </div>
+      </section>
+    </>
   );
 }
