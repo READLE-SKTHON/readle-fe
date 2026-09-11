@@ -1,3 +1,5 @@
+import { ChevronRight, Plus, Settings } from "lucide-react";
+
 import Level1Character from "@/assets/images/level/Level1Character.png";
 import Level2Character from "@/assets/images/level/Level2Character.png";
 import Level3Character from "@/assets/images/level/Level3Character.png";
@@ -48,16 +50,7 @@ export default function MyPage() {
             className="ml-auto flex h-12 w-12 items-center justify-center text-white"
             aria-label="설정"
           >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              className="h-9 w-9"
-            >
-              <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" />
-              <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21a2 2 0 1 1-4 0v-.09A1.7 1.7 0 0 0 8.5 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.6 8.5a1.7 1.7 0 0 0-.34-1.88l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3a2 2 0 1 1 4 0v.09A1.7 1.7 0 0 0 15.5 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9c.12.36.34.7.6 1 .3.3.7.5 1.1.5H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51.5Z" />
-            </svg>
+            <Settings size={34} strokeWidth={1.8} />
           </button>
         </div>
 
@@ -87,19 +80,23 @@ export default function MyPage() {
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-bold">
             친구 목록
-            <span className="ml-2 text-base font-medium text-gray-400">7</span>
+            <span className="ml-2 text-base font-medium text-gray-400">{friends.length}</span>
           </h2>
 
-          <button type="button" className="text-sm font-medium text-gray-400">
-            전체보기 ›
+          <button
+            type="button"
+            className="flex items-center gap-1 text-sm font-medium text-gray-400"
+          >
+            전체보기
+            <ChevronRight size={16} strokeWidth={2} />
           </button>
         </div>
 
         <div className="mt-5 grid grid-cols-4 gap-3">
           {/* 친구 추가 */}
           <button type="button" className="flex flex-col items-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#D4E8F8] text-4xl font-light">
-              +
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#D4E8F8]">
+              <Plus size={28} strokeWidth={1.8} />
             </div>
 
             <span className="mt-2 text-sm font-semibold">친구 추가</span>
@@ -210,9 +207,9 @@ function StatItem({ icon, value, label, border = false }: StatItemProps) {
     >
       <span className="text-2xl">{icon}</span>
 
-      <strong className="mt-1 text-lg">{value}</strong>
+      <strong className="mt-1 text-xl">{value}</strong>
 
-      <span className="mt-1 text-center text-[11px] font-semibold text-gray-400">{label}</span>
+      <span className="mt-1 text-center text-[14px] font-semibold text-gray-400">{label}</span>
     </div>
   );
 }
