@@ -1,28 +1,37 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import blueCircle from "@/assets/icons/home/blueCircle.png";
 import lightningIcon from "@/assets/icons/game/lightningIcon.png";
 import targetIcon from "@/assets/icons/home/targetIcon.png";
 import completeBeluga from "@/assets/images/game/CompleteBeluga.png";
 
-type ResultState = {
-  total: number;
-  correctCount: number;
-  exp: number;
-};
+import { useTodayTrainingResult } from "@/hooks/queries/useTraining";
+import { useUserStore } from "@/stores/useUserStore";
+import { getTrainingErrorMessage } from "@/utils/trainingMapper";
 
 export default function SoloResultPage() {
   const navigate = useNavigate();
-  const location = useLocation();
-
-  const state = location.state as ResultState | null;
-
-  // 결과 데이터가 없을 때 임시 기본값
-  const total = state?.total ?? 10;
-  const correctCount = state?.correctCount ?? 4;
-  const exp = state?.exp ?? 320;
-
-  const correctRate = Math.round((correctCount / total) * 100);
+  const userId = useUserStore((state) => state.user?.id);
+  const { data: result, isPending, error } = useTodayTrainingResult();
+  if (!userId || isPending || error || !result) {
+    return (
+      <main>
+        <p role="status">
+          {!userId
+            ? "로그인이 필요합니다."
+            : error
+              ? getTrainingErrorMessage(error)
+              : isPending
+                ? "결과를 불러오는 중입니다."
+                : "결과를 확인할 수 없습니다."}
+        </p>
+      </main>
+    );
+  }
+  const total = result.totalQuestion;
+  const correctCount = result.correctCount;
+  const exp = result.earnedXp;
+  const correctRate = result.accuracy;
 
   return (
     <main className="flex min-h-screen flex-col px-7 pb-10 pt-20">
@@ -54,7 +63,7 @@ export default function SoloResultPage() {
       <section className="mt-14 grid grid-cols-2 gap-4">
         <ResultCard icon={targetIcon} label="정답률" value={`${correctRate}%`} />
 
-        <ResultCard icon={lightningIcon} label="획득 EXP" value={`+${exp}`} />
+        <ResultCard icon={lightningIcon} label="획득 EXP" value={exp == null ? "-" : `+${exp}`} />
       </section>
 
       {/* 홈으로 */}
