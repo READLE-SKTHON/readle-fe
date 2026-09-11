@@ -83,6 +83,7 @@ export const mockHostWaitingRoom: WaitingRoom = {
     { userId: 3, nickname: "오지우", profileImageUrl: null },
     { userId: 1, nickname: "김환희", profileImageUrl: null },
   ],
+  settings: defaultRoomSettings,
 };
 
 // 참여자 화면용 대기방
@@ -94,9 +95,10 @@ export const mockGuestWaitingRoom: WaitingRoom = {
   ],
 };
 
-// 방장 입장 대기방 목데이터 (방 설정의 참여 인원 수 반영)
-export const createMockHostWaitingRoom = (maxPlayers: number): WaitingRoom => ({
+// 방장 입장 대기방 목데이터 (방 만들기 설정값 적용)
+export const createMockHostWaitingRoom = (settings: RoomSettings): WaitingRoom => ({
   ...mockHostWaitingRoom,
-  maxPlayers,
-  participants: mockHostWaitingRoom.participants.slice(0, maxPlayers),
+  maxPlayers: settings.maxPlayers,
+  participants: mockHostWaitingRoom.participants.slice(0, settings.maxPlayers),
+  settings,
 });

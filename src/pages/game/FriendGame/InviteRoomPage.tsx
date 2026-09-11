@@ -35,7 +35,7 @@ export default function InviteRoomPage() {
   // 대기방 입장 처리 (방장으로 입장)
   const handleEnterRoom = () => {
     // TODO: 대기방 입장 API 연동 (생성한 방 정보 수신)
-    setWaitingRoom(createMockHostWaitingRoom(settings.maxPlayers), mockHostUserId);
+    setWaitingRoom(createMockHostWaitingRoom(settings), mockHostUserId);
     navigate("/game/friend/waiting");
   };
 

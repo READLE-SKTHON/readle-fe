@@ -47,6 +47,9 @@ export interface WaitingRoom {
   hostId: number;
   maxPlayers: number;
   participants: Participant[];
+
+  // 방 설정 (화면 미표시, 게임 진행에 적용)
+  settings: RoomSettings;
 }
 
 // 방 코드 입장 요청
