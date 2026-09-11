@@ -16,11 +16,7 @@ export default function ParticipantItem({
   isHost,
 }: ParticipantItemProps) {
   return (
-    <li
-      className={`flex h-17.5 items-center gap-5 rounded-2xl px-6 ${
-        isMe ? "bg-[#E8F1F9]" : "bg-[#F4F4F4]"
-      }`}
-    >
+    <li className="flex h-17.5 items-center gap-5 rounded-2xl bg-[#F4F4F4] px-6">
       <div className="relative shrink-0">
         {isHost && (
           <img
@@ -33,12 +29,11 @@ export default function ParticipantItem({
         <ProfileImage src={profileImageUrl} alt={`${nickname} 프로필`} className="size-10" />
       </div>
 
+      {/* 내 행은 이름 대신 나 표시 */}
       <span className="text-[18px] font-semibold text-black">
-        {nickname}
+        {isMe ? <span className="font-bold text-[#0083FF]">나</span> : nickname}
         {isHost && " (방장)"}
       </span>
-
-      {isMe && <span className="ml-auto text-[18px] font-semibold text-[#0083FF]">나</span>}
     </li>
   );
 }
