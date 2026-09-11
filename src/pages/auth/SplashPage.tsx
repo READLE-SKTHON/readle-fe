@@ -5,16 +5,21 @@ import splashLogo from "@/assets/icons/splashLogo.png";
 import splashBeluga from "@/assets/images/splashBeluga.png";
 import splashText from "@/assets/icons/splashText.png";
 
+import { useUserStore } from "@/stores/useUserStore";
+
 export default function SplashPage() {
   const navigate = useNavigate();
 
+  // 로그인 사용자 (로그인 상태면 홈 이동)
+  const user = useUserStore((state) => state.user);
+
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigate("/login");
+      navigate(user ? "/home" : "/login");
     }, 1500);
 
     return () => clearTimeout(timer);
-  }, [navigate]);
+  }, [navigate, user]);
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#2285E3]">

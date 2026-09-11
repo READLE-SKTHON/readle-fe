@@ -3,9 +3,13 @@ import { useNavigate } from "react-router-dom";
 
 import loginIcon from "@/assets/icons/loginIcon.png";
 import { users } from "@/mocks/user";
+import { useUserStore } from "@/stores/useUserStore";
 
 export default function LoginPage() {
   const navigate = useNavigate();
+
+  // 로그인 사용자 전역 저장
+  const login = useUserStore((state) => state.login);
 
   const [nickname, setNickname] = useState("");
   const [school, setSchool] = useState("");
@@ -26,7 +30,7 @@ export default function LoginPage() {
     }
 
     // 로그인한 사용자 정보 저장
-    localStorage.setItem("user", JSON.stringify(user));
+    login(user);
 
     // 로그인 성공 후 메인 페이지 이동
     navigate("/home");

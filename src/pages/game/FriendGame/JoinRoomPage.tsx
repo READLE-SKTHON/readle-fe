@@ -6,7 +6,8 @@ import CharacterShadow from "@/components/game/friend/CharacterShadow";
 import { buttonPressStyles } from "@/components/game/friend/buttonPressStyles";
 import CodeInput from "@/components/game/friend/joinRoom/CodeInput";
 import useCodeInput from "@/hooks/useCodeInput";
-import { mockGuestUserId, mockGuestWaitingRoom } from "@/mocks/room";
+import useUser from "@/hooks/useUser";
+import { createMockGuestWaitingRoom } from "@/mocks/room";
 import { useRoomStore } from "@/stores/useRoomStore";
 
 import codeCharacter from "@/assets/images/game/RoomEnter/CodeCharacter.png";
@@ -17,16 +18,18 @@ const ROOM_CODE_LENGTH = 4;
 export default function JoinRoomPage() {
   const navigate = useNavigate();
 
+  const { user } = useUser();
+
   const setWaitingRoom = useRoomStore((state) => state.setWaitingRoom);
 
   const { digits, isComplete, registerInput, handleChange, handleKeyDown, handlePaste } =
     useCodeInput(ROOM_CODE_LENGTH);
 
-  // 방 코드 입장 처리 (참여자로 입장)
+  // 방 코드 입장 처리 (로그인 사용자 참여자로 입장)
   const handleEnterRoom = () => {
     // TODO: 방 코드 입장 API 연동 (방 코드 전송 → 대기방 정보 수신)
     // TODO: 잘못된 코드·인원 초과·이미 시작된 방 에러 처리 (디자인 확정 후)
-    setWaitingRoom(mockGuestWaitingRoom, mockGuestUserId);
+    setWaitingRoom(createMockGuestWaitingRoom(user), user.id);
     navigate("/game/friend/waiting");
   };
 

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import Header from "@/components/common/header/Header";
 import ArticleSheet from "@/components/common/article/ArticleSheet";
-import GameExitModal from "@/components/game/solo/GameExitModal";
+import GameExitModal from "@/components/common/modal/GameExitModal";
 import QuizTimer from "@/components/game/solo/QuizTimer";
 import NewsPreview from "@/components/quiz/question/NewsPreview";
 import QuizActionButton from "@/components/quiz/question/QuizActionButton";
@@ -11,14 +11,18 @@ import QuizMetaBar from "@/components/quiz/question/QuizMetaBar";
 import QuizRenderer from "@/components/quiz/question/QuizRenderer";
 import QuizResultRenderer from "@/components/quiz/result/QuizResultRenderer";
 
-import { GAME_LEVEL_CONFIG, type UserLevel } from "@/config/gameLevelConfig";
+import { GAME_LEVEL_CONFIG } from "@/config/gameLevelConfig";
 
 import useQuizAnswer from "@/hooks/useQuizAnswer";
+import useUser from "@/hooks/useUser";
 
 import { mockNews } from "@/mocks/news";
 import { mockQuizzes } from "@/mocks/quizzes";
 
 import { useReviewStore } from "@/stores/useReviewStore";
+import { useUserStore } from "@/stores/useUserStore";
+
+import { getQuizTag } from "@/utils/getQuizTag";
 
 export default function SoloGamePage() {
   const navigate = useNavigate();
@@ -26,8 +30,12 @@ export default function SoloGamePage() {
   // 오답 저장 (훈련하기 유형별 정리)
   const saveWrongAnswer = useReviewStore((state) => state.saveWrongAnswer);
 
-  // 임시 사용자 레벨
-  const userLevel: UserLevel = 2;
+  // 획득 XP 누적 (홈 XP 게이지 반영)
+  const addXp = useUserStore((state) => state.addXp);
+
+  // 사용자 레벨 (누적 XP 기준)
+  const { levelInfo } = useUser();
+  const userLevel = levelInfo.level;
 
   // 현재 레벨 게임 설정
   const gameConfig = GAME_LEVEL_CONFIG[userLevel];
@@ -49,6 +57,9 @@ export default function SoloGamePage() {
 
   // 현재 퀴즈
   const currentQuiz = mockQuizzes[currentIndex];
+
+  // 문제 유형 태그 (훈련하기 유형 기준)
+  const quizTag = getQuizTag(currentQuiz.category);
 
   // 답안 상태·제출 가능 여부·피드백 상태
   const {
@@ -87,11 +98,16 @@ export default function SoloGamePage() {
 
     // 마지막 문제면 결과 페이지로 이동
     if (isLastQuiz) {
+      const exp = correctCount * 80;
+
+      // 획득 XP 누적
+      addXp(exp);
+
       navigate("/game/solo/result", {
         state: {
           total: mockQuizzes.length,
           correctCount,
-          exp: correctCount * 80,
+          exp,
         },
       });
 
@@ -116,6 +132,16 @@ export default function SoloGamePage() {
     handleSubmit();
   };
 
+  // 문제 유형 / 지문 전체보기
+  const metaBar = (
+    <QuizMetaBar
+      type={quizTag.type}
+      subtype={quizTag.subtype}
+      canOpenNews={gameConfig.canOpenNews}
+      onOpenNews={() => setIsNewsOpen(true)}
+    />
+  );
+
   return (
     <div>
       <Header
@@ -133,12 +159,7 @@ export default function SoloGamePage() {
         {!isSubmitted && currentQuiz.type === "MULTIPLE_CHOICE" && (
           <>
             {/* 문제 유형 / 지문 전체보기 */}
-            <QuizMetaBar
-              type="객관식"
-              subtype="요지"
-              canOpenNews={gameConfig.canOpenNews}
-              onOpenNews={() => setIsNewsOpen(true)}
-            />
+            {metaBar}
 
             {/* 뉴스 미리보기 */}
             <NewsPreview />
@@ -172,6 +193,7 @@ export default function SoloGamePage() {
             onChangeSubjectiveAnswer={setSubjectiveAnswer}
             isSubmitted={isSubmitted}
             onOpenNews={() => setIsNewsOpen(true)}
+            metaBar={metaBar}
           />
         )}
 

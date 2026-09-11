@@ -12,7 +12,6 @@ import { getToday } from "@/utils/getToday";
 
 // 복습 메인 헤더
 export const mockReviewHeader = {
-  userName: "김환희",
   notificationCount: 1,
 };
 
