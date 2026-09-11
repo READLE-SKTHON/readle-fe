@@ -7,39 +7,28 @@ import CharacterShadow from "@/components/game/friend/CharacterShadow";
 import { buttonPressStyles } from "@/components/game/friend/buttonPressStyles";
 import InviteLinkCard from "@/components/game/friend/invite/InviteLinkCard";
 import useClipboard from "@/hooks/useClipboard";
+import useRoom from "@/hooks/useRoom";
 import useToast from "@/hooks/useToast";
-import useUser from "@/hooks/useUser";
-import { createMockHostWaitingRoom, mockCreatedRoom } from "@/mocks/room";
-import { useRoomStore } from "@/stores/useRoomStore";
 
 import inviteCharacter from "@/assets/images/game/RoomCreate/InviteCharacter.png";
 
 export default function InviteRoomPage() {
   const navigate = useNavigate();
 
-  const { user } = useUser();
-
-  const createdRoom = useRoomStore((state) => state.createdRoom);
-  const settings = useRoomStore((state) => state.settings);
-  const setWaitingRoom = useRoomStore((state) => state.setWaitingRoom);
+  const { room } = useRoom();
 
   const { copy } = useClipboard();
   const { message, showToast } = useToast();
 
-  // 방 정보가 없을 때 임시 기본값
-  const inviteLink = createdRoom?.inviteLink ?? mockCreatedRoom.inviteLink;
-
   // 초대 링크 복사 처리
   const handleCopyLink = async () => {
-    const isCopied = await copy(inviteLink);
+    const isCopied = await copy(room.inviteLink);
 
     showToast(isCopied ? "초대 링크가 복사되었어요" : "링크 복사에 실패했어요");
   };
 
-  // 대기방 입장 처리 (로그인 사용자 방장으로 입장)
+  // 대기방 입장 처리 (생성한 방 방장으로 입장)
   const handleEnterRoom = () => {
-    // TODO: 대기방 입장 API 연동 (생성한 방 정보 수신)
-    setWaitingRoom(createMockHostWaitingRoom(settings, user), user.id);
     navigate("/game/friend/waiting");
   };
 
@@ -70,7 +59,7 @@ export default function InviteRoomPage() {
 
         {/* 초대 링크 */}
         <section className="mt-8 mb-6">
-          <InviteLinkCard link={inviteLink} onCopy={handleCopyLink} />
+          <InviteLinkCard link={room.inviteLink} onCopy={handleCopyLink} />
         </section>
 
         <Button

@@ -4,19 +4,21 @@ import { Blocks, BookPlus, Newspaper, Timer, User } from "lucide-react";
 
 import Button from "@/components/common/button/Button";
 import Header from "@/components/common/header/Header";
+import ConfirmModal from "@/components/common/modal/ConfirmModal";
 import RoomOptionRow from "@/components/game/friend/createRoom/RoomOptionRow";
 import { buttonPressStyles } from "@/components/game/friend/buttonPressStyles";
-import useOutsideClick from "@/hooks/useOutsideClick";
 import {
-  categoryOptions,
-  difficultyOptions,
-  maxPlayersOptions,
-  mockCreatedRoom,
-  questionCountOptions,
-  timeLimitOptions,
-} from "@/mocks/room";
+  CATEGORY_OPTIONS,
+  DIFFICULTY_OPTIONS,
+  MEMBER_COUNT_OPTIONS,
+  QUESTION_COUNT_OPTIONS,
+  TIMER_OPTIONS,
+} from "@/config/roomConfig";
+import useOutsideClick from "@/hooks/useOutsideClick";
+import useCreateRoomMutation from "@/queries/room/useCreateRoomMutation";
 import { useRoomStore } from "@/stores/useRoomStore";
 import type { RoomSettings } from "@/types/room";
+import { getApiError } from "@/utils/getApiError";
 
 import roomCreateCharacter from "@/assets/images/game/RoomCreate/RoomCreateCharacter.png";
 
@@ -25,7 +27,8 @@ export default function CreateRoomPage() {
 
   const savedSettings = useRoomStore((state) => state.settings);
   const saveSettings = useRoomStore((state) => state.setSettings);
-  const setCreatedRoom = useRoomStore((state) => state.setCreatedRoom);
+
+  const { mutate: createRoom, isPending, error, reset } = useCreateRoomMutation();
 
   const [settings, setSettings] = useState<RoomSettings>(savedSettings);
   const [openKey, setOpenKey] = useState<keyof RoomSettings | null>(null);
@@ -46,14 +49,16 @@ export default function CreateRoomPage() {
     setOpenKey(null);
   };
 
-  // 방 생성 처리
+  // 방 생성 처리 (성공 시 설정값 유지 후 초대 화면 이동)
   const handleCreateRoom = () => {
-    // TODO: 방 생성 API 연동 (설정값 전송 → 방 코드·초대 링크 수신)
-    saveSettings(settings);
-    setCreatedRoom(mockCreatedRoom);
+    createRoom(settings, {
+      onSuccess: () => {
+        saveSettings(settings);
 
-    // 뒤로가기 시 방 만들기 화면 복귀 방지
-    navigate("/game/friend/invite", { replace: true });
+        // 뒤로가기 시 방 만들기 화면 복귀 방지
+        navigate("/game/friend/invite", { replace: true });
+      },
+    });
   };
 
   return (
@@ -88,7 +93,7 @@ export default function CreateRoomPage() {
           <RoomOptionRow
             icon={Newspaper}
             label="뉴스 카테고리"
-            options={categoryOptions}
+            options={CATEGORY_OPTIONS}
             value={settings.category}
             isOpen={openKey === "category"}
             onToggle={() => toggleDropdown("category")}
@@ -98,27 +103,27 @@ export default function CreateRoomPage() {
           <RoomOptionRow
             icon={Timer}
             label="문제당 제한 시간"
-            options={timeLimitOptions}
-            value={settings.timeLimit}
-            isOpen={openKey === "timeLimit"}
-            onToggle={() => toggleDropdown("timeLimit")}
-            onSelect={(value) => handleSelect("timeLimit", value)}
+            options={TIMER_OPTIONS}
+            value={settings.timer}
+            isOpen={openKey === "timer"}
+            onToggle={() => toggleDropdown("timer")}
+            onSelect={(value) => handleSelect("timer", value)}
           />
 
           <RoomOptionRow
             icon={User}
             label="참여 인원 수"
-            options={maxPlayersOptions}
-            value={settings.maxPlayers}
-            isOpen={openKey === "maxPlayers"}
-            onToggle={() => toggleDropdown("maxPlayers")}
-            onSelect={(value) => handleSelect("maxPlayers", value)}
+            options={MEMBER_COUNT_OPTIONS}
+            value={settings.memberCount}
+            isOpen={openKey === "memberCount"}
+            onToggle={() => toggleDropdown("memberCount")}
+            onSelect={(value) => handleSelect("memberCount", value)}
           />
 
           <RoomOptionRow
             icon={BookPlus}
             label="한 판당 문제 수"
-            options={questionCountOptions}
+            options={QUESTION_COUNT_OPTIONS}
             value={settings.questionCount}
             isOpen={openKey === "questionCount"}
             onToggle={() => toggleDropdown("questionCount")}
@@ -128,7 +133,7 @@ export default function CreateRoomPage() {
           <RoomOptionRow
             icon={Blocks}
             label="난이도"
-            options={difficultyOptions}
+            options={DIFFICULTY_OPTIONS}
             value={settings.difficulty}
             isOpen={openKey === "difficulty"}
             onToggle={() => toggleDropdown("difficulty")}
@@ -137,11 +142,15 @@ export default function CreateRoomPage() {
         </section>
 
         <Button
-          label="방 생성하기"
+          label={isPending ? "방 만드는 중..." : "방 생성하기"}
+          disabled={isPending}
           onClick={handleCreateRoom}
           className={`mt-auto ${buttonPressStyles.primary}`}
         />
       </main>
+
+      {/* 방 생성 실패 안내 */}
+      {error && <ConfirmModal message={getApiError(error).message} onConfirm={reset} />}
     </div>
   );
 }

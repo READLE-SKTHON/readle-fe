@@ -2,35 +2,46 @@ import { useNavigate } from "react-router-dom";
 
 import Button from "@/components/common/button/Button";
 import Header from "@/components/common/header/Header";
+import ConfirmModal from "@/components/common/modal/ConfirmModal";
 import CharacterShadow from "@/components/game/friend/CharacterShadow";
 import { buttonPressStyles } from "@/components/game/friend/buttonPressStyles";
 import CodeInput from "@/components/game/friend/joinRoom/CodeInput";
+import { ROOM_CODE_LENGTH } from "@/config/roomConfig";
 import useCodeInput from "@/hooks/useCodeInput";
-import useUser from "@/hooks/useUser";
-import { createMockGuestWaitingRoom } from "@/mocks/room";
-import { useRoomStore } from "@/stores/useRoomStore";
+import useJoinRoomMutation from "@/queries/room/useJoinRoomMutation";
+import { getApiError } from "@/utils/getApiError";
 
 import codeCharacter from "@/assets/images/game/RoomEnter/CodeCharacter.png";
 
-// 방 코드 자릿수
-const ROOM_CODE_LENGTH = 4;
+// 방 입장 실패 안내 문구 (에러 코드별, 없으면 서버 메시지)
+const JOIN_ERROR_MESSAGES: Partial<Record<string, string>> = {
+  R001: "존재하지 않는 방 코드예요.\n방 코드를 다시 확인해주세요.",
+  R002: "이미 참가한 방이에요.",
+  R003: "방이 가득 찼어요.\n다른 방 코드를 입력해주세요.",
+};
+
+// 방 입장 실패 안내 문구 변환
+const getJoinErrorMessage = (error: Error) => {
+  const { code, message } = getApiError(error);
+
+  return (code ? JOIN_ERROR_MESSAGES[code] : undefined) ?? message;
+};
 
 export default function JoinRoomPage() {
   const navigate = useNavigate();
 
-  const { user } = useUser();
+  const { mutate: joinRoom, isPending, error, reset } = useJoinRoomMutation();
 
-  const setWaitingRoom = useRoomStore((state) => state.setWaitingRoom);
-
-  const { digits, isComplete, registerInput, handleChange, handleKeyDown, handlePaste } =
+  const { digits, code, isComplete, registerInput, handleChange, handleKeyDown, handlePaste } =
     useCodeInput(ROOM_CODE_LENGTH);
 
-  // 방 코드 입장 처리 (로그인 사용자 참여자로 입장)
+  // 방 코드 입장 처리 (성공 시 대기방 이동)
   const handleEnterRoom = () => {
-    // TODO: 방 코드 입장 API 연동 (방 코드 전송 → 대기방 정보 수신)
-    // TODO: 잘못된 코드·인원 초과·이미 시작된 방 에러 처리 (디자인 확정 후)
-    setWaitingRoom(createMockGuestWaitingRoom(user), user.id);
-    navigate("/game/friend/waiting");
+    if (!isComplete) return;
+
+    joinRoom(code, {
+      onSuccess: () => navigate("/game/friend/waiting"),
+    });
   };
 
   return (
@@ -71,12 +82,15 @@ export default function JoinRoomPage() {
         </section>
 
         <Button
-          label="입장하기"
-          disabled={!isComplete}
+          label={isPending ? "입장 중..." : "입장하기"}
+          disabled={!isComplete || isPending}
           onClick={handleEnterRoom}
           className={`mt-auto ${buttonPressStyles.primary}`}
         />
       </main>
+
+      {/* 방 입장 실패 안내 */}
+      {error && <ConfirmModal message={getJoinErrorMessage(error)} onConfirm={reset} />}
     </div>
   );
 }

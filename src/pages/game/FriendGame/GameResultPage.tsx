@@ -5,17 +5,19 @@ import Header from "@/components/common/header/Header";
 import RankingList from "@/components/game/friend/RankingList";
 import { buttonPressStyles } from "@/components/game/friend/buttonPressStyles";
 import useGameRanking from "@/hooks/useGameRanking";
-import useWaitingRoom from "@/hooks/useWaitingRoom";
+import useGameRoom from "@/hooks/useGameRoom";
 import { useGameStore } from "@/stores/useGameStore";
+import { useRoomStore } from "@/stores/useRoomStore";
 
 import finalCharacter from "@/assets/images/game/MultiGame/FinalCharacter.png";
 
 export default function GameResultPage() {
   const navigate = useNavigate();
 
-  const { room, myUserId } = useWaitingRoom();
-  const rankings = useGameRanking(room.participants);
+  const { roomCode, participants, myUserId } = useGameRoom();
+  const rankings = useGameRanking(participants);
   const resetGame = useGameStore((state) => state.resetGame);
+  const clearRoom = useRoomStore((state) => state.clearRoom);
 
   // 같은 방 대기방 이동 (방장/참여자 분기 유지)
   const handleReplay = () => {
@@ -23,15 +25,16 @@ export default function GameResultPage() {
     resetGame();
   };
 
-  // 홈 이동
+  // 홈 이동 (방 나가기, 방 정보 초기화)
   const handleGoHome = () => {
     navigate("/home", { replace: true });
     resetGame();
+    clearRoom();
   };
 
   return (
     <div className="flex h-dvh flex-col">
-      <Header title={room.roomCode} onBack={handleGoHome} />
+      <Header title={roomCode} onBack={handleGoHome} />
 
       <main className="flex min-h-0 flex-1 flex-col px-6.5">
         <section className="mt-6 flex shrink-0 flex-col items-center">
