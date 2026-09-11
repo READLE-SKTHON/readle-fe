@@ -10,6 +10,8 @@ import newsIcon from "@/assets/icons/home/newsIcon.png";
 import targetIcon from "@/assets/icons/home/targetIcon.png";
 import blueCircle from "@/assets/icons/home/blueCircle.png";
 
+import shadow from "@/assets/images/Shadow.png";
+
 export default function HomePage() {
   const navigate = useNavigate();
 
@@ -68,9 +70,7 @@ export default function HomePage() {
         {/* 통계 */}
         <section className="mt-4 grid grid-cols-3 gap-3">
           <StatCard icon={fireIcon} value="7일" label="연속학습" />
-
           <StatCard icon={bookIcon} value="2개" label="읽은 뉴스" />
-
           <StatCard icon={targetIcon} value="80%" label="정답률" />
         </section>
 
@@ -88,13 +88,29 @@ export default function HomePage() {
                 게임하기
               </span>
 
-              <span className="text-xl pb-1 leading-none">›</span>
+              <span className="pb-1 text-xl leading-none">›</span>
             </button>
           </div>
 
           {/* 뉴스 카드 */}
           <article className="mt-4 flex items-center gap-4 rounded-2xl bg-[#F5F6FB] p-4">
-            <img src={newsIcon} alt="뉴스" className="size-20 shrink-0 object-contain" />
+            {/* 뉴스 이미지 + 그림자 */}
+            <div className="relative size-20 shrink-0">
+              {/* 그림자 */}
+              <img
+                src={shadow}
+                alt=""
+                aria-hidden="true"
+                className="absolute bottom-0 left-1/2 z-0 w-14 -translate-x-1/2 object-contain"
+              />
+
+              {/* 뉴스 이미지 */}
+              <img
+                src={newsIcon}
+                alt="뉴스"
+                className="relative z-10 size-20 -translate-y-2 object-contain"
+              />
+            </div>
 
             <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold text-[#2F8DE4]">경제</p>
