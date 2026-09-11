@@ -1,6 +1,6 @@
 import { CaseSensitive, FileText, Lightbulb, Pencil, Scale, type LucideIcon } from "lucide-react";
 
-import type { AbilityKey, AbilityScore } from "@/types/review";
+import type { AbilityScore, SkillCategory } from "@/types/review";
 
 type AbilityChartProps = {
   abilities: AbilityScore[];
@@ -25,12 +25,13 @@ const BADGE_HALF_SIZE = 12;
 // 그리드 단계 비율
 const GRID_LEVELS = [1 / 3, 2 / 3, 1];
 
-const abilityIcons: Record<AbilityKey, LucideIcon> = {
-  VOCABULARY: CaseSensitive,
-  READING: FileText,
-  INFERENCE: Lightbulb,
-  CRITICAL_THINKING: Scale,
-  EXPRESSION: Pencil,
+// 능력치 영역별 축 아이콘
+const abilityIcons: Record<SkillCategory, LucideIcon> = {
+  문자해독: CaseSensitive,
+  내용이해: FileText,
+  맥락파악: Pencil,
+  추론: Lightbulb,
+  비판적사고: Scale,
 };
 
 // 축 순서별 좌표 (상단부터 시계 방향)

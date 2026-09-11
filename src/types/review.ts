@@ -1,84 +1,114 @@
-import type { News } from "@/types/news";
-import type { Quiz } from "@/types/quiz";
+import type { QuestionMainCategory, QuestionSubCategory } from "@/types/game";
 
-// 문해력 능력치 축 (어휘력 · 독해력 · 추론력 · 비판적 사고력 · 표현력)
-export type AbilityKey =
-  "VOCABULARY" | "READING" | "INFERENCE" | "CRITICAL_THINKING" | "EXPRESSION";
+// 문해력 능력치 영역 (문자해독 · 내용이해 · 맥락파악 · 추론 · 비판적사고)
+export type SkillCategory = "문자해독" | "내용이해" | "맥락파악" | "추론" | "비판적사고";
 
-// 능력치 조회 응답 (서버 AI 주관식 분석 결과, 0~100)
+// 능력치 결과 항목 (영역별 누적 평균 점수)
+export interface SkillResult {
+  skillCategory: SkillCategory;
+  averageScore: number;
+}
+
+// 능력치 결과 조회 응답
+export interface SkillResultsResponse {
+  skillResults: SkillResult[];
+}
+
+// 능력치 차트 항목 (나의 점수 · 전체 평균, 0~100)
 export interface AbilityScore {
-  key: AbilityKey;
+  key: SkillCategory;
   label: string;
   myScore: number;
   averageScore: number;
 }
 
-// 복습 유형
-export type ReviewTypeId = "VOCABULARY" | "INFORMATION" | "MAIN_IDEA" | "INFERENCE" | "STRUCTURE";
-
-// 유형별 오답 개수 조회 응답
-export interface ReviewTypeSummary {
-  typeId: ReviewTypeId;
-  name: string;
-  subTypes: string[];
+// 유형별 틀린 문제 개수 (5개 유형 전부, 오답 없으면 0)
+export interface ReviewCategory {
+  mainCategory: QuestionMainCategory;
+  subCategories: QuestionSubCategory[];
   wrongCount: number;
-
-  // 오늘 복습 XP 획득 여부
-  isXpEarnedToday: boolean;
 }
 
-// 유형 복습 상태 (복습 전 오답 있음 / 오늘 모두 복습 완료 / 틀린 문제 없음)
-export type ReviewStatus = "UNREVIEWED" | "REVIEWED" | "EMPTY";
-
-// 복기(기존 오답) / 응용(동일 유형 신규 지문)
-export type ReviewKind = "RETRY" | "APPLY";
-
-// 복습 문제 본문 (혼자 문제풀기 문제 + 기사·객관식 해설)
-export type ReviewQuizContent = Quiz & {
-  // 기사 미리보기·지문 전체보기 기사
-  news: News;
-
-  // 객관식 해설 (없으면 해설 미표시)
-  explanation?: string;
-};
-
-// 저장된 오답 (혼자 문제풀기 오답, 훈련하기 유형별 정리)
-export interface ReviewWrongAnswer {
-  quiz: ReviewQuizContent;
-  typeId: ReviewTypeId;
-  subType: string;
-
-  // 복습 완료 날짜 (복습 전 null)
-  reviewedDate: string | null;
+// 유형별 틀린 문제 개수 조회 응답
+export interface ReviewCategoriesResponse {
+  categories: ReviewCategory[];
 }
 
-// 복습 문제 (복기·응용 구분 + 훈련하기 유형 태그)
-export type ReviewQuiz = ReviewQuizContent & {
-  reviewKind: ReviewKind;
+// 날짜·세부 유형별 틀린 문제 묶음
+export interface ReviewGroup {
+  // 가장 최근에 틀린 날짜 (yyyy-MM-dd)
+  date: string;
 
-  // 문제 유형 태그 (예: 정보추출 | 일치/불일치)
-  typeName: string;
-  subType: string;
-};
-
-// 답안 제출 요청
-export interface ReviewAnswerRequest {
-  questionId: number;
-  answer: string;
+  subCategory: QuestionSubCategory;
+  wrongCount: number;
 }
 
-// 답안 채점 결과
-export interface ReviewAnswerResponse {
-  isCorrect: boolean;
+// 날짜·세부 유형별 틀린 문제 묶음 조회 응답
+export interface ReviewGroupsResponse {
+  groups: ReviewGroup[];
 }
 
-// 유형 복습 완료 XP 획득 결과
-export interface ReviewXpResponse {
-  typeId: ReviewTypeId;
+// 복습 시작 요청 (세부 유형 목록에서 고른 유형·날짜)
+export interface StartReviewRequest {
+  mainCategory: QuestionMainCategory;
+  subCategory: QuestionSubCategory;
+  date: string;
+}
 
-  // 이번 획득 XP (오늘 이미 받은 유형이면 0)
+// 복습 문제 구분 (틀린 문제 복기 / 같은 유형 다른 기사 문제)
+export type ReviewMode = "RECALL" | "PRACTICE";
+
+// 복습 문제 (기사 + 문제)
+export interface ReviewQuestion {
+  order: number;
+  mode: ReviewMode;
+
+  article: {
+    newsId: number;
+    title: string;
+    content: string;
+  };
+
+  question: {
+    questionId: number;
+
+    // 문제 형식 (OX / multiple_choice / short_answer)
+    questionFormat: string;
+
+    mainCategory: string;
+    subCategory: string;
+    content: string;
+
+    // 보기 목록 (OX·단답형 없음)
+    choices: string[] | null;
+  };
+}
+
+// 복습 시작 응답 (복습 세션)
+export interface StartReviewResponse {
+  reviewSessionId: number;
+  totalQuestions: number;
+  questions: ReviewQuestion[];
+}
+
+// 복습 답안 제출 요청 (객관식 보기 번호 "1"~ / OX "O"·"X" / 단답형 텍스트)
+export interface SubmitReviewAnswerRequest {
+  selectedAnswer: string;
+}
+
+// 복습 답안 채점 결과
+export interface SubmitReviewAnswerResponse {
+  correct: boolean;
+  correctAnswer: string;
+  explanation: string;
+
+  // 이번 제출로 획득한 XP (오답 0)
   earnedXp: number;
+}
 
-  // 오늘 획득 XP 합계
-  todayXp: number;
+// 복습 결과 (세션에서 푼 문제 기준)
+export interface ReviewResultResponse {
+  totalQuestions: number;
+  correctCount: number;
+  accuracy: number;
 }

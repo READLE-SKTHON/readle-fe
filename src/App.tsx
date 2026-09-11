@@ -13,6 +13,7 @@ import MyPage from "@/pages/my/MyPage";
 import RankingPage from "@/pages/ranking/RankingPage";
 import ReviewPage from "@/pages/review/ReviewPage";
 import ReviewTypePage from "@/pages/review/ReviewTypePage";
+import ReviewGroupPage from "@/pages/review/ReviewGroupPage";
 import ReviewPlayPage from "@/pages/review/ReviewPlayPage";
 import ReviewResultPage from "@/pages/review/ReviewResultPage";
 
@@ -65,7 +66,8 @@ export default function App() {
           </Route>
 
           <Route path="/review/types" element={<ReviewTypePage />} />
-          <Route path="/review/play/:typeId" element={<ReviewPlayPage />} />
+          <Route path="/review/types/:mainCategory" element={<ReviewGroupPage />} />
+          <Route path="/review/play" element={<ReviewPlayPage />} />
           <Route path="/review/result" element={<ReviewResultPage />} />
         </Route>
       </Routes>
