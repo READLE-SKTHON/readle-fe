@@ -24,7 +24,7 @@ export default function QuizMetaBar({
         <button
           type="button"
           onClick={onOpenNews}
-          className="cursor-pointer rounded-full px-4 py-1 text-[14px] font-bold text-black"
+          className="cursor-pointer rounded-full px-4 py-1 text-[14px] font-bold text-b"
         >
           지문 전체보기
         </button>

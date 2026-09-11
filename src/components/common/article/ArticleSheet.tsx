@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { ExternalLink, X } from "lucide-react";
 
 import type { News } from "@/types/news";
@@ -12,6 +13,14 @@ const formatPublishedDate = (publishedAt: string) => publishedAt.slice(0, 10).sp
 
 // 지문 전체보기 바텀시트 (기사 원문 · 출처)
 export default function ArticleSheet({ news, onClose }: ArticleSheetProps) {
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
+
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center">
       {/* 배경 클릭 닫기 */}
