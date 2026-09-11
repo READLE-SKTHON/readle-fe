@@ -1,27 +1,37 @@
+import { useState } from "react";
 import { FilePenLine, Target } from "lucide-react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 
 import Button from "@/components/common/button/Button";
+import ErrorState from "@/components/common/status/ErrorState";
+import LoadingState from "@/components/common/status/LoadingState";
 import ReviewStatCard from "@/components/review/result/ReviewStatCard";
+import useReviewResultQuery from "@/queries/review/useReviewResultQuery";
+import { useReviewStore } from "@/stores/useReviewStore";
+import { getApiError } from "@/utils/getApiError";
 
 import completeBeluga from "@/assets/images/game/CompleteBeluga.png";
 
-type ReviewResultState = {
-  solvedCount: number;
-  correctCount: number;
-};
-
 export default function ReviewResultPage() {
   const navigate = useNavigate();
-  const location = useLocation();
 
-  const state = location.state as ReviewResultState | null;
+  // 진입 시점 복습 세션 (나가기 처리 중 이동 경로 덮어쓰기 방지)
+  const [session] = useState(() => useReviewStore.getState().session);
+  const clearSession = useReviewStore((state) => state.clearSession);
 
-  // 결과 데이터가 없을 때 임시 기본값
-  const solvedCount = state?.solvedCount ?? 10;
-  const correctCount = state?.correctCount ?? 7;
+  const { data, isError, error, refetch } = useReviewResultQuery(session?.reviewSessionId ?? null);
 
-  const correctRate = solvedCount > 0 ? Math.round((correctCount / solvedCount) * 100) : 0;
+  // 복습 세션 없이 진입 시 유형 선택 이동
+  if (!session) return <Navigate to="/review/types" replace />;
+
+  // 복습 종료 후 이동 처리 (세션 초기화)
+  const handleLeave = (path: string) => {
+    navigate(path, { replace: true });
+    clearSession();
+  };
+
+  // 조회 실패 안내 문구 (받아온 결과 없을 때만)
+  const errorMessage = isError && !data ? getApiError(error).message : null;
 
   return (
     <main className="flex min-h-dvh flex-col px-6.5 pt-18 pb-10">
@@ -48,24 +58,30 @@ export default function ReviewResultPage() {
         </p>
       </section>
 
-      <section className="mt-7 flex flex-col gap-2.5">
-        <ReviewStatCard icon={FilePenLine} label="오늘 푼 문제" value={`${solvedCount}개`} />
+      {errorMessage ? (
+        <ErrorState message={errorMessage} onRetry={() => refetch()} className="mt-7" />
+      ) : !data ? (
+        <LoadingState message="결과를 불러오는 중이에요" className="mt-7" />
+      ) : (
+        <section className="mt-7 flex flex-col gap-2.5">
+          <ReviewStatCard
+            icon={FilePenLine}
+            label="오늘 푼 문제"
+            value={`${data.totalQuestions}개`}
+          />
 
-        <ReviewStatCard icon={Target} label="정답률" value={`${correctRate}%`} />
-      </section>
+          <ReviewStatCard icon={Target} label="정답률" value={`${data.accuracy}%`} />
+        </section>
+      )}
 
       <div className="mt-3.5 flex flex-col gap-3">
         <Button
           label="다른 유형 더풀기"
           variant="black"
-          onClick={() => navigate("/review/types", { replace: true })}
+          onClick={() => handleLeave("/review/types")}
         />
 
-        <Button
-          label="홈 화면으로 가기"
-          variant="gray"
-          onClick={() => navigate("/home", { replace: true })}
-        />
+        <Button label="홈 화면으로 가기" variant="gray" onClick={() => handleLeave("/home")} />
       </div>
     </main>
   );
