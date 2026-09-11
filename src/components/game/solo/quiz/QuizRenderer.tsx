@@ -42,7 +42,6 @@ export default function QuizRenderer({
           quiz={quiz}
           selectedOptionId={selectedOptionId}
           onSelect={onSelectOption}
-          isSubmitted={isSubmitted}
         />
       );
 

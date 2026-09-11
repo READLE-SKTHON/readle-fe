@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import Header from "@/components/common/header/Header";
 import FeedbackRenderer from "@/components/game/solo/feedback/FeedbackRenderer";
+import MultipleChoiceResult from "@/components/game/solo/feedback/result/MultipleChoiceResult";
 import OxResult from "@/components/game/solo/feedback/result/OxResult";
 import SubjectiveResult from "@/components/game/solo/feedback/result/SubjectiveResult";
 import NewsModal from "@/components/game/solo/NewsModal";
@@ -22,7 +23,7 @@ import type { FeedbackStatus } from "@/types/quiz";
 export default function SoloGamePage() {
   const navigate = useNavigate();
 
-  //임시 사용자 레벨
+  // 임시 사용자 레벨
   const userLevel: UserLevel = 2;
 
   // 현재 레벨 게임 설정
@@ -186,8 +187,18 @@ export default function SoloGamePage() {
           </>
         )}
 
-        {/* 제출 후 상단 피드백 */}
-        {isSubmitted && feedbackStatus && (
+        {/* 객관식 제출 후 결과 */}
+        {isSubmitted && currentQuiz.type === "MULTIPLE_CHOICE" && selectedOptionId !== null && (
+          <MultipleChoiceResult
+            choices={currentQuiz.options}
+            selectedId={selectedOptionId}
+            correctId={currentQuiz.correctAnswer}
+            explanation="왜냐하면 블라블라이기 때문"
+          />
+        )}
+
+        {/* O/X, 주관식 제출 후 상단 피드백 */}
+        {isSubmitted && feedbackStatus && currentQuiz.type !== "MULTIPLE_CHOICE" && (
           <FeedbackRenderer quiz={currentQuiz} status={feedbackStatus} />
         )}
 
@@ -206,8 +217,8 @@ export default function SoloGamePage() {
           <SubjectiveResult quiz={currentQuiz} answer={subjectiveAnswer} />
         )}
 
-        {/* 문제 풀이 화면 */}
-        {(!isSubmitted || currentQuiz.type === "MULTIPLE_CHOICE") && (
+        {/* 제출 전 문제 풀이 화면 */}
+        {!isSubmitted && (
           <QuizRenderer
             quiz={currentQuiz}
             selectedOptionId={selectedOptionId}
@@ -223,7 +234,7 @@ export default function SoloGamePage() {
           />
         )}
 
-        {/* 제출 / 다음 */}
+        {/* 제출 / 다음 버튼 */}
         <QuizActionButton
           label={isSubmitted ? "다음" : currentQuiz.type === "SUBJECTIVE" ? "다음" : "제출하기"}
           disabled={!isSubmitted && !canSubmit}
