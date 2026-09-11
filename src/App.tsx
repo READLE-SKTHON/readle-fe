@@ -20,6 +20,8 @@ import CreateRoomPage from "@/pages/game/FriendGame/CreateRoomPage";
 import InviteRoomPage from "@/pages/game/FriendGame/InviteRoomPage";
 import JoinRoomPage from "@/pages/game/FriendGame/JoinRoomPage";
 import WaitingRoomPage from "@/pages/game/FriendGame/WaitingRoomPage";
+import GamePlayPage from "@/pages/game/FriendGame/GamePlayPage";
+import GameResultPage from "@/pages/game/FriendGame/GameResultPage";
 import SoloResultPage from "@/pages/game/SoloGame/SoloResultPage";
 
 export default function App() {
@@ -49,6 +51,8 @@ export default function App() {
           <Route path="/game/friend/invite" element={<InviteRoomPage />} />
           <Route path="/game/friend/join" element={<JoinRoomPage />} />
           <Route path="/game/friend/waiting" element={<WaitingRoomPage />} />
+          <Route path="/game/friend/play" element={<GamePlayPage />} />
+          <Route path="/game/friend/result" element={<GameResultPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
