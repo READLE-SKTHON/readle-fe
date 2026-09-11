@@ -23,8 +23,7 @@ export default function SoloGamePage() {
   const navigate = useNavigate();
 
   //임시 사용자 레벨
-
-  const userLevel: UserLevel = 3;
+  const userLevel: UserLevel = 2;
 
   // 현재 레벨 게임 설정
   const gameConfig = GAME_LEVEL_CONFIG[userLevel];
