@@ -1,180 +1,117 @@
 import { useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
-import useCountdown from "@/hooks/useCountdown";
-import useGameRoom from "@/hooks/useGameRoom";
-import { createMockQuestions, gradeMockRound, mockSubmitTimings } from "@/mocks/game";
+import useRoom from "@/hooks/useRoom";
+import useUser from "@/hooks/useUser";
+import useGameStatusQuery from "@/queries/game/useGameStatusQuery";
+import useSubmitAnswerMutation, {
+  DUPLICATE_SUBMIT_CODE,
+} from "@/queries/game/useSubmitAnswerMutation";
 import { useGameStore } from "@/stores/useGameStore";
+import { getApiError } from "@/utils/getApiError";
+import { toGameQuestion } from "@/utils/toGameQuestion";
+import { toSubmitAnswerRequest } from "@/utils/toSubmitAnswerRequest";
 
-// 전원 제출 완료 표시 후 정답 발표까지 대기 시간
-const ALL_SUBMITTED_HOLD_MS = 1500;
+// 아직 시작되지 않은 방 에러 코드
+const NOT_STARTED_CODE = "R010";
 
-// 정답 발표·중간 순위 화면 유지 시간
-const REVEAL_DURATION_MS = 3000;
-const RANKING_DURATION_MS = 3000;
-
-// 게임 진행 단계 전환 및 서버 이벤트 수신 (현재는 목데이터·타이머 시뮬레이션)
+// 게임 상태 조회·화면 전환·답안 제출 (서버 상태 기준, 클라이언트 임의 전환 없음)
 export default function useGameFlow() {
   const navigate = useNavigate();
-  const { room, roomCode, participants, myUserId } = useGameRoom();
 
+  const { user } = useUser();
+  const { room, roomCode } = useRoom();
+
+  const statusQuery = useGameStatusQuery(room.roomId);
+  const status = statusQuery.data;
+
+  const syncStatus = useGameStore((state) => state.syncStatus);
   const questions = useGameStore((state) => state.questions);
-  const currentIndex = useGameStore((state) => state.currentIndex);
-  const phase = useGameStore((state) => state.phase);
-  const submitStatuses = useGameStore((state) => state.submitStatuses);
-  const myAnswer = useGameStore((state) => state.myAnswer);
-  const roundScores = useGameStore((state) => state.roundScores);
+  const submittedOrders = useGameStore((state) => state.submittedOrders);
+  const draftAnswer = useGameStore((state) => state.draftAnswer);
+  const setDraftAnswer = useGameStore((state) => state.setDraftAnswer);
 
-  const startGame = useGameStore((state) => state.startGame);
-  const updateSubmitStatus = useGameStore((state) => state.updateSubmitStatus);
-  const submitMyAnswer = useGameStore((state) => state.submitMyAnswer);
-  const revealResult = useGameStore((state) => state.revealResult);
-  const showRanking = useGameStore((state) => state.showRanking);
-  const goToNextQuestion = useGameStore((state) => state.goToNextQuestion);
+  const submitMutation = useSubmitAnswerMutation(room.roomId);
 
-  const participantIds = useMemo(
-    () => participants.map((participant) => participant.userId),
-    [participants],
+  // 상태 응답 store 반영 (판·문제 전환 감지)
+  useEffect(() => {
+    if (status) syncStatus(status);
+  }, [status, syncStatus]);
+
+  // 게임 종료 시 최종 순위 화면 이동
+  useEffect(() => {
+    if (status?.phase === "FINISHED") navigate("/game/friend/result", { replace: true });
+  }, [status?.phase, navigate]);
+
+  // 시작 전 방 진입 시 대기방 이동
+  const statusErrorCode = getApiError(statusQuery.error).code;
+
+  useEffect(() => {
+    if (statusErrorCode === NOT_STARTED_CODE) navigate("/game/friend/waiting", { replace: true });
+  }, [statusErrorCode, navigate]);
+
+  const order = status?.currentQuestionOrder ?? null;
+  const statusQuestion = status?.question ?? null;
+
+  // 현재 문제 (문제 없는 정답 공개 단계는 저장된 문제)
+  const currentQuestion = useMemo(
+    () => (statusQuestion ? toGameQuestion(statusQuestion) : null),
+    [statusQuestion],
   );
 
-  const otherIds = useMemo(
-    () => participantIds.filter((userId) => userId !== myUserId),
-    [participantIds, myUserId],
-  );
+  const question = currentQuestion ?? (order !== null ? (questions[order] ?? null) : null);
 
-  const isAnswerPhase = phase === "ANSWERING" || phase === "WAITING";
-  const isLastQuestion = currentIndex === questions.length - 1;
+  const answerStatus = status?.answerStatus ?? [];
 
-  // 문제당 제한 시간 (문제 풀이·제출 대기 동안 진행)
-  const remainingSeconds = useCountdown(room.timer, isAnswerPhase, currentIndex);
-  const isTimeUp = remainingSeconds === 0;
+  // 내 제출 여부 (제출 기록 또는 서버 제출 현황)
+  const isSubmitted =
+    order !== null &&
+    (submittedOrders.includes(order) ||
+      answerStatus.some(({ userId, answered }) => userId === user.id && answered));
 
-  // 게임 시작
-  useEffect(() => {
-    // TODO: 문제 목록 조회 API 연동
-    startGame(createMockQuestions(room.questionCount), participantIds);
-  }, [startGame, room.questionCount, participantIds]);
+  // 전원 제출 완료 여부
+  const isAllSubmitted = answerStatus.length > 0 && answerStatus.every(({ answered }) => answered);
 
-  // 다른 참여자 제출 현황 수신
-  useEffect(() => {
-    if (!isAnswerPhase) return;
+  // 답안 선택·입력 완료 여부 (단답형 공백만 입력 시 제출 불가)
+  const canSubmit =
+    draftAnswer !== null &&
+    (draftAnswer.format !== "short_answer" || draftAnswer.text.trim().length > 0);
 
-    // TODO: WebSocket 제출 현황 이벤트로 교체
-    const timers = otherIds.flatMap((userId, index) => {
-      const { selectingAt, submittedAt, isAfterMySubmit } =
-        mockSubmitTimings[index % mockSubmitTimings.length];
+  // 답안 제출 처리
+  const submitAnswer = () => {
+    if (order === null || !draftAnswer || !canSubmit || submitMutation.isPending) return;
 
-      const selectingTimer = window.setTimeout(
-        () => updateSubmitStatus(userId, "SELECTING"),
-        selectingAt,
-      );
-
-      if (isAfterMySubmit) return [selectingTimer];
-
-      return [
-        selectingTimer,
-        window.setTimeout(() => updateSubmitStatus(userId, "SUBMITTED"), submittedAt),
-      ];
-    });
-
-    return () => timers.forEach((timer) => window.clearTimeout(timer));
-  }, [isAnswerPhase, currentIndex, questions, otherIds, updateSubmitStatus]);
-
-  // 내 제출 이후 제출하는 참여자 (제출 대기 화면 시뮬레이션)
-  useEffect(() => {
-    if (phase !== "WAITING") return;
-
-    const timers = otherIds.flatMap((userId, index) => {
-      const { submittedAt, isAfterMySubmit } = mockSubmitTimings[index % mockSubmitTimings.length];
-
-      return isAfterMySubmit
-        ? [window.setTimeout(() => updateSubmitStatus(userId, "SUBMITTED"), submittedAt)]
-        : [];
-    });
-
-    return () => timers.forEach((timer) => window.clearTimeout(timer));
-  }, [phase, otherIds, updateSubmitStatus]);
-
-  // 전원 제출(완료 표시 후) 또는 제한 시간 종료 시 정답 발표
-  useEffect(() => {
-    const state = useGameStore.getState();
-    const question = state.questions[state.currentIndex];
-
-    const isAnswering = state.phase === "ANSWERING" || state.phase === "WAITING";
-    const isAllSubmitted = state.participantIds.every(
-      (userId) => state.submitStatuses[userId] === "SUBMITTED",
-    );
-
-    if (!question || !isAnswering || !(isAllSubmitted || isTimeUp)) return;
-
-    // 정답 발표 시점 상태로 채점
-    const reveal = () => {
-      const latest = useGameStore.getState();
-
-      // TODO: 서버 정답·점수 결과 수신으로 교체
-      revealResult(
-        gradeMockRound({
-          question,
-          questionIndex: latest.currentIndex,
-          participantIds: latest.participantIds,
-          myUserId,
-          myAnswer: latest.myAnswer,
-          submitStatuses: latest.submitStatuses,
-        }),
-      );
-    };
-
-    if (isTimeUp) {
-      reveal();
-      return;
-    }
-
-    // 전원 제출 완료 상태 표시 후 이동
-    const timer = window.setTimeout(reveal, ALL_SUBMITTED_HOLD_MS);
-
-    return () => window.clearTimeout(timer);
-  }, [submitStatuses, phase, isTimeUp, myUserId, revealResult]);
-
-  // 정답 발표 → 중간 순위(마지막 문제는 최종 순위) → 다음 문제 자동 전환
-  useEffect(() => {
-    if (phase === "REVEAL") {
-      const timer = window.setTimeout(() => {
-        if (isLastQuestion) {
-          navigate("/game/friend/result", { replace: true });
-          return;
-        }
-
-        showRanking();
-      }, REVEAL_DURATION_MS);
-
-      return () => window.clearTimeout(timer);
-    }
-
-    if (phase === "RANKING") {
-      const timer = window.setTimeout(goToNextQuestion, RANKING_DURATION_MS);
-
-      return () => window.clearTimeout(timer);
-    }
-  }, [phase, isLastQuestion, navigate, showRanking, goToNextQuestion]);
-
-  // 내 답안 제출
-  const submitAnswer = (answer: string) => {
-    // TODO: 답안 제출 API 연동
-    submitMyAnswer(myUserId, answer);
+    submitMutation.mutate({ order, request: toSubmitAnswerRequest(draftAnswer) });
   };
+
+  // 제출 실패 안내 문구 (중복 제출은 제출 완료 처리)
+  const submitError = submitMutation.error ? getApiError(submitMutation.error) : null;
+  const submitErrorMessage =
+    submitError && submitError.code !== DUPLICATE_SUBMIT_CODE ? submitError.message : null;
+
+  // 상태 조회 실패 안내 문구 (받아온 상태가 없을 때만, 시작 전 방 제외)
+  const statusErrorMessage =
+    statusQuery.isError && !status && statusErrorCode !== NOT_STARTED_CODE
+      ? getApiError(statusQuery.error).message
+      : null;
 
   return {
     roomCode,
-    participants,
-    myUserId,
-    question: questions[currentIndex],
-    questionNumber: currentIndex + 1,
-    totalCount: questions.length,
-    phase,
-    remainingSeconds,
-    submitStatuses,
-    myAnswer,
-    roundScores,
+    myUserId: user.id,
+    status,
+    question,
+    draftAnswer,
+    setDraftAnswer,
+    isSubmitted,
+    isAllSubmitted,
+    canSubmit,
     submitAnswer,
+    isSubmitting: submitMutation.isPending,
+    submitErrorMessage,
+    resetSubmitError: submitMutation.reset,
+    statusErrorMessage,
+    retryStatus: () => {
+      statusQuery.refetch();
+    },
   };
 }
