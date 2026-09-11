@@ -9,7 +9,7 @@ type MultipleChoiceFeedbackProps = {
 export default function MultipleChoiceFeedback({ isCorrect }: MultipleChoiceFeedbackProps) {
   return (
     <section
-      className={`relative mt-12 h-45 rounded-3xl border px-6 pb-7 pt-20 ${
+      className={`relative mt-15 h-45 rounded-3xl border px-6 pb-7 pt-20 ${
         isCorrect ? "border-[#78D51B] bg-[#E7F8D5]" : "border-[#F02D2D] bg-[#FFDADA]"
       }`}
     >
@@ -57,8 +57,8 @@ export default function MultipleChoiceFeedback({ isCorrect }: MultipleChoiceFeed
         <h2
           className={`-mt-4 text-center text-[36px] font-extrabold leading-tight ${
             isCorrect
-              ? "text-[#557536] [text-shadow:_-2px_-2px_0_white,_2px_-2px_0_white,_-2px_2px_0_white,_2px_2px_0_white]"
-              : "text-[#E72F2F] [text-shadow:_-2px_-2px_0_white,_2px_-2px_0_white,_-2px_2px_0_white,_2px_2px_0_white]"
+              ? "text-[#557536] text-shadow-[-2px_-2px_0_white,2px_-2px_0_white,-2px_2px_0_white,2px_2px_0_white]"
+              : "text-[#E72F2F] text-shadow-[-2px_-2px_0_white,2px_-2px_0_white,-2px_2px_0_white,2px_2px_0_white]"
           }`}
         >
           {isCorrect ? "고래고래!" : "아쉬워!!!"}

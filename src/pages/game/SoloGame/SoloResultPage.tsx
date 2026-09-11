@@ -1,8 +1,9 @@
 import { useLocation, useNavigate } from "react-router-dom";
 
-import completeBeluga from "@/assets/images/game/CompleteBeluga.png";
+import blueCircle from "@/assets/icons/home/blueCircle.png";
 import lightningIcon from "@/assets/icons/game/lightningIcon.png";
 import targetIcon from "@/assets/icons/home/targetIcon.png";
+import completeBeluga from "@/assets/images/game/CompleteBeluga.png";
 
 type ResultState = {
   total: number;
@@ -26,12 +27,25 @@ export default function SoloResultPage() {
   return (
     <main className="flex min-h-screen flex-col px-7 pb-10 pt-20">
       {/* 완료 캐릭터 */}
-      <section className="flex flex-col items-center">
-        <img src={completeBeluga} alt="문제 풀이를 완료한 벨루가" className="w-64 object-contain" />
+      <section className="relative flex flex-col items-center">
+        {/* 배경 원 */}
+        <img
+          src={blueCircle}
+          alt=""
+          aria-hidden="true"
+          className="absolute top-0 z-0 size-64 object-contain"
+        />
 
-        <h1 className="mt-6 text-[28px] font-extrabold">오늘도 수고했어요!</h1>
+        {/* 완료 벨루가 */}
+        <img
+          src={completeBeluga}
+          alt="문제 풀이를 완료한 벨루가"
+          className="relative z-10 w-64 object-contain"
+        />
 
-        <p className="mt-4 text-[22px] font-medium">
+        <h1 className="relative z-10 mt-6 text-[24px] font-extrabold">오늘도 수고했어요!</h1>
+
+        <p className="relative z-10 mt-4 text-[22px] font-medium text-[#5E5E5E]">
           {total}문제 중 {correctCount}문제를 맞혔어요
         </p>
       </section>
@@ -66,7 +80,7 @@ function ResultCard({ icon, label, value }: ResultCardProps) {
     <div className="flex min-h-40 flex-col items-center justify-center rounded-3xl bg-[#F5F6FC]">
       <img src={icon} alt="" className="h-12 w-14 object-contain" />
 
-      <p className="mt-1 text-[17px] font-bold text-gray-400">{label}</p>
+      <p className="mt-1 text-[17px] font-semibold text-gray-400">{label}</p>
 
       <strong className="text-[34px] font-extrabold text-[#123BFF]">{value}</strong>
     </div>

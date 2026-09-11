@@ -2,11 +2,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Header from "@/components/common/header/Header";
+import ArticleSheet from "@/components/common/article/ArticleSheet";
 import FeedbackRenderer from "@/components/game/solo/feedback/FeedbackRenderer";
 import MultipleChoiceResult from "@/components/game/solo/feedback/result/MultipleChoiceResult";
 import OxResult from "@/components/game/solo/feedback/result/OxResult";
 import SubjectiveResult from "@/components/game/solo/feedback/result/SubjectiveResult";
-import ArticleSheet from "@/components/common/article/ArticleSheet";
+import GameExitModal from "@/components/game/solo/GameExitModal";
 import NewsPreview from "@/components/game/solo/NewsPreview";
 import QuizTimer from "@/components/game/solo/QuizTimer";
 import QuizActionButton from "@/components/game/solo/quiz/QuizActionButton";
@@ -49,6 +50,9 @@ export default function SoloGamePage() {
 
   // 뉴스 모달
   const [isNewsOpen, setIsNewsOpen] = useState(false);
+
+  // 게임 종료 경고 모달
+  const [isExitModalOpen, setIsExitModalOpen] = useState(false);
 
   // 제출 여부
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -164,7 +168,7 @@ export default function SoloGamePage() {
         title="혼자 문제풀기"
         current={currentIndex + 1}
         total={mockQuizzes.length}
-        backPath="/game/solo"
+        onBack={() => setIsExitModalOpen(true)}
       />
 
       <main className="px-5 pb-8 pt-6">
@@ -245,6 +249,14 @@ export default function SoloGamePage() {
       {/* 지문 전체보기 */}
       {isNewsOpen && gameConfig.canOpenNews && (
         <ArticleSheet news={mockNews} onClose={() => setIsNewsOpen(false)} />
+      )}
+
+      {/* 게임 종료 경고 모달 */}
+      {isExitModalOpen && (
+        <GameExitModal
+          onClose={() => setIsExitModalOpen(false)}
+          onExit={() => navigate("/game/solo")}
+        />
       )}
     </div>
   );
