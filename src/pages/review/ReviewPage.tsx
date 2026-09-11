@@ -2,8 +2,8 @@ import { ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import MainHeader from "@/components/common/header/MainHeader";
-import AbilityChart from "@/components/review/AbilityChart";
-import ReviewHero from "@/components/review/ReviewHero";
+import AbilityChart from "@/components/review/main/AbilityChart";
+import ReviewHero from "@/components/review/main/ReviewHero";
 import { mockAbilityScores, mockReviewHeader } from "@/mocks/review";
 
 export default function ReviewPage() {

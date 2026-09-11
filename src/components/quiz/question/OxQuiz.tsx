@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import QuizMetaBar from "./QuizMetaBar";
 
 import type { OxQuiz as OxQuizType } from "@/types/quiz";
@@ -10,6 +12,9 @@ type OxQuizProps = {
   onSelect: (answer: "O" | "X") => void;
   onChangeReason: (reason: string) => void;
   onOpenNews: () => void;
+
+  // 문제 유형 영역 (없으면 기본 유형 태그)
+  metaBar?: ReactNode;
 };
 
 export default function OxQuiz({
@@ -20,6 +25,7 @@ export default function OxQuiz({
   onSelect,
   onChangeReason,
   onOpenNews,
+  metaBar,
 }: OxQuizProps) {
   return (
     <section>
@@ -27,7 +33,7 @@ export default function OxQuiz({
       {!isSubmitted && (
         <>
           {/* 문제 유형 / 지문 전체보기 */}
-          <QuizMetaBar type="O/X 문제" onOpenNews={onOpenNews} />
+          {metaBar ?? <QuizMetaBar type="O/X 문제" onOpenNews={onOpenNews} />}
 
           {/* 질문 */}
           <h2 className="mt-6 text-[18px] font-bold leading-8">{quiz.question}</h2>

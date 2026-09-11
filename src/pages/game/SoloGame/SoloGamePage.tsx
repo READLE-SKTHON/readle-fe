@@ -3,26 +3,28 @@ import { useNavigate } from "react-router-dom";
 
 import Header from "@/components/common/header/Header";
 import ArticleSheet from "@/components/common/article/ArticleSheet";
-import FeedbackRenderer from "@/components/game/solo/feedback/FeedbackRenderer";
-import MultipleChoiceResult from "@/components/game/solo/feedback/result/MultipleChoiceResult";
-import OxResult from "@/components/game/solo/feedback/result/OxResult";
-import SubjectiveResult from "@/components/game/solo/feedback/result/SubjectiveResult";
 import GameExitModal from "@/components/game/solo/GameExitModal";
-import NewsPreview from "@/components/game/solo/NewsPreview";
 import QuizTimer from "@/components/game/solo/QuizTimer";
-import QuizActionButton from "@/components/game/solo/quiz/QuizActionButton";
-import QuizMetaBar from "@/components/game/solo/quiz/QuizMetaBar";
-import QuizRenderer from "@/components/game/solo/quiz/QuizRenderer";
+import NewsPreview from "@/components/quiz/question/NewsPreview";
+import QuizActionButton from "@/components/quiz/question/QuizActionButton";
+import QuizMetaBar from "@/components/quiz/question/QuizMetaBar";
+import QuizRenderer from "@/components/quiz/question/QuizRenderer";
+import QuizResultRenderer from "@/components/quiz/result/QuizResultRenderer";
 
 import { GAME_LEVEL_CONFIG, type UserLevel } from "@/config/gameLevelConfig";
+
+import useQuizAnswer from "@/hooks/useQuizAnswer";
 
 import { mockNews } from "@/mocks/news";
 import { mockQuizzes } from "@/mocks/quizzes";
 
-import type { FeedbackStatus } from "@/types/quiz";
+import { useReviewStore } from "@/stores/useReviewStore";
 
 export default function SoloGamePage() {
   const navigate = useNavigate();
+
+  // 오답 저장 (훈련하기 유형별 정리)
+  const saveWrongAnswer = useReviewStore((state) => state.saveWrongAnswer);
 
   // 임시 사용자 레벨
   const userLevel: UserLevel = 2;
@@ -36,18 +38,6 @@ export default function SoloGamePage() {
   // 맞힌 문제 수
   const [correctCount, setCorrectCount] = useState(0);
 
-  // 객관식 답
-  const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null);
-
-  // O/X 답
-  const [selectedOxAnswer, setSelectedOxAnswer] = useState<"O" | "X" | null>(null);
-
-  // O/X 근거
-  const [reason, setReason] = useState("");
-
-  // 주관식 답
-  const [subjectiveAnswer, setSubjectiveAnswer] = useState("");
-
   // 뉴스 모달
   const [isNewsOpen, setIsNewsOpen] = useState(false);
 
@@ -60,63 +50,32 @@ export default function SoloGamePage() {
   // 현재 퀴즈
   const currentQuiz = mockQuizzes[currentIndex];
 
-  // 제출 가능 여부
-  const canSubmit = (() => {
-    if (currentQuiz.type === "MULTIPLE_CHOICE") {
-      return selectedOptionId !== null;
-    }
-
-    if (currentQuiz.type === "OX") {
-      return selectedOxAnswer !== null && (!currentQuiz.requiresReason || reason.trim().length > 0);
-    }
-
-    if (currentQuiz.type === "SUBJECTIVE") {
-      return subjectiveAnswer.trim().length > 0;
-    }
-
-    return false;
-  })();
-
-  // 피드백 상태
-  const getFeedbackStatus = (): FeedbackStatus | null => {
-    // 객관식
-    if (currentQuiz.type === "MULTIPLE_CHOICE") {
-      return selectedOptionId === currentQuiz.correctAnswer ? "CORRECT" : "INCORRECT";
-    }
-
-    // O/X
-    if (currentQuiz.type === "OX") {
-      if (selectedOxAnswer !== currentQuiz.correctAnswer) {
-        return "INCORRECT";
-      }
-
-      // 임시 기준
-      // 추후 AI/API 평가 결과로 변경
-      if (reason.trim().length < 10) {
-        return "PARTIAL";
-      }
-
-      return "CORRECT";
-    }
-
-    // 주관식
-    if (currentQuiz.type === "SUBJECTIVE") {
-      // 임시 처리
-      // 추후 AI/API 채점 결과로 변경
-      return "CORRECT";
-    }
-
-    return null;
-  };
+  // 답안 상태·제출 가능 여부·피드백 상태
+  const {
+    selectedOptionId,
+    setSelectedOptionId,
+    selectedOxAnswer,
+    setSelectedOxAnswer,
+    reason,
+    setReason,
+    subjectiveAnswer,
+    setSubjectiveAnswer,
+    canSubmit,
+    feedbackStatus,
+    resetAnswer,
+  } = useQuizAnswer(currentQuiz);
 
   // 제출
   const handleSubmit = () => {
     if (!canSubmit) return;
 
-    const status = getFeedbackStatus();
-
-    if (status === "CORRECT") {
+    if (feedbackStatus === "CORRECT") {
       setCorrectCount((prev) => prev + 1);
+    }
+
+    // 오답 훈련하기 유형별 저장
+    if (feedbackStatus === "INCORRECT") {
+      saveWrongAnswer(currentQuiz, mockNews);
     }
 
     setIsSubmitted(true);
@@ -143,10 +102,7 @@ export default function SoloGamePage() {
     setCurrentIndex((prev) => prev + 1);
 
     // 이전 문제 상태 초기화
-    setSelectedOptionId(null);
-    setSelectedOxAnswer(null);
-    setReason("");
-    setSubjectiveAnswer("");
+    resetAnswer();
     setIsSubmitted(false);
   };
 
@@ -159,8 +115,6 @@ export default function SoloGamePage() {
 
     handleSubmit();
   };
-
-  const feedbackStatus = getFeedbackStatus();
 
   return (
     <div>
@@ -191,34 +145,17 @@ export default function SoloGamePage() {
           </>
         )}
 
-        {/* 객관식 제출 후 결과 */}
-        {isSubmitted && currentQuiz.type === "MULTIPLE_CHOICE" && selectedOptionId !== null && (
-          <MultipleChoiceResult
-            choices={currentQuiz.options}
-            selectedId={selectedOptionId}
-            correctId={currentQuiz.correctAnswer}
+        {/* 제출 후 결과 */}
+        {isSubmitted && (
+          <QuizResultRenderer
+            quiz={currentQuiz}
+            status={feedbackStatus}
+            selectedOptionId={selectedOptionId}
+            selectedOxAnswer={selectedOxAnswer}
+            reason={reason}
+            subjectiveAnswer={subjectiveAnswer}
             explanation="왜냐하면 블라블라이기 때문"
           />
-        )}
-
-        {/* O/X, 주관식 제출 후 상단 피드백 */}
-        {isSubmitted && feedbackStatus && currentQuiz.type !== "MULTIPLE_CHOICE" && (
-          <FeedbackRenderer quiz={currentQuiz} status={feedbackStatus} />
-        )}
-
-        {/* O/X 제출 후 상세 결과 */}
-        {isSubmitted && currentQuiz.type === "OX" && selectedOxAnswer && feedbackStatus && (
-          <OxResult
-            quiz={currentQuiz}
-            selectedAnswer={selectedOxAnswer}
-            reason={reason}
-            status={feedbackStatus}
-          />
-        )}
-
-        {/* 주관식 제출 후 상세 결과 */}
-        {isSubmitted && currentQuiz.type === "SUBJECTIVE" && feedbackStatus && (
-          <SubjectiveResult quiz={currentQuiz} answer={subjectiveAnswer} />
         )}
 
         {/* 제출 전 문제 풀이 화면 */}

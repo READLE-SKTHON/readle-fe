@@ -2,7 +2,7 @@ import { FilePenLine, Target } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import Button from "@/components/common/button/Button";
-import ReviewStatCard from "@/components/review/ReviewStatCard";
+import ReviewStatCard from "@/components/review/result/ReviewStatCard";
 
 import completeBeluga from "@/assets/images/game/CompleteBeluga.png";
 

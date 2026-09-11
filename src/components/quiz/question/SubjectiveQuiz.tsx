@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import QuizMetaBar from "./QuizMetaBar";
 
 import type { SubjectiveQuiz as SubjectiveQuizType } from "@/types/quiz";
@@ -7,6 +9,9 @@ type SubjectiveQuizProps = {
   answer: string;
   onChangeAnswer: (answer: string) => void;
   onOpenNews: () => void;
+
+  // 문제 유형 영역 (없으면 기본 유형 태그)
+  metaBar?: ReactNode;
 };
 
 export default function SubjectiveQuiz({
@@ -14,11 +19,12 @@ export default function SubjectiveQuiz({
   answer,
   onChangeAnswer,
   onOpenNews,
+  metaBar,
 }: SubjectiveQuizProps) {
   return (
     <section>
       {/* 문제 유형 / 지문 전체보기 */}
-      <QuizMetaBar type="주관식 문제" onOpenNews={onOpenNews} />
+      {metaBar ?? <QuizMetaBar type="주관식 문제" onOpenNews={onOpenNews} />}
 
       {/* 문제 */}
       <h2 className="mt-7 text-[20px] font-bold leading-8">{quiz.question}</h2>

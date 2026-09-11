@@ -1,34 +1,41 @@
-import { useMemo, useRef, useState } from "react";
+import { useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 
 import ArticleSheet from "@/components/common/article/ArticleSheet";
-import Button from "@/components/common/button/Button";
 import Header from "@/components/common/header/Header";
-import QuizMetaBar from "@/components/game/solo/quiz/QuizMetaBar";
-import ReviewFeedback from "@/components/review/ReviewFeedback";
-import ReviewQuestionRenderer from "@/components/review/ReviewQuestionRenderer";
-import { createMockReviewQuestions, gradeMockReviewAnswer, mockReviewTypes } from "@/mocks/review";
+import NewsPreview from "@/components/quiz/question/NewsPreview";
+import QuizActionButton from "@/components/quiz/question/QuizActionButton";
+import QuizRenderer from "@/components/quiz/question/QuizRenderer";
+import QuizResultRenderer from "@/components/quiz/result/QuizResultRenderer";
+import ReviewMetaBar from "@/components/review/play/ReviewMetaBar";
+import useQuizAnswer from "@/hooks/useQuizAnswer";
+import { createMockReviewQuizzes, mockReviewTypes } from "@/mocks/review";
 import { useReviewStore } from "@/stores/useReviewStore";
-import type { ReviewQuestion } from "@/types/review";
+import type { ReviewQuiz } from "@/types/review";
+import { getReviewTargets } from "@/utils/getReviewTargets";
 
 export default function ReviewPlayPage() {
   const navigate = useNavigate();
   const { typeId } = useParams();
 
   const earnTodayXp = useReviewStore((state) => state.earnTodayXp);
+  const completeReview = useReviewStore((state) => state.completeReview);
 
   const reviewType = mockReviewTypes.find((type) => type.typeId === typeId);
 
-  // 오답 1개당 복기·응용 문제 (전체 = 오답 수 × 2)
-  const questions = useMemo(
-    () => (reviewType ? createMockReviewQuestions(reviewType) : []),
-    [reviewType],
-  );
+  // 오답 1개당 복기·응용 문제 (입장 시점 복습 대상 기준 고정)
+  const [questions] = useState(() => {
+    if (!reviewType) return [];
+
+    const { targets } = getReviewTargets(useReviewStore.getState().wrongAnswers, reviewType.typeId);
+
+    return createMockReviewQuizzes(reviewType, targets);
+  });
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
 
-  // 잘못된 유형·오답 없는 유형은 유형 선택 이동
+  // 잘못된 유형·틀린 문제 없는 유형은 유형 선택 이동
   if (!reviewType || questions.length === 0) return <Navigate to="/review/types" replace />;
 
   const question = questions[currentIndex];
@@ -39,6 +46,11 @@ export default function ReviewPlayPage() {
     const nextCorrectCount = correctCount + (isCorrect ? 1 : 0);
 
     if (isLastQuestion) {
+      // 복기한 오답 복습 완료 처리 (유형별 틀린 문제 개수 제외)
+      completeReview(
+        questions.filter(({ reviewKind }) => reviewKind === "RETRY").map(({ quizId }) => quizId),
+      );
+
       // 유형별 일일 XP 획득 (오늘 이미 받은 유형 제외)
       earnTodayXp(reviewType.typeId);
 
@@ -54,7 +66,7 @@ export default function ReviewPlayPage() {
   };
 
   return (
-    <div className="flex h-dvh flex-col">
+    <div>
       {/* TODO: 복습 중단 확인 (디자인 없음) */}
       <Header
         title="훈련하기"
@@ -63,86 +75,110 @@ export default function ReviewPlayPage() {
         backPath="/review/types"
       />
 
-      <ReviewStep key={question.questionId} question={question} onNext={handleNext} />
+      <ReviewStep key={currentIndex} question={question} onNext={handleNext} />
     </div>
   );
 }
 
 type ReviewStepProps = {
-  question: ReviewQuestion;
+  question: ReviewQuiz;
   onNext: (isCorrect: boolean) => void;
 };
 
-// 문제별 풀이 단계 (답안·제출 여부는 문제별 내부 상태)
+// 문제별 풀이 단계 (혼자 문제풀기와 같은 화면, 답안·제출 여부는 문제별 내부 상태)
 function ReviewStep({ question, onNext }: ReviewStepProps) {
-  const [answer, setAnswer] = useState("");
+  const {
+    selectedOptionId,
+    setSelectedOptionId,
+    selectedOxAnswer,
+    setSelectedOxAnswer,
+    reason,
+    setReason,
+    subjectiveAnswer,
+    setSubjectiveAnswer,
+    canSubmit,
+    feedbackStatus,
+  } = useQuizAnswer(question);
+
+  // 제출 여부
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  // 지문 전체보기
   const [isArticleOpen, setIsArticleOpen] = useState(false);
 
-  const mainRef = useRef<HTMLElement>(null);
-
-  const isCorrect = isSubmitted && gradeMockReviewAnswer(question, answer);
-
-  // 동일 유형 신규 지문 응용 문제
-  const isApply = question.reviewKind === "APPLY";
-
-  // 공백만 입력한 경우 제출 불가
-  const canSubmit = answer.trim().length > 0;
-
-  // 제출 후 피드백 확인 → 다음 문제
+  // 하단 버튼 (제출 → 다음 문제)
   const handleAction = () => {
-    if (!isSubmitted) {
-      setIsSubmitted(true);
-      mainRef.current?.scrollTo({ top: 0 });
+    if (isSubmitted) {
+      onNext(feedbackStatus === "CORRECT");
       return;
     }
 
-    onNext(isCorrect);
+    if (!canSubmit) return;
+
+    setIsSubmitted(true);
   };
 
-  // 태그·피드백과 문제 사이 간격
-  const questionSpacing = isSubmitted ? "mt-6" : isApply ? "mt-3" : "mt-10";
+  // 훈련하기 유형 태그·응용 태그
+  const metaBar = (
+    <ReviewMetaBar
+      typeName={question.typeName}
+      subType={question.subType}
+      isApply={question.reviewKind === "APPLY"}
+      onOpenNews={() => setIsArticleOpen(true)}
+    />
+  );
 
   return (
     <>
-      <main ref={mainRef} className="min-h-0 flex-1 overflow-y-auto px-6 pt-5 pb-4">
-        {isSubmitted ? (
-          <ReviewFeedback isCorrect={isCorrect} explanation={question.explanation} />
-        ) : (
+      <main className="px-5 pb-8 pt-6">
+        {/* 객관식 풀이 전 */}
+        {!isSubmitted && question.type === "MULTIPLE_CHOICE" && (
           <>
-            <QuizMetaBar
-              type={question.category}
-              subtype={question.subCategory}
-              onOpenNews={() => setIsArticleOpen(true)}
-            />
+            {metaBar}
 
-            {/* 응용 문제 태그 */}
-            {isApply && (
-              <span className="mt-6 inline-block rounded-full bg-[#2285E3] px-4 py-1 text-[14px] font-bold text-white">
-                응용
-              </span>
-            )}
+            {/* 기사 미리보기 */}
+            <NewsPreview content={question.news.content} />
           </>
         )}
 
-        <div className={questionSpacing}>
-          <ReviewQuestionRenderer
-            question={question}
-            answer={answer}
-            onChangeAnswer={setAnswer}
-            isSubmitted={isSubmitted}
-            isCorrect={isCorrect}
+        {/* 제출 후 결과 */}
+        {isSubmitted && (
+          <QuizResultRenderer
+            quiz={question}
+            status={feedbackStatus}
+            selectedOptionId={selectedOptionId}
+            selectedOxAnswer={selectedOxAnswer}
+            reason={reason}
+            subjectiveAnswer={subjectiveAnswer}
+            explanation={question.explanation}
           />
-        </div>
-      </main>
+        )}
 
-      <div className="shrink-0 px-6 pt-3 pb-6">
-        <Button
-          label={isSubmitted ? "다음" : "제출하기"}
+        {/* 제출 전 문제 풀이 화면 */}
+        {!isSubmitted && (
+          <QuizRenderer
+            quiz={question}
+            selectedOptionId={selectedOptionId}
+            onSelectOption={setSelectedOptionId}
+            selectedOxAnswer={selectedOxAnswer}
+            reason={reason}
+            onSelectOxAnswer={setSelectedOxAnswer}
+            onChangeReason={setReason}
+            subjectiveAnswer={subjectiveAnswer}
+            onChangeSubjectiveAnswer={setSubjectiveAnswer}
+            isSubmitted={isSubmitted}
+            onOpenNews={() => setIsArticleOpen(true)}
+            metaBar={metaBar}
+          />
+        )}
+
+        {/* 제출 / 다음 버튼 */}
+        <QuizActionButton
+          label={isSubmitted ? "다음" : question.type === "SUBJECTIVE" ? "다음" : "제출하기"}
           disabled={!isSubmitted && !canSubmit}
           onClick={handleAction}
         />
-      </div>
+      </main>
 
       {/* 지문 전체보기 */}
       {isArticleOpen && (

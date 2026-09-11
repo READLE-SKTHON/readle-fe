@@ -26,16 +26,15 @@ const typeIcons: Record<ReviewTypeId, LucideIcon> = {
   STRUCTURE: Puzzle,
 };
 
-// 복습 유형 카드 (오답 0개 클릭 불가, 오늘 XP 획득 시 획득 완료 표시)
+// 복습 유형 카드 (오답 0개도 클릭 시 안내 모달, 오늘 XP 획득 시 획득 완료 표시)
 export default function ReviewTypeCard({ reviewType, isXpEarned, onClick }: ReviewTypeCardProps) {
   const Icon = typeIcons[reviewType.typeId];
 
   return (
     <button
       type="button"
-      disabled={reviewType.wrongCount === 0}
       onClick={onClick}
-      className="flex w-full cursor-pointer items-center rounded-2xl bg-[#F3F4FA] py-2.5 pr-4 pl-5 text-left disabled:cursor-default"
+      className="flex w-full cursor-pointer items-center rounded-2xl bg-[#F3F4FA] py-2.5 pr-4 pl-5 text-left"
     >
       <Icon className="size-8 shrink-0 text-[#2285E3]" />
 
