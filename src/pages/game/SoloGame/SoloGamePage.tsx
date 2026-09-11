@@ -6,7 +6,7 @@ import FeedbackRenderer from "@/components/game/solo/feedback/FeedbackRenderer";
 import MultipleChoiceResult from "@/components/game/solo/feedback/result/MultipleChoiceResult";
 import OxResult from "@/components/game/solo/feedback/result/OxResult";
 import SubjectiveResult from "@/components/game/solo/feedback/result/SubjectiveResult";
-import NewsModal from "@/components/game/solo/NewsModal";
+import ArticleSheet from "@/components/common/article/ArticleSheet";
 import NewsPreview from "@/components/game/solo/NewsPreview";
 import QuizTimer from "@/components/game/solo/QuizTimer";
 import QuizActionButton from "@/components/game/solo/quiz/QuizActionButton";
@@ -242,9 +242,9 @@ export default function SoloGamePage() {
         />
       </main>
 
-      {/* 뉴스 전체보기 */}
+      {/* 지문 전체보기 */}
       {isNewsOpen && gameConfig.canOpenNews && (
-        <NewsModal news={mockNews} onClose={() => setIsNewsOpen(false)} />
+        <ArticleSheet news={mockNews} onClose={() => setIsNewsOpen(false)} />
       )}
     </div>
   );
