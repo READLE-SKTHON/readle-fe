@@ -1,12 +1,22 @@
 import type { QuestionMainCategory, QuestionSubCategory } from "@/types/game";
 
-// 문해력 능력치 축 (어휘력 · 독해력 · 추론력 · 비판적 사고력 · 표현력)
-export type AbilityKey =
-  "VOCABULARY" | "READING" | "INFERENCE" | "CRITICAL_THINKING" | "EXPRESSION";
+// 문해력 능력치 영역 (문자해독 · 내용이해 · 맥락파악 · 추론 · 비판적사고)
+export type SkillCategory = "문자해독" | "내용이해" | "맥락파악" | "추론" | "비판적사고";
 
-// 능력치 조회 응답 (서버 AI 주관식 분석 결과, 0~100)
+// 능력치 결과 항목 (영역별 누적 평균 점수)
+export interface SkillResult {
+  skillCategory: SkillCategory;
+  averageScore: number;
+}
+
+// 능력치 결과 조회 응답
+export interface SkillResultsResponse {
+  skillResults: SkillResult[];
+}
+
+// 능력치 차트 항목 (나의 점수 · 전체 평균, 0~100)
 export interface AbilityScore {
-  key: AbilityKey;
+  key: SkillCategory;
   label: string;
   myScore: number;
   averageScore: number;
