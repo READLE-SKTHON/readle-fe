@@ -1,8 +1,13 @@
+import axios from "axios";
+import { useQueryClient } from "@tanstack/react-query";
 import { ChevronRight } from "lucide-react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import MainHeader from "@/components/common/header/MainHeader";
 import StatCard from "@/components/home/StatCard";
+
+import { getTodayTraining } from "@/api/training";
 
 import blueCircle from "@/assets/icons/home/blueCircle.png";
 import bookIcon from "@/assets/icons/home/bookIcon.png";
@@ -15,6 +20,9 @@ import shadow from "@/assets/images/Shadow.png";
 import type { UserLevel } from "@/config/gameLevelConfig";
 import { LEVEL_CONFIG } from "@/config/levelConfig";
 import { useHome } from "@/hooks/queries/useHome";
+import { useUserStore } from "@/stores/useUserStore";
+
+import type { ApiErrorResponse } from "@/types/api";
 
 // 레벨별 캐릭터 세로 위치·크기 (이미지 여백 차이 보정, 레벨 배너 위 안착)
 const CHARACTER_CLASS_NAMES: Record<UserLevel, string> = {
@@ -27,13 +35,51 @@ const CHARACTER_CLASS_NAMES: Record<UserLevel, string> = {
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  // 로그인 사용자 ID
+  const userId = useUserStore((state) => state.user?.id);
 
   // 홈 사용자 정보·학습 통계·오늘의 기사
   const { data: home, isLoading, isError } = useHome();
+
+  // 오늘 문제 상태 확인 중
+  const [isCheckingTraining, setIsCheckingTraining] = useState(false);
+
   const levelInfo = LEVEL_CONFIG.find(({ level }) => level === home?.level) ?? LEVEL_CONFIG[0];
-  const levelProgress = home && home.maxXp > 0
-    ? Math.min(100, Math.max(0, (home.xp / home.maxXp) * 100))
-    : 0;
+
+  const levelProgress =
+    home && home.maxXp > 0 ? Math.min(100, Math.max(0, (home.xp / home.maxXp) * 100)) : 0;
+
+  // 혼자 문제풀기 이동
+  const handleSoloGame = async () => {
+    if (!userId || isCheckingTraining) return;
+
+    setIsCheckingTraining(true);
+
+    try {
+      // 오늘 문제풀이 가능 여부 확인
+      await queryClient.fetchQuery({
+        queryKey: ["training", "today", userId],
+        queryFn: () => getTodayTraining(userId),
+        staleTime: 1000 * 60 * 5,
+      });
+
+      // 아직 오늘 문제를 풀지 않은 경우
+      navigate("/game/solo");
+    } catch (error) {
+      // 오늘 문제풀이를 이미 완료한 경우
+      if (axios.isAxiosError<ApiErrorResponse>(error) && error.response?.data?.code === "AN002") {
+        navigate("/game/solo/completed");
+        return;
+      }
+
+      // AN001 등 다른 오류는 기존 SoloReadingPage에서 처리
+      navigate("/game/solo");
+    } finally {
+      setIsCheckingTraining(false);
+    }
+  };
 
   return (
     <main>
@@ -81,10 +127,16 @@ export default function HomePage() {
         >
           <p className="text-2xl font-extrabold text-[#2F8DE4]">Lv. {home?.level ?? "-"}</p>
 
-          <h2 className="mt-0.5 text-2xl font-extrabold text-[#071D2E]">{home ? levelInfo.title : "-"}</h2>
+          <h2 className="mt-0.5 text-2xl font-extrabold text-[#071D2E]">
+            {home ? levelInfo.title : "-"}
+          </h2>
 
           <p className="mt-1 text-md font-semibold text-gray-400">
-            {home ? levelInfo.description : isLoading ? "홈 정보를 불러오는 중이에요." : "홈 정보를 불러오지 못했습니다."}
+            {home
+              ? levelInfo.description
+              : isLoading
+                ? "홈 정보를 불러오는 중이에요."
+                : "홈 정보를 불러오지 못했습니다."}
           </p>
 
           <div className="mt-2 flex items-center gap-3">
@@ -96,15 +148,26 @@ export default function HomePage() {
             </div>
 
             <span className="whitespace-nowrap text-sm font-semibold text-gray-400">
-              {home?.xp.toLocaleString("ko-KR") ?? "-"}/{home?.maxXp.toLocaleString("ko-KR") ?? "-"} XP
+              {home?.xp.toLocaleString("ko-KR") ?? "-"}/{home?.maxXp.toLocaleString("ko-KR") ?? "-"}{" "}
+              XP
             </span>
           </div>
         </section>
 
         {/* 통계 */}
         <section className="mt-4 grid grid-cols-3 gap-3">
-          <StatCard icon={fireIcon} value={home ? `${home.currentStreak}일` : "-"} label="연속학습" />
-          <StatCard icon={bookIcon} value={home ? `${home.newsReadCount}개` : "-"} label="읽은 뉴스" />
+          <StatCard
+            icon={fireIcon}
+            value={home ? `${home.currentStreak}일` : "-"}
+            label="연속학습"
+          />
+
+          <StatCard
+            icon={bookIcon}
+            value={home ? `${home.newsReadCount}개` : "-"}
+            label="읽은 뉴스"
+          />
+
           <StatCard icon={targetIcon} value={home ? `${home.answerRate}%` : "-"} label="정답률" />
         </section>
 
@@ -115,11 +178,16 @@ export default function HomePage() {
 
             <button
               type="button"
-              onClick={() => navigate("/game/solo")}
-              className="group flex cursor-pointer items-center gap-1 text-sm font-medium text-gray-500"
+              onClick={handleSoloGame}
+              disabled={isCheckingTraining}
+              className="
+                group flex cursor-pointer items-center gap-1
+                text-sm font-medium text-gray-500
+                disabled:cursor-not-allowed disabled:opacity-60
+              "
             >
               <span className="underline-offset-4 group-hover:underline group-active:underline">
-                게임하기
+                {isCheckingTraining ? "확인 중..." : "게임하기"}
               </span>
 
               <ChevronRight size={18} strokeWidth={2} />
@@ -151,13 +219,9 @@ export default function HomePage() {
                 </p>
               ) : home?.todayNews ? (
                 <>
-                  <p className="text-sm font-semibold text-[#2F8DE4]">
-                    {home.todayNews.category}
-                  </p>
+                  <p className="text-sm font-semibold text-[#2F8DE4]">{home.todayNews.category}</p>
 
-                  <h3 className="truncate text-lg font-bold text-black">
-                    {home.todayNews.title}
-                  </h3>
+                  <h3 className="truncate text-lg font-bold text-black">{home.todayNews.title}</h3>
 
                   <p className="line-clamp-2 text-sm font-semibold leading-snug text-gray-400">
                     {home.todayNews.content}
@@ -165,7 +229,9 @@ export default function HomePage() {
                 </>
               ) : (
                 <p className="text-sm font-semibold text-gray-400">
-                  {isError ? "오늘의 뉴스를 불러오지 못했습니다." : "오늘의 뉴스가 아직 준비되지 않았습니다."}
+                  {isError
+                    ? "오늘의 뉴스를 불러오지 못했습니다."
+                    : "오늘의 뉴스가 아직 준비되지 않았습니다."}
                 </p>
               )}
             </div>

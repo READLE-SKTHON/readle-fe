@@ -15,7 +15,7 @@ export default function SoloResultPage() {
   const { data: result, isPending, error } = useTodayTrainingResult();
   if (!userId || isPending || error || !result) {
     return (
-      <main>
+      <main className="flex min-h-screen flex-col px-7 pb-10 pt-20">
         <p role="status">
           {!userId
             ? "로그인이 필요합니다."
@@ -28,9 +28,9 @@ export default function SoloResultPage() {
       </main>
     );
   }
-  const total = result.totalQuestion;
+  const total = result.totalQuestions;
   const correctCount = result.correctCount;
-  const exp = result.earnedXp;
+  const exp = result.earnedExp;
   const correctRate = result.accuracy;
 
   return (
@@ -63,7 +63,7 @@ export default function SoloResultPage() {
       <section className="mt-14 grid grid-cols-2 gap-4">
         <ResultCard icon={targetIcon} label="정답률" value={`${correctRate}%`} />
 
-        <ResultCard icon={lightningIcon} label="획득 EXP" value={exp == null ? "-" : `+${exp}`} />
+        <ResultCard icon={lightningIcon} label="획득 EXP" value={`+${exp}`} />
       </section>
 
       {/* 홈으로 */}
