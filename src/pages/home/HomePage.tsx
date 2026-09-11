@@ -1,14 +1,15 @@
+import { ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import MainHeader from "@/components/common/header/MainHeader";
 import StatCard from "@/components/home/StatCard";
 
 import beluga from "@/assets/icons/home/Beluga.png";
+import blueCircle from "@/assets/icons/home/blueCircle.png";
 import bookIcon from "@/assets/icons/home/bookIcon.png";
 import fireIcon from "@/assets/icons/home/fireIcon.png";
 import newsIcon from "@/assets/icons/home/newsIcon.png";
 import targetIcon from "@/assets/icons/home/targetIcon.png";
-import blueCircle from "@/assets/icons/home/blueCircle.png";
 
 import shadow from "@/assets/images/Shadow.png";
 
@@ -53,10 +54,10 @@ export default function HomePage() {
           className="
             mt-5
             rounded-3xl
-            border border-white
-            bg-[#EAF5FD]
+            border-2 border-white
+            bg-[#E8F1F9]
             px-5 py-3
-            shadow-[0_4px_14px_rgba(47,141,228,0.15)]
+            shadow-[0_0_20px_5px_rgba(47,141,228,0.12)]
           "
         >
           <p className="text-2xl font-extrabold text-[#2F8DE4]">Lv. 1</p>
@@ -99,7 +100,7 @@ export default function HomePage() {
                 게임하기
               </span>
 
-              <span className="pb-1 text-xl leading-none">›</span>
+              <ChevronRight size={18} strokeWidth={2} />
             </button>
           </div>
 
@@ -107,7 +108,6 @@ export default function HomePage() {
           <article className="mt-4 flex items-center gap-4 rounded-2xl bg-[#F5F6FB] p-5">
             {/* 뉴스 이미지 + 그림자 */}
             <div className="relative size-20 shrink-0">
-              {/* 그림자 */}
               <img
                 src={shadow}
                 alt=""
@@ -115,7 +115,6 @@ export default function HomePage() {
                 className="absolute bottom-0 left-1/2 z-0 w-14 -translate-x-1/2 object-contain"
               />
 
-              {/* 뉴스 이미지 */}
               <img
                 src={newsIcon}
                 alt="뉴스"
@@ -126,7 +125,7 @@ export default function HomePage() {
             <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold text-[#2F8DE4]">경제</p>
 
-              <h3 className=" text-lg font-bold text-black">오늘의 뉴스</h3>
+              <h3 className="text-lg font-bold text-black">오늘의 뉴스</h3>
 
               <p className="line-clamp-2 text-sm font-semibold leading-snug text-gray-400">
                 지속되는 물가상승으로 인해 가계의 생활비 부담이 커지고 있으며, 소비 심리도 위축되고
