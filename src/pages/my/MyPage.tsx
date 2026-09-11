@@ -1,21 +1,18 @@
 import { ChevronRight, Plus, Settings } from "lucide-react";
 
 import Level1Character from "@/assets/images/level/Level1Character.png";
-import Level2Character from "@/assets/images/level/Level2Character.png";
-import Level3Character from "@/assets/images/level/Level3Character.png";
 
+import useUser from "@/hooks/useUser";
 import { mockMyPage } from "@/mocks/mypage";
 
-const levelCharacters = {
-  1: Level1Character,
-  2: Level2Character,
-  3: Level3Character,
-};
-
 export default function MyPage() {
-  const { user, stats, friends, accuracyHistory } = mockMyPage;
+  const { stats, friends, accuracyHistory } = mockMyPage;
 
-  const character = levelCharacters[user.level as keyof typeof levelCharacters] ?? Level1Character;
+  // 로그인 사용자 정보·누적 XP 기준 레벨
+  const { user, totalXp, levelInfo } = useUser();
+
+  // 레벨별 캐릭터
+  const character = levelInfo.character;
 
   const graphWidth = 300;
   const graphHeight = 100;
@@ -40,7 +37,7 @@ export default function MyPage() {
           </div>
 
           <div className="ml-4 text-white">
-            <h1 className="text-2xl font-bold">{user.name}</h1>
+            <h1 className="text-2xl font-bold">{user.nickname}</h1>
             <p className="mt-1 text-lg font-semibold">{user.school}</p>
           </div>
 
@@ -57,7 +54,7 @@ export default function MyPage() {
         {/* 레벨별 메인 캐릭터 */}
         <img
           src={character}
-          alt={`레벨 ${user.level} 캐릭터`}
+          alt={`레벨 ${levelInfo.level} 캐릭터`}
           className="absolute -bottom-5 right-5 w-59 object-contain"
         />
       </section>
@@ -67,7 +64,7 @@ export default function MyPage() {
         <div className="grid grid-cols-4">
           <StatItem icon="🔥" value={`${stats.streakDays}일`} label="연속 학습일" />
 
-          <StatItem icon="⚡" value={stats.totalXp} label="누적 XP" border />
+          <StatItem icon="⚡" value={totalXp} label="누적 XP" border />
 
           <StatItem icon="📘" value={`${stats.newsCount}개`} label="읽은 뉴스" border />
 

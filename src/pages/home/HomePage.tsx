@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import MainHeader from "@/components/common/header/MainHeader";
 import StatCard from "@/components/home/StatCard";
 
-import beluga from "@/assets/icons/home/Beluga.png";
 import blueCircle from "@/assets/icons/home/blueCircle.png";
 import bookIcon from "@/assets/icons/home/bookIcon.png";
 import fireIcon from "@/assets/icons/home/fireIcon.png";
@@ -13,12 +12,30 @@ import targetIcon from "@/assets/icons/home/targetIcon.png";
 
 import shadow from "@/assets/images/Shadow.png";
 
+import type { UserLevel } from "@/config/gameLevelConfig";
+import { XP_PER_LEVEL } from "@/config/levelConfig";
+import useUser from "@/hooks/useUser";
+import { mockMyPage } from "@/mocks/mypage";
+
+// 레벨별 캐릭터 세로 위치 (이미지 아래 여백 차이 보정, 레벨 배너 위 안착)
+const CHARACTER_TOP_CLASS_NAMES: Record<UserLevel, string> = {
+  1: "top-2",
+  2: "top-5.5",
+  3: "top-5",
+};
+
 export default function HomePage() {
   const navigate = useNavigate();
 
+  // 로그인 사용자 정보·누적 XP 기준 레벨
+  const { user, levelInfo, levelXp, levelProgress } = useUser();
+
+  // 학습 통계 (마이페이지 공통)
+  const { stats } = mockMyPage;
+
   return (
     <main>
-      <MainHeader userName="김환희" />
+      <MainHeader userName={user.nickname} />
 
       <div className="px-5">
         {/* 메인 문구 */}
@@ -41,11 +58,11 @@ export default function HomePage() {
             className="absolute -right-3 -top-6 size-40 object-contain"
           />
 
-          {/* 벨루가 */}
+          {/* 레벨별 벨루가 */}
           <img
-            src={beluga}
+            src={levelInfo.character}
             alt="벨루가 캐릭터"
-            className="absolute -right-1 top-2 z-10 w-36 object-contain"
+            className={`absolute -right-1 ${CHARACTER_TOP_CLASS_NAMES[levelInfo.level]} z-10 w-36 object-contain`}
           />
         </section>
 
@@ -60,30 +77,31 @@ export default function HomePage() {
             shadow-[0_0_20px_5px_rgba(47,141,228,0.12)]
           "
         >
-          <p className="text-2xl font-extrabold text-[#2F8DE4]">Lv. 1</p>
+          <p className="text-2xl font-extrabold text-[#2F8DE4]">Lv. {levelInfo.level}</p>
 
-          <h2 className="mt-0.5 text-2xl font-extrabold text-[#071D2E]">문장 수집가</h2>
+          <h2 className="mt-0.5 text-2xl font-extrabold text-[#071D2E]">{levelInfo.title}</h2>
 
-          <p className="mt-1 text-md font-semibold text-gray-400">
-            문장 속 중요한 단어들을 하나씩 모아가요
-          </p>
+          <p className="mt-1 text-md font-semibold text-gray-400">{levelInfo.description}</p>
 
           <div className="mt-2 flex items-center gap-3">
             <div className="h-5 flex-1 overflow-hidden rounded-full bg-gray-200">
-              <div className="h-full w-[64%] rounded-full bg-[#2F95F5]" />
+              <div
+                className="h-full rounded-full bg-[#2F95F5]"
+                style={{ width: `${levelProgress}%` }}
+              />
             </div>
 
             <span className="whitespace-nowrap text-sm font-semibold text-gray-400">
-              320/500 XP
+              {levelXp.toLocaleString("ko-KR")}/{XP_PER_LEVEL.toLocaleString("ko-KR")} XP
             </span>
           </div>
         </section>
 
         {/* 통계 */}
         <section className="mt-4 grid grid-cols-3 gap-3">
-          <StatCard icon={fireIcon} value="7일" label="연속학습" />
-          <StatCard icon={bookIcon} value="2개" label="읽은 뉴스" />
-          <StatCard icon={targetIcon} value="80%" label="정답률" />
+          <StatCard icon={fireIcon} value={`${stats.streakDays}일`} label="연속학습" />
+          <StatCard icon={bookIcon} value={`${stats.newsCount}개`} label="읽은 뉴스" />
+          <StatCard icon={targetIcon} value={`${stats.accuracy}%`} label="정답률" />
         </section>
 
         {/* 오늘의 뉴스 */}

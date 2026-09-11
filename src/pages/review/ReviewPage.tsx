@@ -4,19 +4,19 @@ import { useNavigate } from "react-router-dom";
 import MainHeader from "@/components/common/header/MainHeader";
 import AbilityChart from "@/components/review/main/AbilityChart";
 import ReviewHero from "@/components/review/main/ReviewHero";
+import useUser from "@/hooks/useUser";
 import { mockAbilityScores, mockReviewHeader } from "@/mocks/review";
 
 export default function ReviewPage() {
   const navigate = useNavigate();
 
+  const { user } = useUser();
+
   // isolate: 히어로 배경 그라데이션을 콘텐츠 뒤에 두기 위한 쌓임 맥락
   return (
     <div className="isolate overflow-x-clip">
       {/* TODO: 알림 클릭 (디자인 없음) */}
-      <MainHeader
-        userName={mockReviewHeader.userName}
-        notificationCount={mockReviewHeader.notificationCount}
-      />
+      <MainHeader userName={user.nickname} notificationCount={mockReviewHeader.notificationCount} />
 
       <main className="px-5 pt-22 pb-6">
         <ReviewHero />

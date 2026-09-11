@@ -1,15 +1,7 @@
 export const mockMyPage = {
-  user: {
-    id: 1,
-    name: "정서홍",
-    school: "서후 고등학교",
-    introduction: "매일 조금씩 성장하는 중!",
-    level: 1,
-  },
-
+  // 학습 통계 (홈·마이페이지 공통, 누적 XP는 로그인 사용자 기준)
   stats: {
     streakDays: 7,
-    totalXp: 130,
     newsCount: 2,
     accuracy: 80,
   },

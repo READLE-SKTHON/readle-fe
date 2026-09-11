@@ -2,6 +2,7 @@ import { ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import MainHeader from "@/components/common/header/MainHeader";
+import useUser from "@/hooks/useUser";
 
 import gameBeluga from "@/assets/images/gameBeluga.png";
 import shadow from "@/assets/images/Shadow.png";
@@ -9,9 +10,12 @@ import shadow from "@/assets/images/Shadow.png";
 export default function GameMainPage() {
   const navigate = useNavigate();
 
+  // 로그인 사용자
+  const { user } = useUser();
+
   return (
     <main>
-      <MainHeader userName="김환희" />
+      <MainHeader userName={user.nickname} />
 
       <div className="overflow-hidden px-5">
         {/* 메인 소개 */}

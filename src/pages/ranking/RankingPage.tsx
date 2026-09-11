@@ -7,6 +7,7 @@ import RankingNotice from "@/components/ranking/RankingNotice";
 import RankingTabs from "@/components/ranking/RankingTabs";
 import useRanking from "@/hooks/useRanking";
 import useRankingDisplay from "@/hooks/useRankingDisplay";
+import useUser from "@/hooks/useUser";
 import { mockRankingHeader } from "@/mocks/ranking";
 import type { RankingEntry, RankingTab } from "@/types/ranking";
 import { formatSchoolName } from "@/utils/formatSchoolName";
@@ -33,6 +34,8 @@ const getRowAppearStyle = (index: number) => ({
 
 export default function RankingPage() {
   const [selectedTab, setSelectedTab] = useState<RankingTab>("TOTAL");
+
+  const { user } = useUser();
 
   const ranking = useRanking(selectedTab);
   const { podium, listItems, outOfRangeMyRanking } = useRankingDisplay(ranking);
@@ -63,7 +66,7 @@ export default function RankingPage() {
     <div className="isolate overflow-x-clip">
       {/* TODO: 알림 클릭 (디자인 없음) */}
       <MainHeader
-        userName={mockRankingHeader.userName}
+        userName={user.nickname}
         notificationCount={mockRankingHeader.notificationCount}
       />
 

@@ -3,6 +3,7 @@ import { Navigate, useNavigate, useParams } from "react-router-dom";
 
 import ArticleSheet from "@/components/common/article/ArticleSheet";
 import Header from "@/components/common/header/Header";
+import GameExitModal from "@/components/common/modal/GameExitModal";
 import NewsPreview from "@/components/quiz/question/NewsPreview";
 import QuizActionButton from "@/components/quiz/question/QuizActionButton";
 import QuizRenderer from "@/components/quiz/question/QuizRenderer";
@@ -34,6 +35,9 @@ export default function ReviewPlayPage() {
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
+
+  // 복습 종료 경고 모달
+  const [isExitModalOpen, setIsExitModalOpen] = useState(false);
 
   // 잘못된 유형·틀린 문제 없는 유형은 유형 선택 이동
   if (!reviewType || questions.length === 0) return <Navigate to="/review/types" replace />;
@@ -67,15 +71,30 @@ export default function ReviewPlayPage() {
 
   return (
     <div>
-      {/* TODO: 복습 중단 확인 (디자인 없음) */}
       <Header
         title="훈련하기"
         current={currentIndex + 1}
         total={questions.length}
-        backPath="/review/types"
+        onBack={() => setIsExitModalOpen(true)}
       />
 
       <ReviewStep key={currentIndex} question={question} onNext={handleNext} />
+
+      {/* 복습 종료 경고 모달 */}
+      {isExitModalOpen && (
+        <GameExitModal
+          title="복습을 종료할까요?"
+          description={
+            <>
+              지금 나가면 진행 중인
+              <br />
+              복습이 저장되지 않아요.
+            </>
+          }
+          onClose={() => setIsExitModalOpen(false)}
+          onExit={() => navigate("/review/types")}
+        />
+      )}
     </div>
   );
 }
