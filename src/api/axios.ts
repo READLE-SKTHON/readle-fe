@@ -9,11 +9,12 @@ const api = axios.create({
   },
 });
 
-// 로그인 사용자 식별 헤더 추가 (서버 인증용)
 api.interceptors.request.use((config) => {
   const userId = useUserStore.getState().user?.id;
 
-  if (userId) config.headers.set("X-USER-ID", userId);
+  if (userId) {
+    config.headers["X-USER-ID"] = String(userId);
+  }
 
   return config;
 });

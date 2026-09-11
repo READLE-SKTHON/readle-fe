@@ -1,7 +1,9 @@
 import { useNavigate } from "react-router-dom";
 
 import Header from "@/components/common/header/Header";
-import { mockNews } from "@/mocks/news";
+import { useTodayTraining } from "@/hooks/queries/useTraining";
+import { useUserStore } from "@/stores/useUserStore";
+import { getTrainingErrorMessage } from "@/utils/trainingMapper";
 
 import articleIcon from "@/assets/icons/game/articleIcon.png";
 import calendarIcon from "@/assets/icons/game/calendarIcon.png";
@@ -10,7 +12,25 @@ import publisherIcon from "@/assets/icons/game/publisherIcon.png";
 export default function SoloReadingPage() {
   const navigate = useNavigate();
 
-  const news = mockNews;
+  const userId = useUserStore((state) => state.user?.id);
+  const { data: training, isPending, error } = useTodayTraining();
+  if (!userId || isPending || error || !training) {
+    return (
+      <div>
+        <Header title="혼자 문제풀기" />
+        <p role="status">
+          {!userId
+            ? "로그인이 필요합니다."
+            : error
+              ? getTrainingErrorMessage(error)
+              : isPending
+                ? "기사를 불러오는 중입니다."
+                : "오늘의 문제가 아직 준비되지 않았습니다."}
+        </p>
+      </div>
+    );
+  }
+  const news = training.article;
 
   return (
     <div>
@@ -41,7 +61,7 @@ export default function SoloReadingPage() {
             </div>
 
             <span className="ml-auto rounded-full bg-[#D5EAFB] px-4 py-2 text-sm font-bold text-[#168CF2]">
-              10문제
+              {training.questionCount}문제
             </span>
           </div>
 
