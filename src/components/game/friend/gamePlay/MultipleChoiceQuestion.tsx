@@ -1,6 +1,6 @@
 import { Check } from "lucide-react";
 
-import QuizMetaBar from "@/components/game/solo/quiz/QuizMetaBar";
+import ExcerptBox from "@/components/game/friend/gamePlay/ExcerptBox";
 import type { MultipleChoiceGameQuestion } from "@/types/game";
 
 type MultipleChoiceQuestionProps = {
@@ -8,7 +8,6 @@ type MultipleChoiceQuestionProps = {
   selectedOptionId: number | null;
   onSelect: (optionId: number) => void;
   isLocked: boolean;
-  onOpenNews?: () => void;
 };
 
 export default function MultipleChoiceQuestion({
@@ -16,7 +15,6 @@ export default function MultipleChoiceQuestion({
   selectedOptionId,
   onSelect,
   isLocked,
-  onOpenNews,
 }: MultipleChoiceQuestionProps) {
   // 보기 번호는 1부터 유지 (제출 대기 시 내가 고른 보기만 표시)
   const options = question.options
@@ -25,24 +23,8 @@ export default function MultipleChoiceQuestion({
 
   return (
     <section>
-      {!isLocked && (
-        <>
-          {onOpenNews && (
-            <QuizMetaBar
-              type={question.category}
-              subtype={question.subCategory}
-              onOpenNews={onOpenNews}
-            />
-          )}
-
-          {/* 지문 */}
-          <div className="mt-4 rounded-3xl bg-[#F5F6FC] px-6 py-5">
-            <p className="text-[16px] leading-7 whitespace-pre-line text-black">
-              {question.news.content}
-            </p>
-          </div>
-        </>
-      )}
+      {/* 발췌 지문 (없으면 기사 전체) */}
+      {!isLocked && <ExcerptBox passage={question.passage ?? question.news.content} />}
 
       <h3
         className={`text-[20px] leading-8 font-bold ${isLocked ? "text-[#5E5E5E]" : "mt-6 text-black"}`}
@@ -61,9 +43,9 @@ export default function MultipleChoiceQuestion({
               type="button"
               disabled={isLocked}
               onClick={() => onSelect(option.id)}
-              className={`flex min-h-14 w-full items-center gap-4 rounded-2xl border px-4 py-3 text-left ${
+              className={`flex min-h-14 w-full items-center gap-4 border px-4 py-3 text-left ${
                 isSelected ? "border-[#2285E3] bg-[#CEE5F8]" : "border-[#E3E2E2] bg-[#F7F7F7]"
-              } ${isLocked ? "cursor-default" : "cursor-pointer"}`}
+              } ${isLocked ? "cursor-default rounded-xl" : "cursor-pointer rounded-2xl"}`}
             >
               {isSelected ? (
                 <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#2285E3]">

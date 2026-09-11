@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Button from "@/components/common/button/Button";
 import Header from "@/components/common/header/Header";
 import RankingList from "@/components/game/friend/RankingList";
+import { buttonPressStyles } from "@/components/game/friend/buttonPressStyles";
 import useGameRanking from "@/hooks/useGameRanking";
 import useWaitingRoom from "@/hooks/useWaitingRoom";
 import { useGameStore } from "@/stores/useGameStore";
@@ -57,9 +58,19 @@ export default function GameResultPage() {
         </div>
 
         <div className="flex shrink-0 flex-col gap-3 pt-4 pb-6">
-          <Button label="한 판 더하기" variant="black" onClick={handleReplay} />
+          <Button
+            label="한 판 더하기"
+            variant="black"
+            onClick={handleReplay}
+            className={buttonPressStyles.black}
+          />
 
-          <Button label="홈화면으로 가기" variant="gray" onClick={handleGoHome} />
+          <Button
+            label="홈화면으로 가기"
+            variant="gray"
+            onClick={handleGoHome}
+            className={buttonPressStyles.gray}
+          />
         </div>
       </main>
     </div>
