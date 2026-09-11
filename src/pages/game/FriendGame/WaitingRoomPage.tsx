@@ -14,9 +14,12 @@ import InviteSlot from "@/components/game/friend/waitingRoom/InviteSlot";
 import ParticipantItem from "@/components/game/friend/waitingRoom/ParticipantItem";
 import RoomCodeCard from "@/components/game/friend/waitingRoom/RoomCodeCard";
 import useClipboard from "@/hooks/useClipboard";
+import useGameStartWatcher from "@/hooks/useGameStartWatcher";
 import useShare from "@/hooks/useShare";
 import useToast from "@/hooks/useToast";
 import useWaitingRoom from "@/hooks/useWaitingRoom";
+import useStartGameMutation from "@/queries/game/useStartGameMutation";
+import { useGameStore } from "@/stores/useGameStore";
 import { useRoomStore } from "@/stores/useRoomStore";
 import { getApiError } from "@/utils/getApiError";
 
@@ -29,6 +32,8 @@ export default function WaitingRoomPage() {
   const navigate = useNavigate();
 
   const {
+    roomId,
+    startedAt,
     inviteLink,
     roomCode,
     participants,
@@ -42,7 +47,18 @@ export default function WaitingRoomPage() {
     refetch,
   } = useWaitingRoom();
 
+  // 게임 시작 감지 후 게임 화면 이동 (방장·참여자 공통)
+  useGameStartWatcher(roomId, startedAt);
+
+  const {
+    mutate: startGame,
+    isPending: isStarting,
+    error: startError,
+    reset: resetStartError,
+  } = useStartGameMutation(roomId);
+
   const clearRoom = useRoomStore((state) => state.clearRoom);
+  const resetGame = useGameStore((state) => state.resetGame);
 
   const [isExitModalOpen, setIsExitModalOpen] = useState(false);
 
@@ -65,14 +81,17 @@ export default function WaitingRoomPage() {
     if (result === "failed") showToast("링크 공유에 실패했어요");
   };
 
-  // 게임 시작 처리
+  // 게임 시작 처리 (방장 전용, 성공 시 게임 화면 이동)
   const handleStart = () => {
-    navigate("/game/friend/play");
+    startGame(undefined, {
+      onSuccess: () => navigate("/game/friend/play", { replace: true }),
+    });
   };
 
-  // 대기방 나가기 처리 (방 정보 초기화 후 친구와 함께 화면 이동)
+  // 대기방 나가기 처리 (게임·방 정보 초기화 후 친구와 함께 화면 이동)
   const handleExit = () => {
     navigate("/game/friend", { replace: true });
+    resetGame();
     clearRoom();
   };
 
@@ -162,8 +181,8 @@ export default function WaitingRoomPage() {
           {isHost && (
             <div className="shrink-0 pt-2 pb-6">
               <Button
-                label="시작하기"
-                disabled={participants.length < MIN_START_PLAYERS}
+                label={isStarting ? "시작하는 중..." : "시작하기"}
+                disabled={participants.length < MIN_START_PLAYERS || isStarting}
                 onClick={handleStart}
                 className={buttonPressStyles.primary}
               />
@@ -185,6 +204,11 @@ export default function WaitingRoomPage() {
           onConfirm={handleExit}
           onCancel={() => setIsExitModalOpen(false)}
         />
+      )}
+
+      {/* 게임 시작 실패 안내 */}
+      {startError && (
+        <ConfirmModal message={getApiError(startError).message} onConfirm={resetStartError} />
       )}
 
       {message && <Toast message={message} />}

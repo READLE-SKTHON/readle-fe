@@ -20,6 +20,11 @@ export default function useWaitingRoom() {
   const emptySlotCount = Math.max(memberCount - participants.length, 0);
 
   return {
+    roomId: room.roomId,
+
+    // 게임 시작 시각 (시작 전 null, 게임 시작 감지용)
+    startedAt: data?.startedAt ?? null,
+
     inviteLink: room.inviteLink,
     roomCode,
     participants,
