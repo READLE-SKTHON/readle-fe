@@ -1,9 +1,9 @@
+import { ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import MainHeader from "@/components/common/header/MainHeader";
 
 import gameBeluga from "@/assets/images/gameBeluga.png";
-
 import shadow from "@/assets/images/Shadow.png";
 
 export default function GameMainPage() {
@@ -54,10 +54,10 @@ export default function GameMainPage() {
             alt=""
             aria-hidden="true"
             className="
-            absolute right-5 bottom-0
-            z-0 w-35
-            object-contain
-          "
+              absolute right-5 bottom-0
+              z-0 w-35
+              object-contain
+            "
           />
 
           {/* 벨루가 */}
@@ -65,10 +65,10 @@ export default function GameMainPage() {
             src={gameBeluga}
             alt="뉴스를 읽는 벨루가"
             className="
-            absolute -right-9 top-27
-            z-10 w-56
-            object-contain
-          "
+              absolute -right-9 top-27
+              z-10 w-56
+              object-contain
+            "
           />
         </section>
 
@@ -92,7 +92,7 @@ export default function GameMainPage() {
               실력을 키워요
             </p>
 
-            <span className="mt-auto self-end text-4xl leading-none text-white">›</span>
+            <ChevronRight size={32} strokeWidth={2} className="mt-auto self-end text-white" />
           </button>
 
           {/* 친구와 함께 */}
@@ -113,7 +113,7 @@ export default function GameMainPage() {
               문해력은 한 뼘 성장
             </p>
 
-            <span className="mt-auto self-end text-4xl leading-none text-[#9AA378]">›</span>
+            <ChevronRight size={32} strokeWidth={2} className="mt-auto self-end text-[#93A27E]" />
           </button>
         </section>
       </div>
