@@ -1,6 +1,8 @@
 import { useState } from "react";
 
 import MainHeader from "@/components/common/header/MainHeader";
+import ErrorState from "@/components/common/status/ErrorState";
+import LoadingState from "@/components/common/status/LoadingState";
 import Podium from "@/components/ranking/Podium";
 import RankingItem from "@/components/ranking/RankingItem";
 import RankingNotice from "@/components/ranking/RankingNotice";
@@ -37,7 +39,7 @@ export default function RankingPage() {
 
   const { user } = useUser();
 
-  const ranking = useRanking(selectedTab);
+  const { ranking, isPending, errorMessage, retry } = useRanking(selectedTab);
   const { podium, listItems, outOfRangeMyRanking } = useRankingDisplay(ranking);
 
   const isSchoolTab = selectedTab === "SCHOOL";
@@ -49,15 +51,15 @@ export default function RankingPage() {
     return entry.isMe ? { ...entry, name: "나" } : entry;
   };
 
-  // 디자인 없는 상태 안내
+  // 디자인 없는 상태 안내 (랭킹 수신 후 표시)
   // TODO: 학교 등록 · 친구 추가 이동 (디자인 없음)
   let notice: string | null = null;
 
-  if (isSchoolTab && !ranking.myRanking) {
+  if (!isPending && isSchoolTab && !ranking.myRanking) {
     notice = "소속 학교를 등록하면 우리 학교 순위를 볼 수 있어요";
   }
 
-  if (selectedTab === "FRIEND" && ranking.rankings.length <= 1) {
+  if (!isPending && selectedTab === "FRIEND" && ranking.rankings.length <= 1) {
     notice = "친구를 추가하고 함께 순위를 겨뤄보세요";
   }
 
@@ -75,41 +77,46 @@ export default function RankingPage() {
           <RankingTabs selectedTab={selectedTab} onSelect={setSelectedTab} />
         </div>
 
-        <div className="mt-8">
-          <Podium image={podiumImages[selectedTab]} entries={podium.map(toDisplayEntry)} />
-        </div>
+        {errorMessage ? (
+          // 랭킹 조회 실패
+          <ErrorState message={errorMessage} onRetry={retry} className="mt-20" />
+        ) : isPending ? (
+          <LoadingState message="랭킹을 불러오는 중이에요" className="mt-20" />
+        ) : (
+          <>
+            <div className="mt-8">
+              <Podium image={podiumImages[selectedTab]} entries={podium.map(toDisplayEntry)} />
+            </div>
 
-        {isSchoolTab && (
-          <p className="mt-4 px-2 text-[13px] font-medium text-[#5E5E5E]">학교별 평균 XP 기준</p>
-        )}
+            {/* 탭 전환 시 목록 다시 등장 */}
+            <ul key={selectedTab} className="mt-2 flex flex-col gap-2 px-2">
+              {listItems.map((entry, index) => (
+                <RankingItem
+                  key={entry.id}
+                  entry={toDisplayEntry(entry)}
+                  isNameEmphasized={isSchoolTab && entry.isMe}
+                  className={ROW_APPEAR_CLASS_NAME}
+                  style={getRowAppearStyle(index)}
+                />
+              ))}
 
-        {/* 탭 전환 시 목록 다시 등장 */}
-        <ul key={selectedTab} className="mt-2 flex flex-col gap-2 px-2">
-          {listItems.map((entry, index) => (
-            <RankingItem
-              key={entry.id}
-              entry={toDisplayEntry(entry)}
-              isNameEmphasized={isSchoolTab && entry.isMe}
-              className={ROW_APPEAR_CLASS_NAME}
-              style={getRowAppearStyle(index)}
-            />
-          ))}
+              {/* 표시 범위 밖 내 순위 (6위 아래) */}
+              {outOfRangeMyRanking && (
+                <RankingItem
+                  entry={toDisplayEntry(outOfRangeMyRanking)}
+                  isNameEmphasized={isSchoolTab}
+                  className={ROW_APPEAR_CLASS_NAME}
+                  style={getRowAppearStyle(listItems.length)}
+                />
+              )}
+            </ul>
 
-          {/* 표시 범위 밖 내 순위 (6위 아래) */}
-          {outOfRangeMyRanking && (
-            <RankingItem
-              entry={toDisplayEntry(outOfRangeMyRanking)}
-              isNameEmphasized={isSchoolTab}
-              className={ROW_APPEAR_CLASS_NAME}
-              style={getRowAppearStyle(listItems.length)}
-            />
-          )}
-        </ul>
-
-        {notice && (
-          <div className="mt-3 px-2">
-            <RankingNotice message={notice} />
-          </div>
+            {notice && (
+              <div className="mt-3 px-2">
+                <RankingNotice message={notice} />
+              </div>
+            )}
+          </>
         )}
       </main>
     </div>
