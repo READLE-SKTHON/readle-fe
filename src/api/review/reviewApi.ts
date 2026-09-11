@@ -5,6 +5,7 @@ import type {
   ReviewCategoriesResponse,
   ReviewGroupsResponse,
   ReviewResultResponse,
+  SkillResultsResponse,
   StartReviewRequest,
   StartReviewResponse,
   SubmitReviewAnswerRequest,
@@ -61,6 +62,15 @@ export const getReviewResult = async (userId: number, reviewSessionId: number) =
     `/api/review/${reviewSessionId}/result`,
     { params: { userId } },
   );
+
+  return data.data;
+};
+
+// 능력치 결과 조회 (영역별 누적 평균 점수)
+export const getSkillResults = async (userId: number) => {
+  const { data } = await api.get<ApiResponse<SkillResultsResponse>>("/api/training/skills", {
+    params: { userId },
+  });
 
   return data.data;
 };

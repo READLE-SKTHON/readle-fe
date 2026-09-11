@@ -11,4 +11,6 @@ export const reviewKeys = {
 
   result: (userId: number, reviewSessionId: number) =>
     [...reviewKeys.all, "result", userId, reviewSessionId] as const,
+
+  skills: (userId: number) => [...reviewKeys.all, "skills", userId] as const,
 };
