@@ -4,15 +4,25 @@ import { NavLink, useLocation } from "react-router-dom";
 import "./FooterNavigation.css";
 
 import bookIcon from "@/assets/icons/navigationIcons/bookIcon.png";
+import bookActiveIcon from "@/assets/icons/navigationIcons/bookActiveIcon.png";
+
 import gameIcon from "@/assets/icons/navigationIcons/gameIcon.png";
+import gameActiveIcon from "@/assets/icons/navigationIcons/gameActiveIcon.png";
+
 import trophyIcon from "@/assets/icons/navigationIcons/trophyIcon.png";
+import trophyActiveIcon from "@/assets/icons/navigationIcons/trophyActiveIcon.png";
+
 import userIcon from "@/assets/icons/navigationIcons/userIcon.png";
+import userActiveIcon from "@/assets/icons/navigationIcons/userActiveIcon.png";
+
 import whaleIcon from "@/assets/icons/navigationIcons/whaleIcon.png";
+import whaleActiveIcon from "@/assets/icons/navigationIcons/whaleActiveIcon.png";
 
 interface NavigationItem {
   label: string;
   path: string;
   icon: string;
+  activeIcon: string;
 }
 
 const navigationItems: NavigationItem[] = [
@@ -20,26 +30,31 @@ const navigationItems: NavigationItem[] = [
     label: "랭킹",
     path: "/ranking",
     icon: trophyIcon,
+    activeIcon: trophyActiveIcon,
   },
   {
     label: "복습",
     path: "/review",
     icon: bookIcon,
+    activeIcon: bookActiveIcon,
   },
   {
     label: "HOME",
     path: "/home",
     icon: whaleIcon,
+    activeIcon: whaleActiveIcon,
   },
   {
     label: "게임",
     path: "/game",
     icon: gameIcon,
+    activeIcon: gameActiveIcon,
   },
   {
     label: "마이페이지",
     path: "/my",
     icon: userIcon,
+    activeIcon: userActiveIcon,
   },
 ];
 
@@ -54,7 +69,6 @@ export default function FooterNavigation() {
     }
 
     // 하위 페이지에서도 해당 메뉴 활성화
-    // 예: /training/result → 훈련 메뉴 활성화
     return pathname === path || pathname.startsWith(`${path}/`);
   });
 
@@ -129,7 +143,7 @@ export default function FooterNavigation() {
             "
           >
             <img
-              src={activeItem.icon}
+              src={activeItem.activeIcon}
               alt=""
               aria-hidden="true"
               className="size-10 object-contain"
@@ -156,7 +170,7 @@ export default function FooterNavigation() {
                 outline-none
               "
             >
-              {/* 활성 메뉴는 아래쪽 아이콘 숨김 */}
+              {/* 비활성 메뉴 아이콘 */}
               <img
                 src={item.icon}
                 alt=""
