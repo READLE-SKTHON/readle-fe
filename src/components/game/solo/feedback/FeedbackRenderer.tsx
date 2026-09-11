@@ -18,6 +18,6 @@ export default function FeedbackRenderer({ quiz, status }: FeedbackRendererProps
       return <OxFeedback status={status} />;
 
     case "SUBJECTIVE":
-      return <SubjectiveFeedback />;
+      return <SubjectiveFeedback status={status} />;
   }
 }
