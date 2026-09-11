@@ -1,54 +1,46 @@
-import MainHeader from "@/components/common/header/MainHeader";
-
+import { ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+
+import MainHeader from "@/components/common/header/MainHeader";
+import AbilityChart from "@/components/review/AbilityChart";
+import ReviewHero from "@/components/review/ReviewHero";
+import { mockAbilityScores, mockReviewHeader } from "@/mocks/review";
 
 export default function ReviewPage() {
   const navigate = useNavigate();
 
+  // isolate: 히어로 배경 그라데이션을 콘텐츠 뒤에 두기 위한 쌓임 맥락
   return (
-    <div>
-      <MainHeader userName="김환희" />
-      <main className="min-h-screen px-5 pt-5">
-        {/* 안내 문구 */}
-        <section className="pt-8">
-          <h1 className="text-2xl font-bold leading-snug">
-            틀린 문제를 다시 풀며 문해력을
-            <br />더 단단하게!
-          </h1>
+    <div className="isolate overflow-x-clip">
+      {/* TODO: 알림 클릭 (디자인 없음) */}
+      <MainHeader
+        userName={mockReviewHeader.userName}
+        notificationCount={mockReviewHeader.notificationCount}
+      />
 
-          <p className="mt-3 text-sm text-gray-500">
-            틀렸던 문제를 분석해 나에게
-            <br />
-            필요한 훈련을 모았어요
-          </p>
-        </section>
+      <main className="px-5 pt-22 pb-6">
+        <ReviewHero />
 
-        {/* 약한 유형 */}
+        {/* 약한 유형 모아보기 */}
         <button
           type="button"
           onClick={() => navigate("/review/types")}
-          className="
-          mt-8 flex w-full items-center justify-between
-          rounded-2xl bg-[#E8F4FF] px-6 py-6 text-left
-        "
+          className="mt-7 flex w-full cursor-pointer items-center justify-between rounded-2xl bg-[#2285E3] py-6.5 pr-7 pl-8 text-left text-white transition-opacity hover:opacity-90 active:opacity-80"
         >
-          <div>
-            <h2 className="text-lg font-bold">내 약한 유형 모아보기</h2>
+          <span>
+            <span className="block text-[18px] font-bold">내 약한 유형 모아보기</span>
 
-            <p className="mt-1 text-sm text-gray-500">최근 자주 틀린 유형부터 연습해요</p>
-          </div>
+            <span className="block text-[16px] font-medium">최근 자주 틀린 유형부터 연습해요</span>
+          </span>
 
-          <span className="text-3xl text-[#168CF2]">›</span>
+          <ChevronRight className="size-8 shrink-0" />
         </button>
 
-        {/* 문해력 능력치 */}
-        <section className="mt-7">
-          <h2 className="text-lg font-bold">내 문해력 능력치</h2>
+        {/* 내 문해력 능력치 */}
+        <section className="mt-9">
+          <h2 className="pl-2 text-[20px] font-bold text-black">내 문해력 능력치</h2>
 
-          <div className="mt-4 flex h-72 items-center justify-center rounded-2xl bg-white">
-            {/* 이후 RadarChart 컴포넌트 넣기 */}
-            <p className="text-sm text-gray-400">문해력 차트 영역</p>
-          </div>
+          <AbilityChart abilities={mockAbilityScores} />
         </section>
       </main>
     </div>
