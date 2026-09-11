@@ -7,9 +7,12 @@ import OxResult from "@/components/game/solo/feedback/result/OxResult";
 import SubjectiveResult from "@/components/game/solo/feedback/result/SubjectiveResult";
 import NewsModal from "@/components/game/solo/NewsModal";
 import NewsPreview from "@/components/game/solo/NewsPreview";
+import QuizTimer from "@/components/game/solo/QuizTimer";
 import QuizActionButton from "@/components/game/solo/quiz/QuizActionButton";
 import QuizMetaBar from "@/components/game/solo/quiz/QuizMetaBar";
 import QuizRenderer from "@/components/game/solo/quiz/QuizRenderer";
+
+import { GAME_LEVEL_CONFIG, type UserLevel } from "@/config/gameLevelConfig";
 
 import { mockNews } from "@/mocks/news";
 import { mockQuizzes } from "@/mocks/quizzes";
@@ -18,6 +21,13 @@ import type { FeedbackStatus } from "@/types/quiz";
 
 export default function SoloGamePage() {
   const navigate = useNavigate();
+
+  //임시 사용자 레벨
+
+  const userLevel: UserLevel = 3;
+
+  // 현재 레벨 게임 설정
+  const gameConfig = GAME_LEVEL_CONFIG[userLevel];
 
   // 현재 문제 번호
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -112,7 +122,7 @@ export default function SoloGamePage() {
   const handleNext = () => {
     const isLastQuiz = currentIndex === mockQuizzes.length - 1;
 
-    // 마지막 문제면 결과 페이지 이동
+    // 마지막 문제면 결과 페이지로 이동
     if (isLastQuiz) {
       navigate("/game/solo/result", {
         state: {
@@ -158,11 +168,21 @@ export default function SoloGamePage() {
       />
 
       <main className="px-5 pb-8 pt-6">
-        {/* 객관식 풀이 전 문제 유형 / 지문 전체보기 / 뉴스 미리보기 */}
+        {/* Lv.2 / Lv.3 타이머 */}
+        {gameConfig.hasTimer && !isSubmitted && <QuizTimer key={currentIndex} duration={60} />}
+
+        {/* 객관식 풀이 전 */}
         {!isSubmitted && currentQuiz.type === "MULTIPLE_CHOICE" && (
           <>
-            <QuizMetaBar type="객관식" subtype="요지" onOpenNews={() => setIsNewsOpen(true)} />
+            {/* 문제 유형 / 지문 전체보기 */}
+            <QuizMetaBar
+              type="객관식"
+              subtype="요지"
+              canOpenNews={gameConfig.canOpenNews}
+              onOpenNews={() => setIsNewsOpen(true)}
+            />
 
+            {/* 뉴스 미리보기 */}
             <NewsPreview />
           </>
         )}
@@ -213,7 +233,9 @@ export default function SoloGamePage() {
       </main>
 
       {/* 뉴스 전체보기 */}
-      {isNewsOpen && <NewsModal news={mockNews} onClose={() => setIsNewsOpen(false)} />}
+      {isNewsOpen && gameConfig.canOpenNews && (
+        <NewsModal news={mockNews} onClose={() => setIsNewsOpen(false)} />
+      )}
     </div>
   );
 }
