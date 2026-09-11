@@ -17,11 +17,13 @@ import { XP_PER_LEVEL } from "@/config/levelConfig";
 import useUser from "@/hooks/useUser";
 import { mockMyPage } from "@/mocks/mypage";
 
-// 레벨별 캐릭터 세로 위치 (이미지 아래 여백 차이 보정, 레벨 배너 위 안착)
-const CHARACTER_TOP_CLASS_NAMES: Record<UserLevel, string> = {
-  1: "top-2",
-  2: "top-5.5",
-  3: "top-5",
+// 레벨별 캐릭터 세로 위치·크기 (이미지 여백 차이 보정, 레벨 배너 위 안착)
+const CHARACTER_CLASS_NAMES: Record<UserLevel, string> = {
+  1: "top-2 w-36",
+  2: "top-5.5 w-36",
+  3: "top-5 w-36",
+  4: "-top-5 w-45",
+  5: "-top-5.5 w-45",
 };
 
 export default function HomePage() {
@@ -62,7 +64,7 @@ export default function HomePage() {
           <img
             src={levelInfo.character}
             alt="벨루가 캐릭터"
-            className={`absolute -right-1 ${CHARACTER_TOP_CLASS_NAMES[levelInfo.level]} z-10 w-36 object-contain`}
+            className={`absolute -right-1 ${CHARACTER_CLASS_NAMES[levelInfo.level]} z-10 object-contain`}
           />
         </section>
 
