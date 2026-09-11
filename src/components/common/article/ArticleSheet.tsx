@@ -55,24 +55,28 @@ export default function ArticleSheet({ news, onClose }: ArticleSheetProps) {
             {news.content}
           </p>
 
-          {/* 출처 */}
-          <div className="mt-6 flex items-center justify-between border-t border-[#E3E2E2] pt-4">
-            <p className="text-[14px] font-medium text-[#8F8F8F]">
-              출처 {news.publisher} · {formatPublishedDate(news.publishedAt)}
-            </p>
+          {/* 출처 (출처·원문 정보 없는 기사 미표시) */}
+          {(news.publisher || news.sourceUrl) && (
+            <div className="mt-6 flex items-center justify-between border-t border-[#E3E2E2] pt-4">
+              {news.publisher && (
+                <p className="text-[14px] font-medium text-[#8F8F8F]">
+                  출처 {news.publisher} · {formatPublishedDate(news.publishedAt)}
+                </p>
+              )}
 
-            {news.sourceUrl && (
-              <a
-                href={news.sourceUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center gap-1 text-[14px] font-semibold text-[#2285E3]"
-              >
-                원문 보기
-                <ExternalLink className="size-4" />
-              </a>
-            )}
-          </div>
+              {news.sourceUrl && (
+                <a
+                  href={news.sourceUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-1 text-[14px] font-semibold text-[#2285E3]"
+                >
+                  원문 보기
+                  <ExternalLink className="size-4" />
+                </a>
+              )}
+            </div>
+          )}
         </div>
       </section>
     </div>
