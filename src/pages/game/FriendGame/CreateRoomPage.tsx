@@ -5,6 +5,7 @@ import { Blocks, BookPlus, Newspaper, Timer, User } from "lucide-react";
 import Button from "@/components/common/button/Button";
 import Header from "@/components/common/header/Header";
 import RoomOptionRow from "@/components/game/friend/createRoom/RoomOptionRow";
+import { buttonPressStyles } from "@/components/game/friend/buttonPressStyles";
 import useOutsideClick from "@/hooks/useOutsideClick";
 import {
   categoryOptions,
@@ -135,7 +136,11 @@ export default function CreateRoomPage() {
           />
         </section>
 
-        <Button label="방 생성하기" onClick={handleCreateRoom} className="mt-auto" />
+        <Button
+          label="방 생성하기"
+          onClick={handleCreateRoom}
+          className={`mt-auto ${buttonPressStyles.primary}`}
+        />
       </main>
     </div>
   );

@@ -1,7 +1,7 @@
-import { Trophy } from "lucide-react";
-
 import PlayerRow from "@/components/game/friend/PlayerRow";
 import type { RankingItem } from "@/types/game";
+
+import gameTrophy from "@/assets/icons/game/GameTrophy.svg";
 
 // 순위 행 순차 등장 간격 (ms)
 const ROW_APPEAR_DELAY_MS = 150;
@@ -50,7 +50,7 @@ type RankBadgeProps = {
 // 순위 표시 (1위 트로피, 2위 원형 배지, 3위 이하 숫자)
 function RankBadge({ rank }: RankBadgeProps) {
   if (rank === 1) {
-    return <Trophy aria-label="1위" className="size-7 shrink-0 fill-[#FFD900] text-[#FFD900]" />;
+    return <img src={gameTrophy} alt="1위" className="size-7 shrink-0" />;
   }
 
   if (rank === 2) {

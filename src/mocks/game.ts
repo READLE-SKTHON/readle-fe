@@ -18,6 +18,9 @@ const priceNews: News = {
   sourceUrl: "https://example.com/news/101",
 };
 
+// 기사 문단 (문제별 발췌 지문, 원문 그대로)
+const [inflationParagraph, priceItemParagraph, consumerParagraph] = priceNews.content.split("\n\n");
+
 // 게임 문제 목록 (방 설정 문제 수만큼 순환 사용)
 export const mockGameQuestions: GameQuestion[] = [
   {
@@ -26,6 +29,7 @@ export const mockGameQuestions: GameQuestion[] = [
     news: priceNews,
     category: "핵심파악",
     subCategory: "요지",
+    passage: `${inflationParagraph}\n\n${priceItemParagraph}`,
     question: "이 글의 중심 내용으로 적절한 것은?",
     options: [
       { id: 1, text: "물가가 안정되면서 가계의 소비가 늘고 있다." },
@@ -42,6 +46,9 @@ export const mockGameQuestions: GameQuestion[] = [
     questionId: 2,
     type: "SHORT_ANSWER",
     news: priceNews,
+    category: "정보추출",
+    subCategory: "근거찾기",
+    passage: priceItemParagraph,
     question: "기사에서 가격이 큰 폭으로 올랐다고 제시한 두 가지 품목을 쓰시오.",
     instruction: ",를 붙여서 쓰시오",
     maxLength: 500,
@@ -53,6 +60,9 @@ export const mockGameQuestions: GameQuestion[] = [
     questionId: 3,
     type: "OX",
     news: priceNews,
+    category: "정보추출",
+    subCategory: "일치/불일치",
+    passage: priceItemParagraph,
     question: "에너지 가격은 큰 폭으로 줄었다",
     correctAnswer: "X",
     explanation: "기사에서는 에너지 가격이 큰 폭으로 올랐다고 설명하고 있어요.",
@@ -64,6 +74,7 @@ export const mockGameQuestions: GameQuestion[] = [
     news: priceNews,
     category: "추론",
     subCategory: "내용 추론",
+    passage: consumerParagraph,
     question: "이 글을 바탕으로 추론할 수 있는 것은?",
     options: [
       { id: 1, text: "소비자들이 지출을 줄이려 할 수 있다." },
@@ -80,6 +91,9 @@ export const mockGameQuestions: GameQuestion[] = [
     questionId: 5,
     type: "OX",
     news: priceNews,
+    category: "정보추출",
+    subCategory: "일치/불일치",
+    passage: consumerParagraph,
     question: "소비자 심리지수는 전달보다 하락했다",
     correctAnswer: "O",
     explanation: "기사에서 소비자 심리지수가 전달보다 하락했다고 설명하고 있어요.",

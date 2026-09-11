@@ -14,8 +14,15 @@ interface BaseGameQuestion {
   questionId: number;
   type: QuestionType;
 
-  // 문제 기사 (제목·본문, 지문 전체보기)
+  // 문제 기사 (제목·본문·출처)
   news: News;
+
+  // 문제 풀이용 발췌 본문 (없으면 기사 본문 전체)
+  passage?: string;
+
+  // 문제 유형 태그 (예: 핵심파악 | 요지)
+  category: string;
+  subCategory: string;
 
   question: string;
   explanation: string;
@@ -27,10 +34,6 @@ interface BaseGameQuestion {
 // 객관식
 export interface MultipleChoiceGameQuestion extends BaseGameQuestion {
   type: "MULTIPLE_CHOICE";
-
-  // 문제 유형 태그 (예: 핵심파악 | 요지)
-  category: string;
-  subCategory: string;
 
   options: {
     id: number;

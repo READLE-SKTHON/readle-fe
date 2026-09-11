@@ -4,6 +4,7 @@ import Button from "@/components/common/button/Button";
 import Header from "@/components/common/header/Header";
 import Toast from "@/components/common/toast/Toast";
 import CharacterShadow from "@/components/game/friend/CharacterShadow";
+import { buttonPressStyles } from "@/components/game/friend/buttonPressStyles";
 import InviteLinkCard from "@/components/game/friend/invite/InviteLinkCard";
 import useClipboard from "@/hooks/useClipboard";
 import useToast from "@/hooks/useToast";
@@ -69,7 +70,11 @@ export default function InviteRoomPage() {
           <InviteLinkCard link={inviteLink} onCopy={handleCopyLink} />
         </section>
 
-        <Button label="입장하기" onClick={handleEnterRoom} className="mt-auto" />
+        <Button
+          label="입장하기"
+          onClick={handleEnterRoom}
+          className={`mt-auto ${buttonPressStyles.primary}`}
+        />
       </main>
 
       {message && <Toast message={message} />}

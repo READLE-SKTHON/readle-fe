@@ -1,4 +1,5 @@
 import ArticleText from "@/components/game/friend/gamePlay/ArticleText";
+import ExcerptBox from "@/components/game/friend/gamePlay/ExcerptBox";
 import type { OxGameQuestion } from "@/types/game";
 
 type OxQuestionProps = {
@@ -16,7 +17,13 @@ export default function OxQuestion({
 }: OxQuestionProps) {
   return (
     <section>
-      {!isLocked && <ArticleText title={question.news.title} content={question.news.content} />}
+      {/* 발췌 지문 (없으면 기사 전체) */}
+      {!isLocked &&
+        (question.passage ? (
+          <ExcerptBox passage={question.passage} />
+        ) : (
+          <ArticleText title={question.news.title} content={question.news.content} />
+        ))}
 
       <h3
         className={`text-[20px] leading-8 font-bold ${isLocked ? "text-[#5E5E5E]" : "mt-8 text-black"}`}
@@ -35,8 +42,10 @@ export default function OxQuestion({
               type="button"
               disabled={isLocked}
               onClick={() => onSelect?.(answer)}
-              className={`h-20 rounded-2xl border text-[32px] font-bold text-black ${
-                isSelected ? "border-[#2285E3] bg-[#CEE5F8]" : "border-[#E3E2E2] bg-[#F7F7F7]"
+              className={`h-20 rounded-2xl border text-[32px] font-bold ${
+                isSelected
+                  ? "border-[#2285E3] bg-[#2285E3] text-white"
+                  : "border-[#E3E2E2] bg-[#F7F7F7] text-black"
               } ${isLocked ? "cursor-default" : "cursor-pointer"}`}
             >
               {answer}
