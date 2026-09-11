@@ -26,7 +26,7 @@ export default function MultipleChoiceResult({
       <MultipleChoiceFeedback isCorrect={isCorrect} />
 
       {/* 객관식 결과 */}
-      <div className="mt-11 flex flex-col gap-3">
+      <div className="mt-5 flex flex-col gap-3">
         {choices.map((choice, index) => {
           const isCorrectChoice = choice.id === correctId;
           const isWrongChoice = choice.id === selectedId && selectedId !== correctId;

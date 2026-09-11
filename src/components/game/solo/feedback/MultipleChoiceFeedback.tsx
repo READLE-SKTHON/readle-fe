@@ -9,7 +9,7 @@ type MultipleChoiceFeedbackProps = {
 export default function MultipleChoiceFeedback({ isCorrect }: MultipleChoiceFeedbackProps) {
   return (
     <section
-      className={`relative mt-12 h-45 rounded-3xl border px-6 pb-7 pt-20 ${
+      className={`relative mt-15 h-45 rounded-3xl border px-6 pb-7 pt-20 ${
         isCorrect ? "border-[#78D51B] bg-[#E7F8D5]" : "border-[#F02D2D] bg-[#FFDADA]"
       }`}
     >
