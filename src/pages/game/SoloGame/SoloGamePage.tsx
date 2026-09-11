@@ -11,7 +11,7 @@ import QuizMetaBar from "@/components/quiz/question/QuizMetaBar";
 import QuizRenderer from "@/components/quiz/question/QuizRenderer";
 import QuizResultRenderer from "@/components/quiz/result/QuizResultRenderer";
 
-import { GAME_LEVEL_CONFIG } from "@/config/gameLevelConfig";
+import { GAME_LEVEL_CONFIG, type UserLevel } from "@/config/gameLevelConfig";
 
 import { useSubmitTrainingAnswer, useTodayTraining } from "@/hooks/queries/useTraining";
 import useQuizAnswer from "@/hooks/useQuizAnswer";
@@ -31,14 +31,17 @@ import {
 
 export default function SoloGamePage() {
   const userId = useUserStore((state) => state.user?.id);
+
   const { data: training, isPending, isError, error } = useTodayTraining();
-  if (!userId)
+
+  if (!userId) {
     return (
       <div>
         <Header title="혼자 문제풀기" />
         <p role="status">로그인이 필요합니다.</p>
       </div>
     );
+  }
 
   if (isPending) {
     return (
@@ -87,8 +90,9 @@ function SoloGameContent({ training }: SoloGameContentProps) {
   // 답안 제출 API
   const submitTraining = useSubmitTrainingAnswer();
 
-  // 사용자 레벨
-  const userLevel = training.userLevel === 2 || training.userLevel === 3 ? training.userLevel : 1;
+  // 서버 사용자 레벨 (1 ~ 5)
+  const userLevel: UserLevel =
+    training.userLevel >= 1 && training.userLevel <= 5 ? (training.userLevel as UserLevel) : 1;
 
   // 현재 레벨 게임 설정
   const gameConfig = GAME_LEVEL_CONFIG[userLevel];
@@ -126,7 +130,10 @@ function SoloGameContent({ training }: SoloGameContentProps) {
   };
 
   // 문제 유형 태그
-  const quizTag = { type: currentQuestion.mainCategory, subtype: currentQuestion.subCategory };
+  const quizTag = {
+    type: currentQuestion.mainCategory,
+    subtype: currentQuestion.subCategory,
+  };
 
   // 답안 입력 상태
   const {
@@ -142,7 +149,11 @@ function SoloGameContent({ training }: SoloGameContentProps) {
     resetAnswer,
   } = useQuizAnswer(currentQuiz);
 
-  const requiresSubjectiveReason = currentQuiz.type === "SUBJECTIVE" && currentQuestion.requireReason;
+  // 주관식 + 근거 필수 여부
+  const requiresSubjectiveReason =
+    currentQuiz.type === "SUBJECTIVE" && currentQuestion.requireReason;
+
+  // 근거가 필요한 문제는 reason까지 입력해야 제출 가능
   const canSubmit = canSubmitAnswer && (!requiresSubjectiveReason || reason.trim().length > 0);
 
   // 서버 채점 결과 → 기존 UI 상태로 변환
@@ -157,7 +168,9 @@ function SoloGameContent({ training }: SoloGameContentProps) {
 
   // 답안 제출
   const handleSubmit = () => {
-    if (isSubmitted || !canSubmit || submitTraining.isPending) return;
+    if (isSubmitted || !canSubmit || submitTraining.isPending) {
+      return;
+    }
 
     let selectedAnswer = "";
 
@@ -180,15 +193,17 @@ function SoloGameContent({ training }: SoloGameContentProps) {
     submitTraining.mutate(
       {
         questionId: currentQuestion.questionId,
+
         body: {
           selectedAnswer,
+
+          // 근거 작성이 필요한 문제에만 reason 전송
           reason: currentQuestion.requireReason ? reason.trim() || undefined : undefined,
         },
       },
       {
         onSuccess: (result) => {
           setSubmitResult(result);
-
           setIsSubmitted(true);
         },
 
@@ -248,7 +263,7 @@ function SoloGameContent({ training }: SoloGameContentProps) {
       />
 
       <main className="px-5 pb-8 pt-6">
-        {/* Lv.2 / Lv.3 타이머 */}
+        {/* 타이머 */}
         {gameConfig.hasTimer && !isSubmitted && <QuizTimer key={currentIndex} duration={60} />}
 
         {/* 객관식 풀이 전 */}
@@ -294,6 +309,7 @@ function SoloGameContent({ training }: SoloGameContentProps) {
           />
         )}
 
+        {/* 답안 제출 실패 */}
         {submitTraining.isError && (
           <p role="alert">답안 제출에 실패했습니다. 다시 시도해 주세요.</p>
         )}

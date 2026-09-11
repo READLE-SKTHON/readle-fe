@@ -27,6 +27,7 @@ import WaitingRoomPage from "@/pages/game/FriendGame/WaitingRoomPage";
 import GamePlayPage from "@/pages/game/FriendGame/GamePlayPage";
 import GameResultPage from "@/pages/game/FriendGame/GameResultPage";
 import SoloResultPage from "@/pages/game/SoloGame/SoloResultPage";
+import SoloCompletedPage from "@/pages/game/SoloGame/SoloCompletedPage";
 
 export default function App() {
   return (
@@ -49,6 +50,7 @@ export default function App() {
           <Route path="/game/solo/reading" element={<SoloReadingPage />} />
           <Route path="/game/solo/play" element={<SoloGamePage />} />
           <Route path="/game/solo/result" element={<SoloResultPage />} />
+          <Route path="/game/solo/completed" element={<SoloCompletedPage />} />
 
           <Route path="/game/friend" element={<FriendGamePage />} />
           <Route path="/game/friend/create" element={<CreateRoomPage />} />
