@@ -53,5 +53,7 @@ export const useTodayTrainingResult = () => {
     queryKey: ["training", "result", "today", userId],
     queryFn: () => getTodayTrainingResult(userId!),
     enabled: !!userId,
+    retry: (failureCount, error) =>
+      !(isAxiosError(error) && error.response?.data?.code === "AN001") && failureCount < 3,
   });
 };

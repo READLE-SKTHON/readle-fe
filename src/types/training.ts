@@ -49,9 +49,8 @@ export interface SubmitAnswerResult {
 
 // 오늘의 학습 결과
 export interface TodayTrainingResult {
-  totalQuestion: number;
+  totalQuestions: number;
   correctCount: number;
-  incorrectCount: number;
   accuracy: number;
-  earnedXp?: number;
+  earnedExp: number;
 }
