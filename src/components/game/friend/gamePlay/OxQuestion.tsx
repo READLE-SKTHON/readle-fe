@@ -1,4 +1,3 @@
-import ArticleText from "@/components/game/friend/gamePlay/ArticleText";
 import ExcerptBox from "@/components/game/friend/gamePlay/ExcerptBox";
 import type { OxGameQuestion } from "@/types/game";
 
@@ -17,13 +16,8 @@ export default function OxQuestion({
 }: OxQuestionProps) {
   return (
     <section>
-      {/* 발췌 지문 (없으면 기사 전체) */}
-      {!isLocked &&
-        (question.passage ? (
-          <ExcerptBox passage={question.passage} />
-        ) : (
-          <ArticleText title={question.news.title} content={question.news.content} />
-        ))}
+      {/* 발췌 지문 */}
+      {!isLocked && question.passage && <ExcerptBox passage={question.passage} />}
 
       <h3
         className={`text-[20px] leading-8 font-bold ${isLocked ? "text-[#5E5E5E]" : "mt-8 text-black"}`}

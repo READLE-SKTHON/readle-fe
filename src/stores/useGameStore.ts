@@ -1,101 +1,76 @@
 import { create } from "zustand";
 
-import type { GamePhase, GameQuestion, RoundScore, SubmitStatus } from "@/types/game";
+import type { GameAnswer, GamePhase, GameQuestion, GameStatusResponse } from "@/types/game";
+import { toGameQuestion } from "@/utils/toGameQuestion";
 
 type GameData = {
-  questions: GameQuestion[];
-  participantIds: number[];
-  currentIndex: number;
-  phase: GamePhase;
+  // 진행 중인 판 번호 (한 판 더하기 시 증가)
+  round: number | null;
 
-  // 참여자별 제출 상태
-  submitStatuses: Record<number, SubmitStatus>;
+  phase: GamePhase | null;
+  currentOrder: number | null;
 
-  // 내가 제출한 답안
-  myAnswer: string | null;
+  // 문제 순서별 문제 (문제 없는 정답 공개 단계 표시용)
+  questions: Record<number, GameQuestion>;
 
-  // 이번 문제 참여자별 점수
-  roundScores: RoundScore[];
+  // 제출 완료 문제 순서
+  submittedOrders: number[];
 
-  // 참여자별 누적 점수
-  totalScores: Record<number, number>;
+  // 선택·입력 중인 답안 (제출 대기 시 제출한 답안)
+  draftAnswer: GameAnswer | null;
 };
 
 type GameState = GameData & {
-  startGame: (questions: GameQuestion[], participantIds: number[]) => void;
-  updateSubmitStatus: (userId: number, status: SubmitStatus) => void;
-  submitMyAnswer: (userId: number, answer: string) => void;
-  revealResult: (scores: RoundScore[]) => void;
-  showRanking: () => void;
-  goToNextQuestion: () => void;
+  syncStatus: (status: GameStatusResponse) => void;
+  setDraftAnswer: (answer: GameAnswer) => void;
+  markSubmitted: (order: number) => void;
   resetGame: () => void;
 };
 
 const initialGameData: GameData = {
-  questions: [],
-  participantIds: [],
-  currentIndex: 0,
-  phase: "ANSWERING",
-  submitStatuses: {},
-  myAnswer: null,
-  roundScores: [],
-  totalScores: {},
+  round: null,
+  phase: null,
+  currentOrder: null,
+  questions: {},
+  submittedOrders: [],
+  draftAnswer: null,
 };
 
-// 참여자 전원 미제출 상태
-const createSubmitStatuses = (participantIds: number[]): Record<number, SubmitStatus> =>
-  Object.fromEntries(participantIds.map((userId) => [userId, "NOT_SUBMITTED"]));
-
-// 게임 진행 상태 (문제 풀이 → 제출 대기 → 정답 발표 → 중간 순위 → 최종 순위 공유)
+// 게임 진행 상태 (서버 상태 조회 기준 동기화, 답안·제출 여부 관리)
 export const useGameStore = create<GameState>()((set) => ({
   ...initialGameData,
 
-  startGame: (questions, participantIds) =>
-    set({
-      ...initialGameData,
-      questions,
-      participantIds,
-      submitStatuses: createSubmitStatuses(participantIds),
-      totalScores: Object.fromEntries(participantIds.map((userId) => [userId, 0])),
-    }),
-
-  updateSubmitStatus: (userId, status) =>
+  syncStatus: (status) =>
     set((state) => {
-      // 제출 완료 후 상태 유지
-      if (state.submitStatuses[userId] === "SUBMITTED") return {};
+      // 새 판 시작 시 이전 판 기록 초기화
+      const base = state.round === status.round ? state : initialGameData;
 
-      return { submitStatuses: { ...state.submitStatuses, [userId]: status } };
+      const { question, currentQuestionOrder: order } = status;
+      const isNewQuestion = question !== null && !(order in base.questions);
+
+      return {
+        round: status.round,
+        phase: status.phase,
+        currentOrder: order,
+        questions:
+          question && isNewQuestion
+            ? { ...base.questions, [order]: toGameQuestion(question) }
+            : base.questions,
+        submittedOrders: base.submittedOrders,
+
+        // 다음 문제 전환 시 선택 답안 초기화
+        draftAnswer: base.currentOrder === order ? base.draftAnswer : null,
+      };
     }),
 
-  submitMyAnswer: (userId, answer) =>
-    set((state) => ({
-      phase: "WAITING",
-      myAnswer: answer,
-      submitStatuses: { ...state.submitStatuses, [userId]: "SUBMITTED" },
-    })),
+  setDraftAnswer: (draftAnswer) => set({ draftAnswer }),
 
-  revealResult: (scores) =>
-    set((state) => ({
-      phase: "REVEAL",
-      roundScores: scores,
-      totalScores: {
-        ...state.totalScores,
-        ...Object.fromEntries(
-          scores.map(({ userId, points }) => [userId, (state.totalScores[userId] ?? 0) + points]),
-        ),
-      },
-    })),
-
-  showRanking: () => set({ phase: "RANKING" }),
-
-  goToNextQuestion: () =>
-    set((state) => ({
-      currentIndex: state.currentIndex + 1,
-      phase: "ANSWERING",
-      myAnswer: null,
-      roundScores: [],
-      submitStatuses: createSubmitStatuses(state.participantIds),
-    })),
+  markSubmitted: (order) =>
+    set((state) =>
+      state.submittedOrders.includes(order)
+        ? {}
+        : { submittedOrders: [...state.submittedOrders, order] },
+    ),
 
   resetGame: () => set(initialGameData),
 }));

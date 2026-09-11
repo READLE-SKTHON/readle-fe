@@ -1,5 +1,5 @@
 import PlayerRow from "@/components/game/friend/PlayerRow";
-import type { RankingItem } from "@/types/game";
+import type { ScoreboardEntry } from "@/types/game";
 
 import gameTrophy from "@/assets/icons/game/GameTrophy.svg";
 
@@ -7,7 +7,7 @@ import gameTrophy from "@/assets/icons/game/GameTrophy.svg";
 const ROW_APPEAR_DELAY_MS = 150;
 
 type RankingListProps = {
-  rankings: RankingItem[];
+  rankings: ScoreboardEntry[];
   myUserId: number;
 };
 
