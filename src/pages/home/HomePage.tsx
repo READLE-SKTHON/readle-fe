@@ -16,7 +16,7 @@ export default function HomePage() {
   const navigate = useNavigate();
 
   return (
-    <main className="mb-10">
+    <main>
       <MainHeader userName="김환희" />
 
       <div className="px-5">
@@ -49,14 +49,25 @@ export default function HomePage() {
         </section>
 
         {/* 레벨 카드 */}
-        <section className="mt-5 rounded-3xl border border-white bg-[#EAF5FD] px-5 py-5 shadow-md">
-          <p className="text-2xl font-bold text-[#2F8DE4]">Lv. 1</p>
+        <section
+          className="
+            mt-5
+            rounded-3xl
+            border border-white
+            bg-[#EAF5FD]
+            px-5 py-3
+            shadow-[0_4px_14px_rgba(47,141,228,0.15)]
+          "
+        >
+          <p className="text-2xl font-extrabold text-[#2F8DE4]">Lv. 1</p>
 
-          <h2 className="mt-1 text-3xl font-bold text-[#071D2E]">문장 수집가</h2>
+          <h2 className="mt-0.5 text-2xl font-extrabold text-[#071D2E]">문장 수집가</h2>
 
-          <p className="mt-2 text-lg font-semibold text-gray-400">글이랑 낯가리는 중이에요!</p>
+          <p className="mt-1 text-md font-semibold text-gray-400">
+            문장 속 중요한 단어들을 하나씩 모아가요
+          </p>
 
-          <div className="mt-4 flex items-center gap-3">
+          <div className="mt-2 flex items-center gap-3">
             <div className="h-5 flex-1 overflow-hidden rounded-full bg-gray-200">
               <div className="h-full w-[64%] rounded-full bg-[#2F95F5]" />
             </div>
@@ -115,9 +126,9 @@ export default function HomePage() {
             <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold text-[#2F8DE4]">경제</p>
 
-              <h3 className="mt-1 text-lg font-bold text-black">오늘의 뉴스</h3>
+              <h3 className=" text-lg font-bold text-black">오늘의 뉴스</h3>
 
-              <p className="mt-1 line-clamp-2 text-sm leading-snug text-gray-400">
+              <p className="mt-1 line-clamp-2 text-sm font-semibold leading-snug text-gray-400">
                 지속되는 물가상승으로 인해 가계의 생활비 부담이 커지고 있으며, 소비 심리도 위축되고
                 있다는 분석이...
               </p>
